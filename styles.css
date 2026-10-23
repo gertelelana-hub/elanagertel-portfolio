@@ -1,0 +1,62 @@
+/* ===== Design variables (from Figma) ===== */
+:root {
+  /* Colors */
+  --color-background: #000000;
+  --color-accent: #ff0000;
+
+  /* Fonts */
+  --font-display: "Abraham TRIAL", sans-serif;
+
+  /* Sizes — the Figma frame is 1440px wide, so values are converted to vw
+     to keep the same proportions on every screen size */
+  --coming-soon-size: 9.107vw;  /* 131px out of 1440px */
+  --coming-soon-left: 19.93vw;  /* 287px out of 1440px */
+  --coming-soon-top: 36.72%;    /* 376px out of 1024px frame height */
+}
+
+/* ===== Font: Abraham TRIAL (trial version, stored in fonts/) ===== */
+@font-face {
+  font-family: "Abraham TRIAL";
+  src: url("fonts/Abraham-Regular-TRIAL.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ===== Base: remove default spacing so the page fills exactly one screen ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-background);
+  overflow: hidden; /* one screen, no scrolling */
+}
+
+/* ===== Coming soon page ===== */
+.coming-soon-page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh; /* on phones: the real visible height */
+}
+
+/* The red "coming soon" text, placed like in the Figma frame */
+.coming-soon-title {
+  position: absolute;
+  left: var(--coming-soon-left);
+  top: var(--coming-soon-top);
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--coming-soon-size);
+  line-height: normal;
+  color: var(--color-accent);
+  white-space: nowrap;
+}

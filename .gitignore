@@ -1,0 +1,5 @@
+# Trial font: its licence does not allow sharing it publicly
+fonts/
+
+# macOS system files
+.DS_Store
