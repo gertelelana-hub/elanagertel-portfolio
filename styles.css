@@ -12,6 +12,10 @@
   --coming-soon-size: 9.107vw;  /* 131px out of 1440px */
   --coming-soon-left: 19.93vw;  /* 287px out of 1440px */
   --coming-soon-top: 36.72%;    /* 376px out of 1024px frame height */
+
+  /* Breathing animation */
+  --breath-duration: 4s;        /* one full breath: in and out */
+  --breath-scale: 1.08;         /* how much the text grows at the peak */
 }
 
 /* ===== Font: Abraham TRIAL (trial version, stored in fonts/) ===== */
@@ -59,4 +63,26 @@ body {
   line-height: normal;
   color: var(--color-accent);
   white-space: nowrap;
+
+  /* Breathing: grow and shrink from the center of the text, forever */
+  transform-origin: center;
+  animation: breathe var(--breath-duration) ease-in-out infinite;
+}
+
+/* The breathing movement: normal size → bigger → back to normal */
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(var(--breath-scale));
+  }
+}
+
+/* Visitors who asked their device for less motion see still text */
+@media (prefers-reduced-motion: reduce) {
+  .coming-soon-title {
+    animation: none;
+  }
 }
