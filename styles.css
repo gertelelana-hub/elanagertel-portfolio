@@ -1,30 +1,21 @@
 /* ===== Design variables (from Figma) ===== */
 :root {
   /* Colors */
-  --color-background: #000000;
-  --color-accent: #ff0000;
+  --color-background: #ffffff;
+  --color-text: #000000;
 
   /* Fonts */
-  --font-display: "Abraham TRIAL", sans-serif;
+  --font-body: "Libre Baskerville", Georgia, serif;
 
-  /* Sizes — the Figma frame is 1440px wide, so values are converted to vw
-     to keep the same proportions on every screen size */
-  --coming-soon-size: 9.107vw;  /* 131px out of 1440px */
-  --coming-soon-left: 19.93vw;  /* 287px out of 1440px */
-  --coming-soon-top: 36.72%;    /* 376px out of 1024px frame height */
+  /* The Figma frames are 1440 × 1024. The stage keeps this shape on every screen,
+     as big as fits: full width, unless the screen is too short for that. */
+  --frame-width: 1440;
+  --frame-height: 1024;
+  --stage-width: min(100vw, 100dvh * var(--frame-width) / var(--frame-height));
 
-  /* Breathing animation */
-  --breath-duration: 4s;        /* one full breath: in and out */
-  --breath-scale: 1.08;         /* how much the text grows at the peak */
-}
-
-/* ===== Font: Abraham TRIAL (trial version, stored in fonts/) ===== */
-@font-face {
-  font-family: "Abraham TRIAL";
-  src: url("fonts/Abraham-Regular-TRIAL.otf") format("opentype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+  /* Name and "Portfolio": 18px in the 1440px frame, growing and shrinking with the stage,
+     but never smaller than 12px so they stay readable on phones */
+  --header-font-size: max(12px, var(--stage-width) * 18.16 / 1440);
 }
 
 /* ===== Base: remove default spacing so the page fills exactly one screen ===== */
@@ -44,45 +35,72 @@ body {
   overflow: hidden; /* one screen, no scrolling */
 }
 
-/* ===== Coming soon page ===== */
-.coming-soon-page {
-  position: relative;
+/* ===== Page: centers the stage in the middle of the screen ===== */
+.shapes-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100vh;
   height: 100dvh; /* on phones: the real visible height */
 }
 
-/* The red "coming soon" text, placed like in the Figma frame */
-.coming-soon-title {
+/* ===== Stage: a box with the frame's proportions, as big as fits on the screen ===== */
+.shapes-stage {
+  position: relative;
+  width: var(--stage-width);
+  aspect-ratio: 1440 / 1024;
+}
+
+/* ===== Name and "Portfolio", placed like in Figma (x 39, y 37 and y 82 in the 1440 × 1024 frame) ===== */
+.site-name,
+.site-label {
   position: absolute;
-  left: var(--coming-soon-left);
-  top: var(--coming-soon-top);
-  font-family: var(--font-display);
+  left: 2.71%;  /* 39 / 1440 */
+  font-family: var(--font-body);
+  font-size: var(--header-font-size);
   font-weight: 400;
-  font-size: var(--coming-soon-size);
   line-height: normal;
-  color: var(--color-accent);
+  color: var(--color-text);
   white-space: nowrap;
-
-  /* Breathing: grow and shrink from the center of the text, forever */
-  transform-origin: center;
-  animation: breathe var(--breath-duration) ease-in-out infinite;
 }
 
-/* The breathing movement: normal size → bigger → back to normal */
-@keyframes breathe {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(var(--breath-scale));
-  }
+.site-name {
+  top: 3.61%;   /* 37 / 1024 */
 }
 
-/* Visitors who asked their device for less motion see still text */
-@media (prefers-reduced-motion: reduce) {
-  .coming-soon-title {
-    animation: none;
-  }
+.site-label {
+  top: 8.01%;   /* 82 / 1024 */
+}
+
+/* ===== Puzzle area: covers the whole stage, the pieces are placed inside it ===== */
+.puzzle {
+  position: absolute;
+  inset: 0;
+}
+
+/* ===== Puzzle pieces: script.js sets each piece's size and position (in %) ===== */
+.shape-piece {
+  position: absolute;
+  display: block;
+  height: auto;
+}
+
+/* ===== Finished words: one shape covering the whole stage, hidden until the puzzle is solved ===== */
+.final-word {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  visibility: hidden;
+}
+
+/* When the puzzle is solved: show the one-piece words and hide the separate pieces */
+.puzzle.is-solved .final-word {
+  visibility: visible;
+}
+
+.puzzle.is-solved .shape-piece {
+  visibility: hidden;
 }

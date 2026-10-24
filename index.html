@@ -4,12 +4,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Coming soon</title>
+  <!-- Font from Google Fonts: Libre Baskerville (used for the name and "Portfolio") -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- "Coming soon" page: one screen with the title -->
-  <main class="coming-soon-page">
-    <h1 class="coming-soon-title">coming soon</h1>
+  <!-- One-screen page: black shapes slide like a puzzle until they spell "coming soon".
+       The shapes are added by script.js. The label tells screen readers what the shapes say. -->
+  <main class="shapes-page">
+    <div class="shapes-stage">
+      <!-- Name and "Portfolio" in the top-left corner, like in all the Figma frames -->
+      <header class="site-header">
+        <h1 class="site-name">Elana Gertel</h1>
+        <p class="site-label">Portfolio</p>
+      </header>
+
+      <!-- The puzzle. script.js adds the pieces here. The label tells screen readers what the shapes say. -->
+      <div class="puzzle" role="img" aria-label="coming soon">
+        <!-- The finished words as one shape. It replaces the pieces at the end, so no hairlines show between them. -->
+        <img class="final-word" src="images/coming-soon.svg" alt="">
+      </div>
+    </div>
   </main>
+
+  <!-- The planned puzzle moves first, then the code that plays them -->
+  <script src="puzzle-moves.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
