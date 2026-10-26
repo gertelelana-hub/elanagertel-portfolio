@@ -17,7 +17,8 @@ const MOVE_DURATION = 650;  // how long one slide takes (the plans were made for
 const END_PAUSE = 250;      // pause after the last piece arrives, before the final swap
 const EASING = "cubic-bezier(0.65, 0, 0.35, 1)"; // slow start, fast middle, soft stop
 
-// All 33 pieces: shape file, SVG width (px in the frame) and [x, y] in each frame
+// All 27 pieces: shape file, SVG width (px in the frame) and [x, y] in each frame.
+// The S uses two bigger pieces (piece-22, piece-23), each made of 4 small squares flattened in Figma.
 //   path[0] = frame 13 (scattered start), path[1] = frame 12, path[2] = frame 11 (final words)
 const pieces = [
   { file: "piece-01.svg", width: 54, path: [[652.12, 167], [652.12, 566], [652.12, 458]] },
@@ -44,15 +45,9 @@ const pieces = [
   { file: "piece-13.svg", width: 54, path: [[1274, 379], [1274, 459.83], [1220.51, 459.83]] },
   { file: "piece-14.svg", width: 54, path: [[1220.51, 753], [1220.51, 699], [1220.51, 512.91]] },
   { file: "piece-10.svg", width: 54, path: [[796, 459.82], [796, 459.82], [848.77, 459.82]] },
-  { file: "piece-16.svg", width: 27, path: [[901.89, 405], [901.89, 405], [901.89, 486.39]] },
-  { file: "piece-16.svg", width: 27, path: [[928.42, 405], [928.42, 405], [928.42, 486.39]] },
-  { file: "piece-17.svg", width: 27, path: [[901.89, 298], [901.89, 298], [901.89, 459.86]] },
-  { file: "piece-18.svg", width: 27, path: [[928.42, 298.01], [928.42, 298.01], [928.42, 459.87]] },
+  { file: "piece-22.svg", width: 54, path: [[901.89, 298], [901.89, 298], [901.89, 459.86]] },
   { file: "piece-19.svg", width: 54, path: [[901.82, 512.91], [901.82, 512.91], [901.82, 512.91]] },
-  { file: "piece-20.svg", width: 27, path: [[875.29, 726], [875.29, 672], [875.29, 512.95]] },
-  { file: "piece-20.svg", width: 27, path: [[848.77, 726], [848.77, 672], [848.77, 512.95]] },
-  { file: "piece-20.svg", width: 27, path: [[784.52, 778], [875.29, 778], [875.29, 539.48]] },
-  { file: "piece-21.svg", width: 27, path: [[758, 778], [848.77, 778], [848.77, 539.48]] },
+  { file: "piece-23.svg", width: 54, path: [[848.77, 726], [848.77, 672], [848.77, 512.95]] },
 ];
 
 // The puzzle area (same size as the stage) that holds all the pieces

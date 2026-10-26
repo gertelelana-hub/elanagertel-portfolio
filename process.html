@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Process — Elana Gertel</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="scroll-page">
+  <!-- Process page, built from Figma frame "MacBook Pro 16' - 31" (node 58:193) -->
+  <main class="process-page">
+
+    <!-- ===== Top of the page: name • Portfolio, the big "MY PROCESS" title, the introduction ===== -->
+    <section class="process-top">
+      <header class="process-header">
+        <a class="process-name" href="index.html">Elana Gertel</a>
+        <img class="process-dot" src="images/dot.svg" alt="">
+        <p class="process-label">Portfolio</p>
+      </header>
+
+      <!-- "MY PROCESS" drawn with the black shapes: one picture per letter -->
+      <h1 class="process-title" aria-label="My process">
+        <span class="process-title-row process-title-row-1">
+          <img src="images/process-title-m.svg" alt="">
+          <img src="images/process-title-y.svg" alt="">
+        </span>
+        <span class="process-title-row process-title-row-2">
+          <img src="images/process-title-p.svg" alt="">
+          <img src="images/process-title-r.svg" alt="">
+          <img src="images/process-title-o.svg" alt="">
+          <img src="images/process-title-c.svg" alt="">
+          <img src="images/process-title-e.svg" alt="">
+          <img src="images/process-title-s1.svg" alt="">
+          <img src="images/process-title-s2.svg" alt="">
+        </span>
+      </h1>
+
+      <p class="process-intro">Visual designer.<br>Macro focused problem solver,<br>turning complex challenges into high impact solutions.</p>
+    </section>
+
+    <!-- ===== Entries: one <article> per week, oldest first =====
+
+         To add a new week, copy this template below the last entry and fill it in.
+         Put the new pictures in the images/ folder.
+
+         <article class="process-entry">
+           <div class="entry-date-rail"><p class="entry-date">2 . 11</p></div>
+           <h2 class="entry-title">Title of the week</h2>
+
+           <div class="entry-group">
+             <p class="entry-label">#1</p>               (optional label — delete this line if not needed)
+             <div class="entry-images">
+               <img src="images/process-NAME.png" alt="Short description of the picture">
+             </div>
+           </div>
+         </article>
+    -->
+    <section class="process-entries">
+
+      <article class="process-entry">
+        <div class="entry-date-rail"><p class="entry-date">19 . 10</p></div>
+        <h2 class="entry-title">Coming Soon</h2>
+
+        <div class="entry-group">
+          <div class="entry-images">
+            <img src="images/process-coming-soon.png" alt="Coming soon page with scattered black shapes">
+          </div>
+        </div>
+      </article>
+
+      <article class="process-entry">
+        <div class="entry-date-rail"><p class="entry-date">26 . 10</p></div>
+        <h2 class="entry-title">2 Design Approaches</h2>
+
+        <div class="entry-group">
+          <p class="entry-label">#1</p>
+          <div class="entry-images">
+            <img src="images/process-direction-1b.png" alt="Design approach 1, version B: black shapes on a white page">
+            <img src="images/process-direction-1.png" alt="Design approach 1: black shapes and small pictures spread over the page">
+          </div>
+        </div>
+
+        <div class="entry-group">
+          <p class="entry-label">#2</p>
+          <div class="entry-images">
+            <img src="images/process-direction-2.png" alt="Design approach 2: the name in large letters next to a black and white portrait">
+          </div>
+        </div>
+      </article>
+
+    </section>
+  </main>
+
+  <!-- Makes the dates stack under each other while scrolling -->
+  <script src="process.js"></script>
+</body>
+</html>

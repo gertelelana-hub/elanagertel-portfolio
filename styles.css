@@ -5,7 +5,7 @@
   --color-text: #000000;
 
   /* Fonts */
-  --font-body: "Libre Baskerville", Georgia, serif;
+  --font-body: "Simpler Pro", Arial, sans-serif;
 
   /* The Figma frames are 1440 × 1024. The stage keeps this shape on every screen,
      as big as fits: full width, unless the screen is too short for that. */
@@ -13,9 +13,18 @@
   --frame-height: 1024;
   --stage-width: min(100vw, 100dvh * var(--frame-width) / var(--frame-height));
 
-  /* Name and "Portfolio": 18px in the 1440px frame, growing and shrinking with the stage,
-     but never smaller than 12px so they stay readable on phones */
-  --header-font-size: max(12px, var(--stage-width) * 18.16 / 1440);
+  /* Text: 18px in the 1440px frame, growing and shrinking with the stage,
+     but never smaller than 12px so it stays readable on phones */
+  --text-font-size: max(12px, var(--stage-width) * 18.16 / 1440);
+}
+
+/* ===== Font: Simpler Pro by Hagilda (stored in fonts/) ===== */
+@font-face {
+  font-family: "Simpler Pro";
+  src: url("fonts/SimplerPro-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
 /* ===== Base: remove default spacing so the page fills exactly one screen ===== */
@@ -52,55 +61,304 @@ body {
   aspect-ratio: 1440 / 1024;
 }
 
-/* ===== Name and "Portfolio", placed like in Figma (x 39, y 37 and y 82 in the 1440 × 1024 frame) ===== */
+/* ===================================================================
+   Text — all positions come from the 1440 × 1024 frame (left: x / 1440, top: y / 1024)
+   =================================================================== */
+
+/* Top row at x 39, y 37: "Elana Gertel" • "Portfolio".
+   A row with gaps (about 25px in the frame), so the words never overlap on small screens. */
+.site-header {
+  position: absolute;
+  left: 2.71%;    /* 39 / 1440 */
+  top: 3.61%;     /* 37 / 1024 */
+  display: flex;
+  align-items: center;
+  gap: max(8px, var(--stage-width) * 25.5 / 1440);
+}
+
 .site-name,
 .site-label {
-  position: absolute;
-  left: 2.71%;  /* 39 / 1440 */
   font-family: var(--font-body);
-  font-size: var(--header-font-size);
+  font-size: var(--text-font-size);
   font-weight: 400;
   line-height: normal;
   color: var(--color-text);
   white-space: nowrap;
 }
 
-.site-name {
-  top: 3.61%;   /* 37 / 1024 */
+/* "Process" link: looks like the other words in the row, underlined only when the mouse is on it */
+.site-link {
+  text-decoration: none;
 }
 
-.site-label {
-  top: 8.01%;   /* 82 / 1024 */
+.site-link:hover,
+.site-link:focus-visible {
+  text-decoration: underline;
 }
 
-/* ===== Puzzle area: covers the whole stage, the pieces are placed inside it ===== */
-.puzzle {
-  position: absolute;
-  inset: 0;
-}
-
-/* ===== Puzzle pieces: script.js sets each piece's size and position (in %) ===== */
-.shape-piece {
-  position: absolute;
+/* The dot between the words: 10 × 10 in the frame, at least 5px */
+.site-dot {
   display: block;
+  width: max(5px, var(--stage-width) * 10 / 1440);
   height: auto;
 }
 
-/* ===== Finished words: one shape covering the whole stage, hidden until the puzzle is solved ===== */
-.final-word {
+/* Introduction at the bottom left: x 39, y 884, 18px text on 28px lines */
+.site-intro {
+  position: absolute;
+  left: 2.71%;    /* 39 / 1440 */
+  top: 86.33%;    /* 884 / 1024 */
+  font-family: var(--font-body);
+  font-size: var(--text-font-size);
+  font-weight: 400;
+  line-height: 1.542; /* 28px / 18.16px */
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+/* ===================================================================
+   "Coming soon" — Figma frame "MacBook Pro 16' - 27"
+   One picture the size of the whole frame, so every piece sits exactly where it is in Figma.
+   =================================================================== */
+.coming-soon-word {
   position: absolute;
   inset: 0;
   display: block;
   width: 100%;
   height: 100%;
-  visibility: hidden;
 }
 
-/* When the puzzle is solved: show the one-piece words and hide the separate pieces */
-.puzzle.is-solved .final-word {
-  visibility: visible;
+/* ===================================================================
+   process.html — Figma frame "MacBook Pro 16' - 31" (1440px wide, scrolls down)
+   Every size is written in "frame pixels": calc(N * var(--u)), where --u is
+   one Figma pixel at the current page width. So the page keeps the frame's
+   proportions on every screen.
+   =================================================================== */
+
+/* This page is long, so it scrolls (the home page is one fixed screen) */
+body.scroll-page {
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
-.puzzle.is-solved .shape-piece {
-  visibility: hidden;
+.process-page {
+  container-type: inline-size;   /* lets --u measure the page width */
+  --u: calc(100cqw / 1440);      /* one Figma pixel */
+  --process-text-size: max(12px, calc(18.16 * var(--u)));
+  --process-left: calc(47 * var(--u));         /* left edge of dates, titles and labels */
+  --process-side-width: calc(261 * var(--u));  /* left column: x 47 → 308 */
+  --process-image-width: calc(1129 * var(--u)); /* right column: x 308 → 1437 */
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: var(--process-text-size);
+  font-weight: 400;
+  color: var(--color-text);
+}
+
+/* ----- Top of the page (frame y 0 → 1114, where the first date starts) ----- */
+.process-top {
+  position: relative;
+  height: calc(1114 * var(--u));
+}
+
+/* Top row at x 46, y 33: "Elana Gertel" • "Portfolio" */
+.process-header {
+  position: absolute;
+  left: calc(46 * var(--u));
+  top: calc(33 * var(--u));
+  display: flex;
+  align-items: center;
+}
+
+.process-name,
+.process-label {
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+/* The dot: 10 × 10, 17px after the name and 15px before "Portfolio" */
+.process-dot {
+  display: block;
+  width: max(5px, calc(10 * var(--u)));
+  height: auto;
+  margin-left: max(6px, calc(16.67 * var(--u)));
+  margin-right: max(6px, calc(15 * var(--u)));
+}
+
+/* "MY PROCESS": letters of 188 × 188 with 20.7px between them.
+   Row 1 ("MY") at y 282, row 2 ("PROCESS") at y 518, both from the left edge. */
+.process-title-row {
+  position: absolute;
+  left: 0;
+  display: flex;
+  gap: calc(20.68 * var(--u));
+}
+
+.process-title-row-1 {
+  top: calc(282 * var(--u));
+}
+
+.process-title-row-2 {
+  top: calc(518 * var(--u));
+}
+
+.process-title-row img {
+  display: block;
+  width: calc(187.99 * var(--u));
+  height: auto;
+}
+
+/* Introduction at x 49, y 873, 18px text on 25px lines */
+.process-intro {
+  position: absolute;
+  left: calc(49 * var(--u));
+  top: calc(873 * var(--u));
+  line-height: 1.377; /* 25px / 18.16px */
+  white-space: nowrap;
+}
+
+/* ----- Entries ----- */
+.process-entries {
+  padding-bottom: calc(338 * var(--u)); /* white space under the last picture */
+}
+
+/* One entry: a left column (date, title, labels) and a right column (pictures) */
+.process-entry {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--process-side-width) var(--process-image-width);
+  padding-left: var(--process-left);
+  padding-top: calc(18 * var(--u)); /* room for the date line */
+}
+
+.process-entry + .process-entry {
+  margin-top: calc(43 * var(--u));
+}
+
+/* The dates stay on screen while scrolling (sticky, like in Figma) and stack:
+   the first date sticks 80px from the top, every next one 46px lower (19 . 10 at 80, 26 . 10 at 126).
+   process.js sets --entry-number (0, 1, 2 …) and makes each rail reach the end of the list,
+   so the dates stay until the bottom of the page. */
+.entry-date-rail {
+  position: absolute;
+  left: var(--process-left);
+  top: 0;
+  height: 100%; /* replaced by process.js with the height down to the end of the list */
+}
+
+.entry-date {
+  position: sticky;
+  top: calc((80 + 46 * var(--entry-number, 0)) * var(--u));
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Title with a dot in front: dot at x 47, title at x 70, 47px under the date */
+.entry-title {
+  grid-column: 1;
+  display: flex;
+  align-items: center;
+  gap: calc(13 * var(--u));
+  margin-top: calc(29 * var(--u));
+  font-size: inherit;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.entry-title::before {
+  content: "";
+  flex-shrink: 0;
+  width: max(5px, calc(10 * var(--u)));
+  height: max(5px, calc(10 * var(--u)));
+  border-radius: 50%;
+  background-color: var(--color-text);
+}
+
+/* A group of pictures, with an optional label (#1, #2) in the left column */
+.entry-group {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: var(--process-side-width) var(--process-image-width);
+  margin-top: calc(12 * var(--u)); /* no label: pictures start 30px under the title */
+}
+
+.entry-group:has(.entry-label) {
+  margin-top: calc(29 * var(--u)); /* label: 47px under the title */
+}
+
+.entry-group + .entry-group {
+  margin-top: calc(34 * var(--u));
+}
+
+.entry-label {
+  grid-column: 1;
+  line-height: 1;
+}
+
+.entry-images {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  gap: calc(45 * var(--u));
+}
+
+.entry-label + .entry-images {
+  margin-top: calc(64 * var(--u)); /* pictures start 64px under the label */
+}
+
+.entry-images img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ----- Phones: the left column is too narrow, so each entry stacks:
+         date, title and label on top, pictures full width underneath ----- */
+@container (max-width: 699px) {
+  .process-entry,
+  .entry-group {
+    grid-template-columns: 1fr;
+  }
+
+  .process-entry {
+    padding: 0 16px;
+  }
+
+  .process-entry + .process-entry {
+    margin-top: 40px;
+  }
+
+  .entry-date-rail {
+    position: static;
+  }
+
+  .entry-date {
+    position: static;
+  }
+
+  .entry-title {
+    margin-top: 12px;
+    gap: 8px;
+  }
+
+  .entry-group,
+  .entry-group:has(.entry-label),
+  .entry-group + .entry-group {
+    margin-top: 16px;
+  }
+
+  .entry-images {
+    grid-column: 1;
+    gap: 16px;
+  }
+
+  .entry-label + .entry-images {
+    margin-top: 8px;
+  }
+
+  .process-entries {
+    padding-bottom: 48px;
+  }
 }

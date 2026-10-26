@@ -3,34 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coming soon</title>
-  <!-- Font from Google Fonts: Libre Baskerville (used for the name and "Portfolio") -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap">
+  <title>Elana Gertel — Portfolio</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- One-screen page: black shapes slide like a puzzle until they spell "coming soon".
-       The shapes are added by script.js. The label tells screen readers what the shapes say. -->
+  <!-- One-screen "coming soon" page, built from Figma frame "MacBook Pro 16' - 27" (node 28:1055) -->
   <main class="shapes-page">
     <div class="shapes-stage">
-      <!-- Name and "Portfolio" in the top-left corner, like in all the Figma frames -->
+      <!-- Top row: name • Portfolio • Process (link to the process page) -->
       <header class="site-header">
         <h1 class="site-name">Elana Gertel</h1>
+        <img class="site-dot" src="images/dot.svg" alt="">
         <p class="site-label">Portfolio</p>
+        <img class="site-dot" src="images/dot.svg" alt="">
+        <a class="site-label site-link" href="process.html">Process</a>
       </header>
 
-      <!-- The puzzle. script.js adds the pieces here. The label tells screen readers what the shapes say. -->
-      <div class="puzzle" role="img" aria-label="coming soon">
-        <!-- The finished words as one shape. It replaces the pieces at the end, so no hairlines show between them. -->
-        <img class="final-word" src="images/coming-soon.svg" alt="">
-      </div>
+      <!-- "Coming soon" made of 27 black shapes, joined into one picture that covers the whole frame -->
+      <img class="coming-soon-word" src="images/coming-soon-27.svg" alt="coming soon">
+
+      <!-- Introduction at the bottom left (the line breaks are part of the design) -->
+      <p class="site-intro">Visual designer.<br>Macro focused problem solver,<br>turning complex challenges into high impact solutions.</p>
     </div>
   </main>
-
-  <!-- The planned puzzle moves first, then the code that plays them -->
-  <script src="puzzle-moves.js"></script>
-  <script src="script.js"></script>
 </body>
 </html>
