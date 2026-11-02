@@ -231,10 +231,6 @@ body.scroll-page {
 }
 
 /* ----- Entries ----- */
-.process-entries {
-  padding-bottom: calc(338 * var(--u)); /* white space under the last picture */
-}
-
 /* One entry: a left column (date, title, labels) and a right column (pictures) */
 .process-entry {
   position: relative;
@@ -325,6 +321,31 @@ body.scroll-page {
   height: auto;
 }
 
+/* "Going Further": starts further down (112px under the last picture) */
+.process-entry.process-entry-far {
+  margin-top: calc(112 * var(--u));
+}
+
+/* A group whose pictures each have their own place and size (--x, --w in Figma pixels),
+   instead of filling the right column */
+.entry-group.entry-group-free {
+  margin-top: calc(25 * var(--u)); /* pictures start 43px under the title */
+}
+
+.entry-images.entry-images-free {
+  grid-column: 1 / -1;
+  gap: calc(110 * var(--u));
+}
+
+.entry-images-free img {
+  width: calc(var(--w) * var(--u));
+  margin-left: calc((var(--x) - 47) * var(--u)); /* the entry already starts at x 47 */
+}
+
+.process-entries {
+  padding-bottom: calc(1500 * var(--u)); /* Figma: white space under the last picture */
+}
+
 /* ----- Phones: the left column is too narrow, so each entry stacks:
          date, title and label on top, pictures full width underneath ----- */
 @container (max-width: 699px) {
@@ -367,6 +388,24 @@ body.scroll-page {
 
   .entry-label + .entry-images {
     margin-top: 8px;
+  }
+
+  /* pictures with their own place: full width like the others */
+  .entry-group.entry-group-free {
+    margin-top: 16px;
+  }
+
+  .entry-images.entry-images-free {
+    gap: 16px;
+  }
+
+  .entry-images-free img {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .process-entry.process-entry-far {
+    margin-top: 40px;
   }
 
   .process-entries {
