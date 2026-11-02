@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Memory Lab — Elana Gertel</title>
+  <!-- Font from Google Fonts: Comme (the texts at the bottom of the page) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comme:wght@400&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="lab-page">
+  <!-- Project page "The Memory Lab", built from Figma frame "MacBook Pro 16' - 65" and its Frame 93.
+       lab.js adds the black shapes that spell "THE MEMORY LAB" (top, and white at the bottom). -->
+  <main class="lab" id="lab">
+    <h1 class="visually-hidden">The Memory Lab</h1>
+
+    <!-- The first screen (title, small texts and names) stays in place while you scroll:
+         the pictures slide up over it. lab.js puts the title shapes in it. -->
+    <div class="lab-first-track">
+      <div class="lab-first" id="lab-first">
+        <!-- Top left: Contact Me (no link yet). Top right: languages (switching is not built yet). -->
+        <p class="flow-small-text lab-contact">Contact Me</p>
+        <p class="flow-small-text flow-lang">HEB, <span class="flow-lang-current">EN</span></p>
+
+        <!-- The small name on the left and right edges, like on the home page -->
+        <img class="flow-logo flow-logo-left" src="images/logo-elana-small.svg" alt="">
+        <img class="flow-logo flow-logo-right" src="images/logo-gertel-small.svg" alt="">
+
+        <!-- Clicking the first screen scrolls down to the first picture (Figma: "scroll to" on click) -->
+        <button class="lab-first-screen" id="lab-first-screen" type="button" aria-label="Scroll down to the project"></button>
+      </div>
+    </div>
+
+    <!-- The pictures and videos: each one slides up from the bottom of the screen, stops in the
+         middle of the screen, and the next one slides up over it (Figma: sticky layers) -->
+    <div class="lab-track lab-track-1">
+      <img class="lab-media lab-media-brain" src="images/lab-brain.jpg" alt="Painting of a man's head in profile, the brain shown open">
+    </div>
+    <div class="lab-track lab-track-2">
+      <img class="lab-media lab-media-cover" src="images/lab-elsc-cover.jpg" alt="ELSC cover with the same painting">
+    </div>
+    <!-- Videos in Figma. For now their first frame is shown as a picture. -->
+    <div class="lab-track lab-track-3">
+      <img class="lab-media lab-media-video-1" src="images/lab-video-1.jpg" alt="Watercolor background (video)">
+    </div>
+    <div class="lab-track lab-track-4">
+      <img class="lab-media lab-media-video-2" src="images/lab-video-2.jpg" alt="Scientific Illustration for The Human Memory Lab, illustrated by Elana Gertel (video)">
+    </div>
+
+    <!-- The black end of the page: the title again in white, and the project details -->
+    <footer class="lab-footer">
+      <!-- The white title (lab.js puts the shapes in it) -->
+      <div class="lab-footer-title" id="lab-footer-title"></div>
+      <p class="lab-footer-text lab-year">2023</p>
+      <p class="lab-footer-text lab-kind">Digital Art</p>
+      <p class="lab-footer-text lab-about">An illustrated book centered on cactus forms and symbols in Israel, combining botanical artwork with Hebrew text.</p>
+    </footer>
+  </main>
+
+  <script src="lab.js"></script>
+</body>
+</html>

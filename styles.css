@@ -6,6 +6,8 @@
 
   /* Fonts */
   --font-body: "Simpler Pro", Arial, sans-serif;
+  --font-small: "TheBasics", Arial, sans-serif;               /* home: Contact Me, Process, HEB, EN */
+  --font-serif-italic: "Crimson Text", Georgia, serif;        /* home: project names and years */
 
   /* The Figma frames are 1440 × 1024. The stage keeps this shape on every screen,
      as big as fits: full width, unless the screen is too short for that. */
@@ -22,6 +24,15 @@
 @font-face {
   font-family: "Simpler Pro";
   src: url("fonts/SimplerPro-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ===== Font: TheBasics by Hagilda (stored in fonts/), used on the home page ===== */
+@font-face {
+  font-family: "TheBasics";
+  src: url("fonts/TheBasics-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -360,5 +371,480 @@ body.scroll-page {
 
   .process-entries {
     padding-bottom: 48px;
+  }
+}
+
+/* ===================================================================
+   index.html — new home page (Figma flow: frames 74 → 72 → 71 → 70)
+   Every size is in "frame pixels": calc(N * var(--u)), one Figma pixel at the
+   current page width (the frame is 1440 wide). home.js sets --x, --y and --w
+   on each shape, picture and name.
+   =================================================================== */
+
+body.home-page {
+  overflow-x: hidden;
+  overflow-y: auto; /* the gallery is taller than one screen */
+}
+
+/* For screen readers only: hidden on screen */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.flow {
+  container-type: inline-size;   /* lets --u measure the page width */
+  --u: calc(100cqw / 1440);      /* one Figma pixel */
+  position: relative;
+  width: 100%;
+  height: calc(2048 * var(--u)); /* the Figma frames are 1440 × 2048 */
+  overflow: hidden;              /* shapes waiting outside the frame stay hidden */
+  isolation: isolate;            /* the "exclusion" texts blend with this white page only */
+  background-color: var(--color-background);
+}
+
+/* Everything inside is placed at --x / --y (Figma pixels from the top-left corner) */
+.flow-piece,
+.flow-photo,
+.flow-name,
+.flow-year {
+  position: absolute;
+  left: calc(var(--x) * var(--u));
+  top: calc(var(--y) * var(--u));
+}
+
+/* ----- The black shapes ----- */
+.flow-piece {
+  z-index: 2;
+  display: block;
+  width: calc(var(--w) * var(--u));
+  height: auto;
+  overflow: visible; /* let the thin outline reach past the edge */
+}
+
+/* A thin black outline (1 screen pixel wide at every page size) around each shape:
+   touching shapes overlap by about half a pixel, so they look merged — no white line between them */
+.flow-piece path {
+  fill: #000000;
+  stroke: #000000;
+  stroke-width: 1px;
+  stroke-linejoin: miter;
+  vector-effect: non-scaling-stroke;
+}
+
+/* While the opening plays: shapes slide one cell at a time, like a sliding puzzle
+   (0.33s each: slow start, fast middle, soft stop) */
+.flow.is-animating .flow-piece {
+  transition:
+    left 330ms cubic-bezier(0.65, 0, 0.35, 1),
+    top 330ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ...and pictures and names glide at a steady speed for 1 second, like Figma's Smart Animate */
+.flow.is-animating .flow-photo,
+.flow.is-animating .flow-name,
+.flow.is-animating .flow-year {
+  transition:
+    left 1000ms linear,
+    top 1000ms linear,
+    opacity 1000ms linear;
+}
+
+/* Into the gallery: each letter (as one block) and the pictures, names and years
+   slide in longer moves of 0.55s */
+.flow.is-animating.is-step-3 .flow-piece,
+.flow.is-animating.is-step-3 .flow-photo,
+.flow.is-animating.is-step-3 .flow-name,
+.flow.is-animating.is-step-3 .flow-year {
+  transition:
+    left 550ms cubic-bezier(0.65, 0, 0.35, 1),
+    top 550ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* After the opening: hovering a picture or a letter moves things in short sliding-puzzle moves */
+.flow.is-done .flow-piece,
+.flow.is-done .flow-photo,
+.flow.is-done .flow-name,
+.flow.is-done .flow-year {
+  transition:
+    left 330ms cubic-bezier(0.65, 0, 0.35, 1),
+    top 330ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Invisible areas over the big letters: hovering one makes the letter slide (see home.js) */
+.flow-letter-area {
+  position: absolute;
+  z-index: 3;
+  left: calc(var(--x) * var(--u));
+  top: calc(var(--y) * var(--u));
+  width: calc(var(--w) * var(--u));
+  height: calc(var(--h) * var(--u));
+}
+
+/* While the shapes puzzle into the project title, hovering does nothing */
+.flow.is-leaving .flow-letter-area,
+.flow.is-leaving .flow-photo {
+  pointer-events: none;
+}
+
+/* "mind" is a link to the project page */
+a.flow-photo {
+  display: block;
+  cursor: pointer;
+}
+
+a.flow-photo:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+/* For a moment at the start of step 3: they jump to the edges without animating */
+.flow.no-item-transition .flow-photo,
+.flow.no-item-transition .flow-name,
+.flow.no-item-transition .flow-year {
+  transition: none;
+}
+
+/* Things that are not in the current frame yet: invisible, they fade in */
+.is-hidden {
+  opacity: 0;
+}
+
+/* ----- Project pictures: a window showing part of the picture (crops from Figma) ----- */
+.flow-photo {
+  z-index: 1;
+  overflow: hidden;
+}
+
+.flow-photo img {
+  position: absolute;
+  display: block;
+  max-width: none;
+}
+
+/* House picture (Double Families): window 151 × 150 */
+.photo-house {
+  width: calc(151 * var(--u));
+  height: calc(150 * var(--u));
+}
+
+.photo-house img {
+  left: -0.21%;
+  top: -26%;
+  width: 100.42%;
+  height: 132.09%;
+}
+
+/* Brain picture (The Memory Lab): window 143 × 135 */
+.photo-brain {
+  width: calc(143 * var(--u));
+  height: calc(135 * var(--u));
+}
+
+.photo-brain img {
+  left: 3.03%;
+  top: -44.61%;
+  width: 96.97%;
+  height: 144.70%;
+  filter: grayscale(1); /* Figma: saturation -100 (black and white) */
+}
+
+/* Watercolour poster: window 153 × 138 (a) or 153 × 139 (b), poster 152.8 × 216.1 inside */
+.photo-water-a,
+.photo-water-b {
+  width: calc(153 * var(--u));
+}
+
+.photo-water-a {
+  height: calc(138 * var(--u));
+}
+
+.photo-water-b {
+  height: calc(139 * var(--u));
+}
+
+.photo-water-a img,
+.photo-water-b img {
+  left: 0;
+  width: calc(152.82 * var(--u));
+  height: calc(216.14 * var(--u));
+}
+
+.photo-water-a img {
+  top: calc(-30 * var(--u));
+}
+
+.photo-water-b img {
+  top: calc(-11 * var(--u));
+}
+
+/* ----- Project names: Crimson Text semi-bold italic 37.6px, centred, tight lines ----- */
+.flow-name {
+  z-index: 1;
+  width: calc(var(--w) * var(--u));
+  font-family: var(--font-serif-italic);
+  font-size: max(9px, calc(37.552 * var(--u)));
+  font-weight: 600;
+  font-style: italic;
+  line-height: 0.64;
+  text-align: center;
+  white-space: pre-wrap; /* keeps the line breaks from Figma */
+  color: var(--color-text);
+}
+
+/* ----- Years: white + "exclusion", so they show black on white and white on a black shape ----- */
+.flow-year {
+  z-index: 3;
+  font-family: var(--font-serif-italic);
+  font-size: max(7px, calc(16.97 * var(--u)));
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1.16;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  color: #ffffff;
+  mix-blend-mode: exclusion;
+}
+
+/* ----- Small texts at the top: TheBasics 12px, white + exclusion (they show black on white) ----- */
+.flow-small-text {
+  font-family: var(--font-small);
+  font-size: max(8px, calc(12 * var(--u)));
+  font-weight: 400;
+  line-height: 1.16;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  color: #ffffff;
+  mix-blend-mode: exclusion;
+  text-decoration: none;
+}
+
+/* Top left at x 22, y 31: Contact Me, then the Process link */
+.flow-top-left {
+  position: absolute;
+  z-index: 4;
+  left: calc(22 * var(--u));
+  top: calc(31 * var(--u));
+  display: flex;
+  gap: max(10px, calc(27 * var(--u)));
+  mix-blend-mode: exclusion; /* the blend works on the whole row (it has its own layer) */
+}
+
+.flow-link:hover,
+.flow-link:focus-visible {
+  text-decoration: underline;
+}
+
+/* Top right at x 1369, y 31: "HEB, EN", with a 15px line under EN (the current language) */
+.flow-lang {
+  position: absolute;
+  z-index: 4;
+  right: calc(23 * var(--u)); /* 1440 - 1369 - 48 */
+  top: calc(31 * var(--u));
+}
+
+.flow-lang-current {
+  position: relative;
+}
+
+.flow-lang-current::after {
+  content: "";
+  position: absolute;
+  left: calc(1 * var(--u));
+  top: calc(16 * var(--u)); /* the line is at y 47 */
+  width: calc(15 * var(--u));
+  height: 1px;
+  background-color: #ffffff; /* white + exclusion = black on white, like the text */
+}
+
+/* The small name on the edges at y 433: "ELANA" (x 17) and "GERTEL" (x 1289) */
+.flow-logo {
+  position: absolute;
+  z-index: 4;
+  top: calc(433 * var(--u));
+  height: auto;
+  mix-blend-mode: exclusion; /* white shapes: black on white, white on black */
+}
+
+.flow-logo-left {
+  left: calc(17 * var(--u));
+  width: calc(108.49 * var(--u));
+}
+
+.flow-logo-right {
+  left: calc(1289 * var(--u));
+  width: calc(130 * var(--u));
+}
+
+/* ===================================================================
+   memory-lab.html — project page "The Memory Lab" (Figma frame 65 + Frame 93)
+   Sizes are in Figma pixels, like the home page: calc(N * var(--u)).
+   The shapes, small texts and side names use the home page styles (.flow-…).
+   =================================================================== */
+
+body.lab-page {
+  overflow-x: hidden;
+  overflow-y: auto; /* the page is long: scrolling on (the base style turns it off) */
+}
+
+.lab {
+  container-type: inline-size;   /* lets --u measure the page width */
+  --u: calc(100cqw / 1440);      /* one Figma pixel */
+  /* Height of the black end: 1126 like in Figma, or more on tall screens, so that at the very end
+     of the page the white title (482 tall) sits exactly in the middle of the screen */
+  --footer-h: max(calc(1126 * var(--u)), calc(50vh + 580 * var(--u)));
+  /* Where the white title's bottom edge is, measured from the top of the black end */
+  --footer-title-bottom: calc(var(--footer-h) - 50vh + 241 * var(--u));
+  position: relative;
+  width: 100%;
+  height: calc(6192 * var(--u) + var(--footer-h)); /* Figma: Frame 93 is 7318 tall */
+  overflow-x: clip;              /* hide what sticks out, but keep the pictures able to stick while scrolling */
+  isolation: isolate;
+  background-color: var(--color-background);
+}
+
+/* ----- The first screen stays while you scroll (until the black end covers it) ----- */
+.lab-first-track {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: calc(6192 * var(--u)); /* down to the black end */
+}
+
+/* It sticks with its middle in the middle of the screen */
+.lab-first {
+  position: sticky;
+  z-index: 0;                         /* the bottom layer: the pictures slide over it */
+  top: calc(50vh - 512 * var(--u));   /* the first screen is 1024 tall */
+  height: calc(1024 * var(--u));
+  background-color: var(--color-background); /* white, so the "exclusion" texts show black */
+}
+
+/* Top left at x 22, y 31: Contact Me */
+.lab-contact {
+  position: absolute;
+  z-index: 6;
+  left: calc(22 * var(--u));
+  top: calc(31 * var(--u));
+}
+
+.lab .flow-lang,
+.lab .flow-logo {
+  z-index: 6;
+}
+
+/* The first screen is one big invisible button: clicking it scrolls down to the pictures */
+.lab-first-screen {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.lab-first-screen:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: -4px;
+}
+
+/* ----- Pictures and videos: each slides up and sticks in the middle of the screen ----- */
+/* A track runs from where the picture starts (Figma) down to the end of the page;
+   the picture inside sticks while its track is on screen. Later pictures lie on top. */
+.lab-track {
+  position: absolute;
+  bottom: 0;
+}
+
+/* Where each picture is in Figma (its visible part) and how big it is */
+.lab-track-1 { z-index: 1; left: calc(450.03 * var(--u)); top: 100vh; --w: 555.54; --h: 784.2; }
+.lab-track-2 { z-index: 2; left: calc(443.89 * var(--u)); top: calc(2544 * var(--u)); --w: 564.23; --h: 798.02; }
+.lab-track-3 { z-index: 3; left: calc(147 * var(--u)); top: calc(3632 * var(--u)); --w: 1157; --h: 855; }
+.lab-track-4 { z-index: 4; left: calc(147 * var(--u)); top: calc(4829 * var(--u)); --w: 1158; --h: 856; }
+
+.lab-media {
+  position: sticky;
+  top: calc(50vh - var(--h) * var(--u) / 2); /* its middle in the middle of the screen */
+  display: block;
+  width: calc(var(--w) * var(--u));
+  height: calc(var(--h) * var(--u));
+  object-fit: cover;
+}
+
+/* ----- The black end of the page (Figma: y 6192, 1126 tall) ----- */
+.lab-footer {
+  position: absolute;
+  z-index: 7; /* above the pictures, which slide under it */
+  left: 0;
+  top: calc(6192 * var(--u));
+  width: 100%;
+  height: var(--footer-h);
+  background-color: #000000;
+}
+
+/* The title again, in white (lab.js puts the shapes in it). When you reach the end of the page,
+   its middle is in the middle of the screen. */
+.lab-footer-title {
+  position: absolute;
+  left: 0;
+  top: calc(var(--footer-title-bottom) - 482 * var(--u));
+  width: 100%;
+  height: calc(482 * var(--u));
+}
+
+.lab-piece-white path {
+  fill: #ffffff;
+  stroke: #ffffff;
+}
+
+/* Texts at the bottom: Comme, white */
+.lab-footer-text {
+  position: absolute;
+  margin: 0;
+  font-family: "Comme", Arial, sans-serif;
+  font-weight: 400;
+  color: #ffffff;
+}
+
+/* Positions are measured from the top of the black area: 208 above its bottom like in Figma,
+   but on short screens a little lower, so there is always a gap under the title
+   (and never lower than the bottom of the screen) */
+.lab-year,
+.lab-kind {
+  top: min(max(calc(var(--footer-h) - 192 * var(--u)), calc(var(--footer-title-bottom) + 76 * var(--u))),
+           calc(var(--footer-h) - 97 * var(--u)));
+  font-size: max(9px, calc(14.31 * var(--u)));
+  line-height: 1.07;
+  white-space: nowrap;
+}
+
+.lab-year { left: calc(90 * var(--u)); }
+.lab-kind { left: calc(224.64 * var(--u)); }
+
+.lab-about {
+  left: calc(342 * var(--u));
+  top: min(max(calc(var(--footer-h) - 208 * var(--u)), calc(var(--footer-title-bottom) + 60 * var(--u))),
+           calc(var(--footer-h) - 113 * var(--u)));
+  width: calc(826 * var(--u));
+  font-size: max(14px, calc(29.65 * var(--u)));
+  line-height: 1.26;
+}
+
+/* Visitors who asked their device for less motion: the hover moves happen without sliding */
+@media (prefers-reduced-motion: reduce) {
+  .flow.is-done .flow-piece,
+  .flow.is-done .flow-photo,
+  .flow.is-done .flow-name,
+  .flow.is-done .flow-year {
+    transition: none;
   }
 }

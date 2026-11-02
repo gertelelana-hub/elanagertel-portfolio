@@ -4,27 +4,38 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Elana Gertel — Portfolio</title>
+  <!-- Font from Google Fonts: Crimson Text, semi-bold italic (project names and years) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@1,600&display=swap">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <!-- One-screen "coming soon" page, built from Figma frame "MacBook Pro 16' - 27" (node 28:1055) -->
-  <main class="shapes-page">
-    <div class="shapes-stage">
-      <!-- Top row: name • Portfolio • Process (link to the process page) -->
-      <header class="site-header">
-        <h1 class="site-name">Elana Gertel</h1>
-        <img class="site-dot" src="images/dot.svg" alt="">
-        <p class="site-label">Portfolio</p>
-        <img class="site-dot" src="images/dot.svg" alt="">
-        <a class="site-label site-link" href="process.html">Process</a>
-      </header>
+<body class="home-page">
+  <!-- Home page, built from the Figma flow that starts at frame "MacBook Pro 16' - 74":
+       black shapes puzzle their way into "ELANA GERTEL" (frames 74 → 72 → 71),
+       then break apart into the project gallery (frame 70).
+       home.js adds the shapes, the project pictures and their names. -->
+  <main class="flow" id="flow">
+    <h1 class="visually-hidden">Elana Gertel — Portfolio</h1>
 
-      <!-- "Coming soon" made of 27 black shapes, joined into one picture that covers the whole frame -->
-      <img class="coming-soon-word" src="images/coming-soon-27.svg" alt="coming soon">
+    <!-- Top left: Contact Me (no link yet) and the link to the process page -->
+    <nav class="flow-top-left">
+      <p class="flow-small-text">Contact Me</p>
+      <a class="flow-small-text flow-link" href="process.html">Process</a>
+    </nav>
 
-      <!-- Introduction at the bottom left (the line breaks are part of the design) -->
-      <p class="site-intro">Visual designer.<br>Macro focused problem solver,<br>turning complex challenges into high impact solutions.</p>
-    </div>
+    <!-- Top right: languages (switching is not built yet). The line marks the current one, EN. -->
+    <p class="flow-small-text flow-lang">HEB, <span class="flow-lang-current">EN</span></p>
+
+    <!-- The small name on the left and right edges, at mid-height of the first screen -->
+    <img class="flow-logo flow-logo-left" src="images/logo-elana-small.svg" alt="">
+    <img class="flow-logo flow-logo-right" src="images/logo-gertel-small.svg" alt="">
   </main>
+
+  <!-- The planned puzzle moves first, then the code that plays them -->
+  <script src="home-moves.js"></script>
+  <script src="hover-moves.js"></script>
+  <script src="to-lab-moves.js"></script>
+  <script src="home.js"></script>
 </body>
 </html>
