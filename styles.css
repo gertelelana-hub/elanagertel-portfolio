@@ -580,13 +580,13 @@ a.flow-photo:focus-visible {
   max-width: none;
 }
 
-/* ----- Pictures: blurred black and white; hovering makes them sharp and coloured ----- */
-/* Figma (Component 2): saturation -100 and a layer blur of 4 (= CSS blur 2px); hovered: full colour, no blur */
-.flow-photo-grey {
-  filter: grayscale(1) blur(calc(2 * var(--u)));
+/* ----- Pictures: in colour and a little blurred; hovering makes them sharp ----- */
+/* Figma (Component 2): saturation 0 and a layer blur of 2 (= CSS blur 1px); hovered: no blur */
+.flow-photo-soft {
+  filter: blur(calc(1 * var(--u)));
 }
 
-/* The coloured, sharp copy on top fades in slowly. It is masked by a very soft glow from the
+/* The sharp copy on top fades in slowly. It is masked by a very soft glow from the
    middle of the picture (--color-x, --color-y: the middle of the visible window, measured on the
    whole picture, which is bigger than the window; set per picture below). The glow has no edge
    and widens while it fades in, so the colour comes in a little sooner in the middle, without
@@ -602,7 +602,7 @@ a.flow-photo:focus-visible {
   opacity: 0;
   -webkit-mask-image: radial-gradient(circle at var(--color-x, 50%) var(--color-y, 50%), #000 calc(var(--color-size) * 0.5 - 30%), transparent var(--color-size));
   mask-image: radial-gradient(circle at var(--color-x, 50%) var(--color-y, 50%), #000 calc(var(--color-size) * 0.5 - 30%), transparent var(--color-size));
-  /* leaving: back to black and white, a little faster */
+  /* leaving: back to blurred, a little faster */
   transition:
     opacity 500ms ease-in-out,
     --color-size 500ms ease-in-out;

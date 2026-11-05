@@ -128,8 +128,8 @@ const itemElements = ITEMS.map((item) => {
     const img = document.createElement("img");
     img.src = "images/" + PHOTO_FILES[item.kind];
     img.alt = item.alt;
-    img.className = "flow-photo-grey";   // blurred, black and white
-    // the same picture sharp and in colour on top: hovering reveals it (see .flow-photo-color)
+    img.className = "flow-photo-soft";   // a little blurred
+    // the same picture sharp on top: hovering reveals it (see .flow-photo-color)
     const color = document.createElement("img");
     color.src = img.src;
     color.alt = "";
@@ -199,12 +199,15 @@ function getItemsReadyAtEdges() {
 // something changes direction. When the mouse leaves a letter, the same moves play backwards;
 // when it leaves a picture, everything glides straight home in one quick motion.
 // A new hover effect starts only once the previous one is back home.
-let wanted = null;      // which effect the mouse asks for now: "scatter", a letter's plan, or null
+let wanted = null;      // which effect the mouse asks for now: "scatter" ("mind"), "scatter-N" (picture N),
+                        // a letter's plan, or null
 let showing = null;     // which effect is out right now (null = the gallery is at rest)
 let busy = false;       // true while an effect is moving
 
 function planFor(key) {
-  return key === "scatter" ? HOVER_SCATTER : key;
+  if (key === "scatter") return HOVER_SCATTER;                          // "mind": Figma's scatter
+  if (typeof key === "string") return PHOTO_SCATTERS[key.split("-")[1]]; // another picture: its own scatter
+  return key;
 }
 
 // The mouse and the letters are like magnets that cannot touch: the mouse pushes a letter the way
@@ -278,7 +281,7 @@ function updateHover() {
   if (showing !== null && showing !== wanted) {
     busy = true;
     const backHome = () => { busy = false; showing = null; updateHover(); };
-    if (showing === "scatter") glideHome(HOVER_SCATTER, backHome);
+    if (typeof showing === "string") glideHome(planFor(showing), backHome);   // after a picture
     else playPlan(planFor(showing), false, backHome);
   } else if (showing === null && wanted !== null) {
     busy = true;
@@ -290,14 +293,16 @@ function updateHover() {
 function hoverOn(key) { wanted = key; updateHover(); }
 function hoverOff(key) { if (wanted === key) wanted = null; updateHover(); }
 
-// Every picture scatters the shapes (also when reached with the keyboard), turns sharp and
-// coloured, and shows its caption and year
+// Every picture scatters the shapes (also when reached with the keyboard), turns sharp,
+// and shows its caption and year
 ITEMS.forEach((item, i) => {
   if (item.type !== "photo") return;
   const el = itemElements[i];
   function show(on) {
     el.classList.toggle("is-colored", on);
-    on ? hoverOn("scatter") : hoverOff("scatter");
+    // each picture scatters the shapes its own way ("mind" like Figma)
+    const key = typeof PHOTO_SCATTERS !== "undefined" && PHOTO_SCATTERS[i] ? "scatter-" + i : "scatter";
+    on ? hoverOn(key) : hoverOff(key);
   }
   el.addEventListener("mouseenter", () => show(true));
   el.addEventListener("mouseleave", () => show(false));
@@ -350,7 +355,8 @@ function goToLab(event) {
     busy = true;
     const spread = () => { showing = "scatter"; playPlan(HOVER_SCATTER, true, () => { busy = false; playToLab(link); }); };
     if (showing === null) spread();
-    else playPlan(planFor(showing), false, spread);   // first take back another effect
+    else if (typeof showing === "string") glideHome(planFor(showing), spread);   // first take back another effect
+    else playPlan(planFor(showing), false, spread);
   };
   setTimeout(ready, window.scrollY > 0 ? 400 : 0);
 }
