@@ -514,6 +514,14 @@ body.home-page {
     top 330ms cubic-bezier(0.65, 0, 0.35, 1);
 }
 
+/* The big names and years are never shown: the pictures come in without titles, and each
+   picture shows its own small caption and year while it is hovered (.flow-photo-caption, .flow-photo-year).
+   They stay in the page (hidden) because the planned moves still slide them. */
+.flow-name,
+.flow-year {
+  visibility: hidden;
+}
+
 /* Invisible areas over the big letters: hovering one makes the letter slide (see home.js) */
 .flow-letter-area {
   position: absolute;
@@ -554,8 +562,15 @@ a.flow-photo:focus-visible {
 }
 
 /* ----- Project pictures: a window showing part of the picture (crops from Figma) ----- */
+/* The picture's box: the crop window, plus the caption under it and the year above it.
+   (No z-index here, so the year's "exclusion" mixes with what is behind the picture.) */
 .flow-photo {
-  z-index: 1;
+  display: block;
+}
+
+.flow-photo-window {
+  position: absolute;
+  inset: 0;
   overflow: hidden;
 }
 
@@ -565,6 +580,94 @@ a.flow-photo:focus-visible {
   max-width: none;
 }
 
+/* ----- Pictures: blurred black and white; hovering makes them sharp and coloured ----- */
+/* Figma (Component 2): saturation -100 and a layer blur of 4 (= CSS blur 2px); hovered: full colour, no blur */
+.flow-photo-grey {
+  filter: grayscale(1) blur(calc(2 * var(--u)));
+}
+
+/* The coloured, sharp copy on top fades in slowly. It is masked by a very soft glow from the
+   middle of the picture (--color-x, --color-y: the middle of the visible window, measured on the
+   whole picture, which is bigger than the window; set per picture below). The glow has no edge
+   and widens while it fades in, so the colour comes in a little sooner in the middle, without
+   any visible line or circle. */
+@property --color-size {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 60%;
+}
+
+.flow-photo-color {
+  --color-size: 60%;
+  opacity: 0;
+  -webkit-mask-image: radial-gradient(circle at var(--color-x, 50%) var(--color-y, 50%), #000 calc(var(--color-size) * 0.5 - 30%), transparent var(--color-size));
+  mask-image: radial-gradient(circle at var(--color-x, 50%) var(--color-y, 50%), #000 calc(var(--color-size) * 0.5 - 30%), transparent var(--color-size));
+  /* leaving: back to black and white, a little faster */
+  transition:
+    opacity 500ms ease-in-out,
+    --color-size 500ms ease-in-out;
+}
+
+.flow-photo.is-colored .flow-photo-color {
+  --color-size: 400%;
+  opacity: 1;
+  transition:
+    opacity 750ms ease-in-out,
+    --color-size 900ms ease-in-out;
+}
+
+/* ----- Caption under the picture and year above its right edge, shown while hovered -----
+   Figma (Component 2, hovered "mind"): caption Crimson Text 19.4px, centred, 7px under the picture;
+   year Crimson Text italic 11.8px, white + exclusion, right-aligned, 7px above the picture */
+.flow-photo-caption,
+.flow-photo-year {
+  position: absolute;
+  font-family: var(--font-serif-italic);
+  font-weight: 400;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 400ms ease;
+  /* thin, regular letters like in Figma (on a Mac the browser otherwise draws small text a bit bolder) */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.flow-photo-caption {
+  z-index: 1;
+  left: 50%;
+  top: calc(100% + 7 * var(--u));
+  transform: translateX(-50%);
+  font-size: max(10px, calc(19.41 * var(--u)));
+  line-height: 0.92;
+  color: var(--color-text);
+}
+
+.flow-photo-year {
+  z-index: 3;
+  right: 0;
+  bottom: calc(100% + 7 * var(--u));
+  font-size: max(7px, calc(11.83 * var(--u)));
+  font-style: italic;
+  line-height: 1.16;
+  letter-spacing: 0.06em;
+  color: #ffffff;
+  mix-blend-mode: exclusion;
+}
+
+.flow.is-done .flow-photo.is-colored .flow-photo-caption,
+.flow.is-done .flow-photo.is-colored .flow-photo-year {
+  opacity: 1;
+}
+
+/* Less motion: the colour comes without spreading */
+@media (prefers-reduced-motion: reduce) {
+  .flow-photo-color,
+  .flow-photo.is-colored .flow-photo-color {
+    transition: none;
+  }
+}
+
 /* House picture (Double Families): window 151 × 150 */
 .photo-house {
   width: calc(151 * var(--u));
@@ -572,6 +675,8 @@ a.flow-photo:focus-visible {
 }
 
 .photo-house img {
+  --color-x: 50%;
+  --color-y: 57.5%;
   left: -0.21%;
   top: -26%;
   width: 100.42%;
@@ -585,11 +690,12 @@ a.flow-photo:focus-visible {
 }
 
 .photo-brain img {
+  --color-x: 48.4%;
+  --color-y: 65.4%;
   left: 3.03%;
   top: -44.61%;
   width: 96.97%;
   height: 144.70%;
-  filter: grayscale(1); /* Figma: saturation -100 (black and white) */
 }
 
 /* Watercolour poster: window 153 × 138 (a) or 153 × 139 (b), poster 152.8 × 216.1 inside */
@@ -615,10 +721,12 @@ a.flow-photo:focus-visible {
 
 .photo-water-a img {
   top: calc(-30 * var(--u));
+  --color-y: 45.8%;
 }
 
 .photo-water-b img {
   top: calc(-11 * var(--u));
+  --color-y: 37.2%;
 }
 
 /* ----- Project names: Crimson Text semi-bold italic 37.6px, centred, tight lines ----- */

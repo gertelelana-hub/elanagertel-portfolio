@@ -1,7 +1,8 @@
 // ===== Home page: the opening animation and the project gallery =====
 // Figma flow: frame 74 (scattered) → 71 ("ELANA GERTEL") → 70 (gallery).
-//   - Opening: the scattered black shapes (FLOW_PIECES in home-moves.js) puzzle their way into
-//     "ELANA GERTEL" without stopping, one cell per move, like a sliding puzzle (FLOW_TIMELINE).
+//   - Opening: the scattered black shapes (FLOW_PIECES in home-moves.js) slide into "ELANA GERTEL"
+//     from outside the word in a few long straight slides of 0.55s each, like the move to
+//     "THE MEMORY LAB" (FLOW_TIMELINE).
 //   - Then each letter moves to the gallery as one block, and the project pictures, names and
 //     years (ITEMS below) slide in from the edges like puzzle pieces (ITEM_TIMELINE).
 //     Before that they wait outside the page.
@@ -18,19 +19,21 @@ const STEP_STARTS = [0, FLOW_STEP_ENDS[0] + STEP_PAUSE];
 // ----- Project pictures and names -----
 // at: [x, y] in frames 74, 71, 70. null = not on the page yet (it slides in from the edge later).
 // Pictures: "kind" picks the picture and how it is cropped (see .photo-… in styles.css).
+// caption / year: shown under / above the picture while it is hovered (Figma: Component 2).
 const ITEMS = [
   // pictures
-  { type: "photo", kind: "house",   alt: "Double Families", at: [[1595, 712], [1595, 712], [961, 712]] },
-  { type: "photo", kind: "water-a", alt: "Shintana",        at: [[-404, 876], [-404, 876], [170, 876]] },
-  { type: "photo", kind: "brain",   alt: "The Memory Lab",  at: [[-366, 398], [-366, 398], [330, 395]],
+  { type: "photo", kind: "house",   alt: "Double Families", caption: "Double Families", year: "2023", at: [[1595, 712], [1595, 712], [961, 712]] },
+  { type: "photo", kind: "water-a", alt: "Shintana",        caption: "Shintana", year: "2023", at: [[-404, 876], [-404, 876], [170, 876]] },
+  { type: "photo", kind: "brain",   alt: "The Memory Lab",  caption: "The Memory Lab", year: "2023", at: [[-366, 398], [-366, 398], [330, 395]],
     link: "memory-lab.html" },   // "mind": opens the project page
-  { type: "photo", kind: "water-b", alt: "The Memory Lab",  at: [[1652, -18], [1652, -18], [964, 71]] },
+  { type: "photo", kind: "water-b", alt: "The Memory Lab",  caption: "The Memory Lab", year: "2023", at: [[1652, -18], [1652, -18], [964, 71]] },
   { type: "photo", kind: "brain",   alt: "",                at: [[1476, 1360], [1476, 1360], [964, 1360]] },
   { type: "photo", kind: "brain",   alt: "",                at: [[-327, 1681], [-327, 1681], [11, 1681]] },
-  { type: "photo", kind: "water-b", alt: "The Memory Lab",  at: [null, null, [329, 1193]] },
-  { type: "photo", kind: "house",   alt: "Double Families", at: [null, null, [646, 1685]] },
+  { type: "photo", kind: "water-b", alt: "The Memory Lab",  caption: "The Memory Lab", at: [null, null, [329, 1193]] },
+  { type: "photo", kind: "house",   alt: "Double Families", caption: "Double Families", year: "2023", at: [null, null, [646, 1685]] },
 
-  // project names (width in Figma pixels; text centred inside it)
+  // project names (width in Figma pixels; text centred inside it). They show in the opening only:
+  // in the gallery each picture shows its own caption while hovered (see "caption" above)
   { type: "name", text: "Shintana",          width: 124, at: [[-239, 930], [-239, 930], [335, 930]] },
   { type: "name", text: "Double Families",   width: 192, at: [[1727, 756], [1727, 756], [1093, 756]] },
   { type: "name", text: "The  \nMemory Lab", width: 175, at: [[-203, 428], [-203, 428], [520, 428]],
@@ -120,10 +123,28 @@ const itemElements = ITEMS.map((item) => {
     el = document.createElement(item.link ? "a" : "div");
     if (item.link) el.href = item.link;
     el.className = "flow-photo photo-" + item.kind;
+    const crop = document.createElement("div");
+    crop.className = "flow-photo-window";
     const img = document.createElement("img");
     img.src = "images/" + PHOTO_FILES[item.kind];
     img.alt = item.alt;
-    el.appendChild(img);
+    img.className = "flow-photo-grey";   // blurred, black and white
+    // the same picture sharp and in colour on top: hovering reveals it (see .flow-photo-color)
+    const color = document.createElement("img");
+    color.src = img.src;
+    color.alt = "";
+    color.className = "flow-photo-color";
+    crop.append(img, color);
+    el.appendChild(crop);
+    // the caption and year, hidden until the picture is hovered
+    [["flow-photo-caption", item.caption], ["flow-photo-year", item.year]].forEach(([name, text]) => {
+      if (!text) return;
+      const label = document.createElement("span");
+      label.className = name;
+      label.setAttribute("aria-hidden", "true");   // the picture's alt already says it
+      label.textContent = text;
+      el.appendChild(label);
+    });
   } else {
     el = document.createElement("p");
     el.className = item.type === "name" ? "flow-name" : "flow-year";
@@ -175,7 +196,8 @@ function getItemsReadyAtEdges() {
 // ----- Hovering in the gallery (the plans are in hover-moves.js) -----
 // Hovering any picture scatters the shapes; a big letter is pushed away by the mouse like a magnet,
 // and the letters and cards near it make room. Like a sliding puzzle: each move is one straight slide, and a new move starts only when
-// something changes direction. When the mouse leaves, the same moves play backwards.
+// something changes direction. When the mouse leaves a letter, the same moves play backwards;
+// when it leaves a picture, everything glides straight home in one quick motion.
 // A new hover effect starts only once the previous one is back home.
 let wanted = null;      // which effect the mouse asks for now: "scatter", a letter's plan, or null
 let showing = null;     // which effect is out right now (null = the gallery is at rest)
@@ -233,12 +255,31 @@ function playPlan(plan, out, done) {
   setTimeout(done, plan.total);
 }
 
+// After hovering a picture: everything goes straight home together, in one quick glide
+// (not the puzzle moves backwards)
+const RETURN_TIME = 400;   // ms
+function glideHome(plan, done) {
+  const home = new Map();   // each element's place before the plan moved it: the "from" of its first move
+  [...plan.moves].sort((a, b) => a[0] - b[0]).forEach(([time, kind, i, from]) => {
+    const el = kind === "p" ? pieceElements[i] : itemElements[i];
+    if (!home.has(el)) home.set(el, from);
+  });
+  home.forEach((point, el) => {
+    el.style.transitionDuration = RETURN_TIME + "ms";
+    el.style.transitionTimingFunction = "cubic-bezier(0.33, 1, 0.68, 1)";   // quick start, soft stop
+    place(el, point);
+  });
+  setTimeout(done, RETURN_TIME);
+}
+
 // Bring the gallery to what the mouse asks for, one effect at a time
 function updateHover() {
   if (busy || leaving || !flow.classList.contains("is-done")) return;
   if (showing !== null && showing !== wanted) {
     busy = true;
-    playPlan(planFor(showing), false, () => { busy = false; showing = null; updateHover(); });
+    const backHome = () => { busy = false; showing = null; updateHover(); };
+    if (showing === "scatter") glideHome(HOVER_SCATTER, backHome);
+    else playPlan(planFor(showing), false, backHome);
   } else if (showing === null && wanted !== null) {
     busy = true;
     showing = wanted;
@@ -249,14 +290,19 @@ function updateHover() {
 function hoverOn(key) { wanted = key; updateHover(); }
 function hoverOff(key) { if (wanted === key) wanted = null; updateHover(); }
 
-// Every picture scatters the shapes (also when reached with the keyboard)
+// Every picture scatters the shapes (also when reached with the keyboard), turns sharp and
+// coloured, and shows its caption and year
 ITEMS.forEach((item, i) => {
   if (item.type !== "photo") return;
   const el = itemElements[i];
-  el.addEventListener("mouseenter", () => hoverOn("scatter"));
-  el.addEventListener("mouseleave", () => hoverOff("scatter"));
-  el.addEventListener("focus", () => hoverOn("scatter"));
-  el.addEventListener("blur", () => hoverOff("scatter"));
+  function show(on) {
+    el.classList.toggle("is-colored", on);
+    on ? hoverOn("scatter") : hoverOff("scatter");
+  }
+  el.addEventListener("mouseenter", () => show(true));
+  el.addEventListener("mouseleave", () => show(false));
+  el.addEventListener("focus", () => show(true));
+  el.addEventListener("blur", () => show(false));
 });
 
 // Every big letter: an invisible area over the letter's place in the gallery feels the mouse.
