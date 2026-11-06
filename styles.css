@@ -809,8 +809,9 @@ a.flow-photo:focus-visible {
 }
 
 /* The small name on the edges at y 433: "ELANA" (x 17) and "GERTEL" (x 1289) */
+/* The small names stay fixed on the sides of the screen on every page, also while scrolling */
 .flow-logo {
-  position: absolute;
+  position: fixed;
   z-index: 4;
   top: calc(433 * var(--u));
   height: auto;
@@ -880,9 +881,15 @@ body.lab-page {
   top: calc(31 * var(--u));
 }
 
-.lab .flow-lang,
-.lab .flow-logo {
+.lab .flow-lang {
   z-index: 6;
+}
+
+/* The side names lie over everything on this page (pictures and the black end too), and stay at
+   the same height as the first screen's (433, or the middle of a tall screen like the title) */
+.lab .flow-logo {
+  z-index: 9;
+  top: max(calc(433 * var(--u)), calc(50vh - 79 * var(--u)));
 }
 
 /* The first screen is one big invisible button: clicking it scrolls down to the pictures */
@@ -984,6 +991,68 @@ body.lab-page {
   width: calc(826 * var(--u));
   font-size: max(14px, calc(29.65 * var(--u)));
   line-height: 1.26;
+}
+
+/* ----- Hovering a title: the shapes reshape into organic letters (lab.js) ----- */
+/* Each letter's spot that feels the mouse (lab.js sets its place and size) */
+.lab-title-hover {
+  position: absolute;
+  z-index: 6;
+  left: calc(var(--x) * var(--u));
+  top: calc(var(--y) * var(--u));
+  width: calc(var(--w) * var(--u));
+  height: calc(var(--h) * var(--u));
+  cursor: pointer;
+}
+
+.lab-footer-title .lab-title-hover {
+  cursor: default;
+}
+
+/* The drawing of the reshaping shapes: the page's width, over the title (lab.js sets its top) */
+.lab-morph {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  width: calc(1440 * var(--u));
+  height: calc(520 * var(--u));
+  overflow: visible;
+  pointer-events: none;
+}
+
+.lab-morph path {
+  fill: #000000;
+  stroke: #000000;
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.lab-morph-white path {
+  fill: #ffffff;
+  stroke: #ffffff;
+}
+
+/* the holes in O, R, A, B: the colour behind the title */
+.lab-morph .lab-morph-hole {
+  fill: var(--color-background);
+  stroke: none;
+}
+
+.lab-morph-white .lab-morph-hole {
+  fill: #000000;
+}
+
+/* While a letter is reshaping, its real shapes hide (the drawing shows them) */
+.lab-piece.is-reshaping {
+  visibility: hidden;
+}
+
+/* A hidden drawing that lab.js uses to measure outlines */
+.lab-measure {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
 }
 
 /* Visitors who asked their device for less motion: the hover moves happen without sliding */
