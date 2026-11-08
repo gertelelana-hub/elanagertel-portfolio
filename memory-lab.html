@@ -8,22 +8,29 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comme:wght@400&family=Crimson+Text:ital,wght@0,400;1,400&display=swap">
-  <link rel="stylesheet" href="styles.css?v=20261108g">
+  <link rel="stylesheet" href="styles.css?v=20261108j">
+  <!-- Show the page only once the title is drawn (the marker "page-ready" comes after the scripts),
+       so coming from the home page the title is simply there, without blinking -->
+  <link rel="expect" href="#page-ready" blocking="render">
 </head>
 <body class="lab-page">
   <!-- Project page "The Memory Lab", built from Figma frame "MacBook Pro 16' - 65" and its Frame 93.
        lab.js adds the black shapes that spell "THE MEMORY LAB" (top, and white at the bottom). -->
-  <main class="lab" id="lab">
+  <main class="lab lab-invert memory" id="lab">
     <h1 class="visually-hidden">The Memory Lab</h1>
 
-    <!-- The first screen (title, small texts and names) stays in place while you scroll:
-         the pictures slide up over it. lab.js puts the title shapes in it. -->
+    <!-- The first screen (the title) stays in place until the end of the page: the pictures slide up
+         over it, and the black end slides up behind it. lab.js puts the title shapes in it. -->
     <div class="lab-first-track">
       <div class="lab-first" id="lab-first">
-
-
         <!-- Clicking the first screen scrolls down to the first picture (Figma: "scroll to" on click) -->
         <button class="lab-first-screen" id="lab-first-screen" type="button" aria-label="Scroll down to the project"></button>
+
+        <!-- The white title: lies exactly on the black one, but only shows over the black end,
+             so the title turns white where the black end passes (lab.js puts the shapes in it) -->
+        <div class="lab-white" id="lab-white">
+          <div class="lab-footer-title" id="lab-footer-title"></div>
+        </div>
       </div>
     </div>
 
@@ -50,17 +57,17 @@
       <img class="lab-media lab-media-video-2" src="images/lab-video-2.jpg" alt="Scientific Illustration for The Human Memory Lab, illustrated by Elana Gertel (video)">
     </div>
 
-    <!-- The black end of the page: the title again in white, and the project details -->
+    <!-- The black end of the page: the project details -->
     <footer class="lab-footer">
-      <!-- The white title (lab.js puts the shapes in it) -->
-      <div class="lab-footer-title" id="lab-footer-title"></div>
       <p class="lab-footer-text lab-year">2023</p>
       <p class="lab-footer-text lab-kind">Digital Art</p>
       <p class="lab-footer-text lab-about">An illustrated book centered on cactus forms and symbols in Israel, combining botanical artwork with Hebrew text.</p>
     </footer>
   </main>
 
-  <script src="lab-organic.js?v=20261108a"></script>
-  <script src="lab.js?v=20261108f"></script>
+  <script src="pieces.js?v=20261108h"></script>
+  <script src="lab-organic.js?v=20261108h"></script>
+  <script src="lab.js?v=20261108h"></script>
+  <div id="page-ready"></div>
 </body>
 </html>

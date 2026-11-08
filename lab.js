@@ -32,33 +32,22 @@ const footerTitle = document.getElementById("lab-footer-title");
   });
 });
 
-// Load each shape file once and copy its outline into every shape that uses it
-async function drawShapes() {
-  const files = [...new Set(titleShapes.map((shape) => shape.file))];
-  await Promise.all(files.map(async (file) => {
-    const text = await (await fetch("images/" + file)).text();
-    const source = new DOMParser().parseFromString(text, "image/svg+xml").documentElement;
-    const viewBox = source.getAttribute("viewBox");
-    // close every outline, so the thin outline goes all the way round
-    const outlines = [...source.querySelectorAll("path")].map((path) =>
-      path.getAttribute("d").replace(/([^Zz\s])\s*M/g, "$1Z M").replace(/([^Zz\s])\s*$/, "$1Z"));
-    titleShapes.forEach((shape) => {
-      if (shape.file !== file) return;
-      shape.svg.setAttribute("viewBox", viewBox);
-      outlines.forEach((d) => {
-        const path = document.createElementNS(SVG_NS, "path");
-        path.setAttribute("d", d);
-        shape.svg.appendChild(path);
-      });
+// The outlines come from pieces.js (loaded before this file), so the title is drawn right away,
+// before the page is first shown: coming from the home page, the title is simply there.
+function drawShapes() {
+  titleShapes.forEach((shape) => {
+    const { viewBox, outlines } = PIECE_SHAPES[shape.file];
+    shape.svg.setAttribute("viewBox", viewBox);
+    outlines.forEach((d) => {
+      const path = document.createElementNS(SVG_NS, "path");
+      path.setAttribute("d", d);
+      shape.svg.appendChild(path);
     });
-  }));
+  });
 }
-drawShapes().then(() => {
-  setUpMorph(false);   // the black title (first screen)
-  setUpMorph(true);    // the white title (black end)
-});
+drawShapes();
 
-// ----- A white title that only shows over the black end (The Israeli Cactus) -----
+// ----- The white title only shows over the black end -----
 // While you scroll, everything of it above the top of the black end is cut off,
 // so the title turns white exactly where the black end passes behind it.
 const whiteLayer = document.getElementById("lab-white");
@@ -307,3 +296,7 @@ function setUpMorph(white) {
     if (!white) area.addEventListener("click", () => document.getElementById("lab-first-screen").click());
   });
 }
+
+// Hovering the titles: their letters ooze into organic shapes (both titles are drawn by now)
+setUpMorph(false);   // the black title (first screen)
+setUpMorph(true);    // the white title

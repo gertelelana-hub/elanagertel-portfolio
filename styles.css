@@ -913,12 +913,15 @@ body.lab-page {
   height: var(--end); /* down to the black end */
 }
 
-/* It sticks with its middle in the middle of the screen */
+/* It sticks at the top of the screen, so the title never moves while you scroll, and it is exactly
+   where the shapes formed it on the home page */
 .lab-first {
   position: sticky;
   z-index: 0;                         /* the bottom layer: the pictures slide over it */
-  top: calc(50vh - 512 * var(--u));   /* the first screen is 1024 tall */
-  height: calc(1024 * var(--u));
+  top: 0;
+  /* the first screen (1024 tall), but never taller than the window: otherwise at the very end of
+     the page there is no room for it and it would be pushed up */
+  height: min(calc(1024 * var(--u)), 100vh);
   background-color: var(--color-background); /* white, so the "exclusion" texts show black */
 }
 
@@ -1086,12 +1089,22 @@ body.lab-page {
 }
 
 /* ===================================================================
-   Pages whose title turns white over the black end (class "lab-invert": The Israeli Cactus, Sense)
+   Pages whose title turns white over the black end
+   (class "lab-invert": The Memory Lab, The Israeli Cactus, Sense)
    =================================================================== */
+/* The title stays where it is (--title-top from the top of the screen) until the end of the page.
+   The black end is tall enough to reach 339 above the title at the very end (like in Figma),
+   and the texts at the bottom are measured from where the title's bottom edge then is. */
+.lab-invert {
+  overflow-y: clip; /* the extra pixel of the title's track never makes the page longer */
+  --footer-h: max(calc(1126 * var(--u)), calc(100vh - (var(--title-top) - 339) * var(--u)));
+  --footer-title-bottom: calc(var(--footer-h) - 100vh + (var(--title-top) + var(--title-h)) * var(--u));
+}
+
 /* The first screen stays in the middle of the screen until the very end of the page. It has no
    background and lies over the black end (black on black does not show), under the pictures. */
 .lab-invert .lab-first-track {
-  height: 100%;
+  height: calc(100% + 1px); /* 1px more, so rounding of the page height never nudges the title at the very end */
 }
 
 .lab-invert .lab-first {
@@ -1122,6 +1135,19 @@ body.lab-page {
 /* its letters still ooze into organic shapes on hover */
 .lab-white .lab-title-hover {
   pointer-events: auto;
+}
+
+/* ===================================================================
+   memory-lab.html — with its title turning white over the black end
+   =================================================================== */
+.memory {
+  --title-top: 269.6;
+}
+
+/* The pictures lie over the title, and scroll away with the top of the black end */
+.memory .lab-track {
+  z-index: 3;
+  bottom: calc(100% - var(--end));
 }
 
 /* ===================================================================
