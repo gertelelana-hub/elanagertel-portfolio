@@ -47,6 +47,15 @@ function drawShapes() {
 }
 drawShapes();
 
+// The title's middle (Figma y), measured from its shapes: the CSS puts it in the middle of the
+// screen, level with the side names
+const titleTop = Math.min(...TITLE_PIECES.map(([n, w, x, y]) => y));
+const titleBottom = Math.max(...TITLE_PIECES.map(([number, width, x, y]) => {
+  const [, , vw, vh] = PIECE_SHAPES["flow-piece-" + number + ".svg"].viewBox.split(/[\s,]+/).map(Number);
+  return y + width * TITLE_SCALE * vh / vw;
+}));
+document.getElementById("lab").style.setProperty("--title-mid", (titleTop + titleBottom) / 2);
+
 // ----- The white title only shows over the black end -----
 // While you scroll, everything of it above the top of the black end is cut off,
 // so the title turns white exactly where the black end passes behind it.

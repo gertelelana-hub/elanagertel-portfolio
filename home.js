@@ -24,11 +24,11 @@ const ITEMS = [
   // pictures
   { type: "photo", kind: "house",   alt: "Double Families", caption: "Double Families", year: "2023", at: [[1595, 712], [1595, 712], [961, 712]] },
   { type: "photo", kind: "cactus",  alt: "The Israeli Cactus", caption: "The Israeli Cactus", year: "2023", at: [[-406, 877], [-406, 877], [168, 877]],
-    link: "israeli-cactus.html", toTitle: "cactus" },   // opens the project page (moves: to-cactus-moves.js)
+    link: "israeli-cactus.html", toTitle: "cactus", titleMid: 512.03 },   // opens the project page (moves: to-cactus-moves.js)
   { type: "photo", kind: "mind",    alt: "The Memory Lab",  caption: "The Memory Lab", year: "2023", at: [[-366, 398], [-366, 398], [330, 395]],
-    link: "memory-lab.html", toTitle: "lab" },          // "mind": opens the project page (moves: to-lab-moves.js)
+    link: "memory-lab.html", toTitle: "lab", titleMid: 493.75 },          // "mind": opens the project page (moves: to-lab-moves.js)
   { type: "photo", kind: "sense",   alt: "Sense",           caption: "Sense", year: "2023", at: [[1650, -17], [1650, -17], [962, 72]],
-    link: "sense.html", toTitle: "sense" },                // opens the project page (moves: to-sense-moves.js)
+    link: "sense.html", toTitle: "sense", titleMid: 512.18 },                // opens the project page (moves: to-sense-moves.js)
   { type: "photo", kind: "brain",   alt: "",                at: [[1476, 1360], [1476, 1360], [964, 1360]] },
   { type: "photo", kind: "brain",   alt: "",                at: [[-327, 1681], [-327, 1681], [11, 1681]] },
   { type: "photo", kind: "water-b", alt: "The Memory Lab",  caption: "The Memory Lab", at: [null, null, [329, 1193]] },
@@ -362,12 +362,13 @@ function goToProject(event, i) {
     return;
   }
   leaving = true;
-  // The title forms where it is on the project page: its middle (Figma y 512) in the middle of the
-  // screen, level with the side names. A short window scrolls down to it; a tall one moves the
+  // The title forms where it is on the project page: its middle (titleMid, Figma y) in the middle of
+  // the screen, level with the side names. A short window scrolls down to it; a tall one moves the
   // whole page down instead (it cannot scroll above the top).
   const u = flow.getBoundingClientRect().width / 1440;   // one Figma pixel
-  const scrollTarget = Math.max(0, 512 * u - window.innerHeight / 2);
-  const lift = Math.max(0, window.innerHeight / 2 - 512 * u);
+  const mid = ITEMS[i].titleMid;
+  const scrollTarget = Math.max(0, mid * u - window.innerHeight / 2);
+  const lift = Math.max(0, window.innerHeight / 2 - mid * u);
   flow.style.setProperty("--title-lift", lift + "px");
   flow.classList.add("is-leaving");
   const moving = Math.abs(window.scrollY - scrollTarget) > 1 || lift > 0;
