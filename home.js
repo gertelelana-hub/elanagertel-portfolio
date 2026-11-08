@@ -362,8 +362,16 @@ function goToProject(event, i) {
     return;
   }
   leaving = true;
+  // The title forms where it is on the project page: its middle (Figma y 512) in the middle of the
+  // screen, level with the side names. A short window scrolls down to it; a tall one moves the
+  // whole page down instead (it cannot scroll above the top).
+  const u = flow.getBoundingClientRect().width / 1440;   // one Figma pixel
+  const scrollTarget = Math.max(0, 512 * u - window.innerHeight / 2);
+  const lift = Math.max(0, window.innerHeight / 2 - 512 * u);
+  flow.style.setProperty("--title-lift", lift + "px");
   flow.classList.add("is-leaving");
-  window.scrollTo({ top: 0, behavior: "smooth" });   // the title forms at the top of the page
+  const moving = Math.abs(window.scrollY - scrollTarget) > 1 || lift > 0;
+  window.scrollTo({ top: scrollTarget, behavior: "smooth" });
   // the plan starts from the shapes this picture spreads out (the mouse is on it): make sure they are there
   const key = PHOTO_SCATTERS[i] ? "scatter-" + i : "scatter";
   const ready = () => {
@@ -375,7 +383,7 @@ function goToProject(event, i) {
     else if (typeof showing === "string") glideHome(planFor(showing), spread);   // first take back another effect
     else playPlan(planFor(showing), false, spread);
   };
-  setTimeout(ready, window.scrollY > 0 ? 400 : 0);
+  setTimeout(ready, moving ? 400 : 0);
 }
 
 function playToTitle(plan, link) {

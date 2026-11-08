@@ -533,6 +533,13 @@ body.home-page {
 }
 
 /* While the shapes puzzle into the project title, hovering does nothing */
+/* Leaving for a project page on a tall window: the whole page moves down, so the title forms with
+   its middle in the middle of the screen (home.js sets --title-lift) */
+.flow.is-leaving {
+  transform: translateY(var(--title-lift, 0px));
+  transition: transform 400ms ease;
+}
+
 .flow.is-leaving .flow-letter-area,
 .flow.is-leaving .flow-photo {
   pointer-events: none;
@@ -913,12 +920,13 @@ body.lab-page {
   height: var(--end); /* down to the black end */
 }
 
-/* It sticks at the top of the screen, so the title never moves while you scroll, and it is exactly
-   where the shapes formed it on the home page */
+/* It sticks with its middle (Figma y 512) in the middle of the screen, level with the side names,
+   like in Figma. Its track starts there too, so the title never moves while you scroll, and it is
+   exactly where the shapes formed it on the home page. */
 .lab-first {
   position: sticky;
   z-index: 0;                         /* the bottom layer: the pictures slide over it */
-  top: 0;
+  top: calc(50vh - 512 * var(--u));
   /* the first screen (1024 tall), but never taller than the window: otherwise at the very end of
      the page there is no room for it and it would be pushed up */
   height: min(calc(1024 * var(--u)), 100vh);
@@ -1092,19 +1100,22 @@ body.lab-page {
    Pages whose title turns white over the black end
    (class "lab-invert": The Memory Lab, The Israeli Cactus, Sense)
    =================================================================== */
-/* The title stays where it is (--title-top from the top of the screen) until the end of the page.
-   The black end is tall enough to reach 339 above the title at the very end (like in Figma),
-   and the texts at the bottom are measured from where the title's bottom edge then is. */
+/* The title stays where it is (its top --title-top from the top of the first screen, whose middle
+   is in the middle of the screen) until the end of the page. The black end is tall enough to reach
+   339 above the title at the very end (like in Figma), and the texts at the bottom are measured
+   from where the title's bottom edge then is. */
 .lab-invert {
-  overflow-y: clip; /* the extra pixel of the title's track never makes the page longer */
-  --footer-h: max(calc(1126 * var(--u)), calc(100vh - (var(--title-top) - 339) * var(--u)));
-  --footer-title-bottom: calc(var(--footer-h) - 100vh + (var(--title-top) + var(--title-h)) * var(--u));
+  overflow-y: clip; /* the title's track never makes the page longer */
+  --footer-h: max(calc(1126 * var(--u)), calc(50vh + (851 - var(--title-top)) * var(--u)));
+  --footer-title-bottom: calc(var(--footer-h) - 50vh + (var(--title-top) + var(--title-h) - 512) * var(--u));
 }
 
 /* The first screen stays in the middle of the screen until the very end of the page. It has no
    background and lies over the black end (black on black does not show), under the pictures. */
 .lab-invert .lab-first-track {
-  height: calc(100% + 1px); /* 1px more, so rounding of the page height never nudges the title at the very end */
+  top: calc(50vh - 512 * var(--u));   /* where the first screen sticks (see .lab-first) */
+  /* down to the end of the page, 1px more, so rounding of the page height never nudges the title */
+  height: calc(100% + 1px - 50vh + 512 * var(--u));
 }
 
 .lab-invert .lab-first {
