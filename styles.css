@@ -538,13 +538,6 @@ body.home-page {
 }
 
 /* While the shapes puzzle into the project title, hovering does nothing */
-/* Leaving for a project page on a tall window: the whole page moves down, so the title forms with
-   its middle in the middle of the screen (home.js sets --title-lift) */
-.flow.is-leaving {
-  transform: translateY(var(--title-lift, 0px));
-  transition: transform 400ms ease;
-}
-
 .flow.is-leaving .flow-letter-area,
 .flow.is-leaving .flow-photo {
   pointer-events: none;

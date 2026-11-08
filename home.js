@@ -362,47 +362,60 @@ function goToProject(event, i) {
     return;
   }
   leaving = true;
-  // The title forms where it is on the project page: its middle (titleMid, Figma y) in the middle of
-  // the screen, level with the side names. A short window scrolls down to it; a tall one moves the
-  // whole page down instead (it cannot scroll above the top).
+  // The title is built right where it is on the project page: its middle (titleMid, Figma y) in the
+  // middle of the screen, level with the side names. The page does not move: the title's place in the
+  // plan is moved up or down by `shift` (Figma pixels) instead.
   const u = flow.getBoundingClientRect().width / 1440;   // one Figma pixel
-  const mid = ITEMS[i].titleMid;
-  const scrollTarget = Math.max(0, mid * u - window.innerHeight / 2);
-  const lift = Math.max(0, window.innerHeight / 2 - mid * u);
-  flow.style.setProperty("--title-lift", lift + "px");
+  const shift = (window.innerHeight / 2 + window.scrollY) / u - ITEMS[i].titleMid;
   flow.classList.add("is-leaving");
-  const moving = Math.abs(window.scrollY - scrollTarget) > 1 || lift > 0;
-  window.scrollTo({ top: scrollTarget, behavior: "smooth" });
   // the plan starts from the shapes this picture spreads out (the mouse is on it): make sure they are there
   const key = PHOTO_SCATTERS[i] ? "scatter-" + i : "scatter";
   const ready = () => {
     if (busy) { setTimeout(ready, 50); return; }
-    if (showing === key) { playToTitle(plan, link); return; }
+    if (showing === key) { playToTitle(plan, link, shift); return; }
     busy = true;
-    const spread = () => { showing = key; playPlan(planFor(key), true, () => { busy = false; playToTitle(plan, link); }); };
+    const spread = () => { showing = key; playPlan(planFor(key), true, () => { busy = false; playToTitle(plan, link, shift); }); };
     if (showing === null) spread();
     else if (typeof showing === "string") glideHome(planFor(showing), spread);   // first take back another effect
     else playPlan(planFor(showing), false, spread);
   };
-  setTimeout(ready, moving ? 400 : 0);
+  ready();
 }
 
-function playToTitle(plan, link) {
-  // the shapes that come in from the edges
+// shift: how far (Figma pixels, down) the title is built from its place in the plan, so that it is
+// built where it is on the project page
+function playToTitle(plan, link, shift) {
+  // the shapes that come in from the edges (they start shifted too, so their way in stays the same)
   const newPieces = plan.newPieces.map((piece) => {
     const svg = document.createElementNS(SVG_NS, "svg");
     svg.setAttribute("class", "flow-piece");
     svg.setAttribute("aria-hidden", "true");
     svg.style.setProperty("--w", piece.width);
-    place(svg, piece.start);
+    place(svg, [piece.start[0], piece.start[1] + shift]);
     flow.appendChild(svg);
     drawShape(svg, piece.file);
     return svg;
   });
   const elementOf = ([kind, n]) => kind === "i" ? itemElements[n]
     : (n < pieceElements.length ? pieceElements[n] : newPieces[n - pieceElements.length]);
+  const at = (el) => [parseFloat(el.style.getPropertyValue("--x")), parseFloat(el.style.getPropertyValue("--y"))];
+
+  // The shapes already on the page that go into the title: their last slide up or down is made
+  // longer or shorter by `shift` (a shape that only slides sideways gets it in its last slide).
+  const moves = plan.moves.map((move) => [...move]);
+  plan.bodies.forEach((things, body) => {
+    const own = moves.filter((move) => move[1] === body).sort((a, b) => a[0] - b[0]);
+    if (!own.length || things[0][0] !== "p" || things[0][1] >= pieceElements.length) return;
+    const [x, y] = at(elementOf(things[0]));
+    const end = [x + own.reduce((s, m) => s + m[2], 0), y + own.reduce((s, m) => s + m[3], 0)];
+    const intoTitle = end[0] > -10 && end[0] < 1440 && end[1] > -10 && end[1] < 1100;   // the others leave the page
+    if (!intoTitle) return;
+    const upDown = own.filter((move) => move[2] === 0);
+    (upDown.length ? upDown[upDown.length - 1] : own[own.length - 1])[3] += shift;
+  });
+
   // every slide: the whole body (a shape, or a picture with its name and year) moves together
-  plan.moves.forEach(([time, body, dx, dy]) => {
+  moves.forEach(([time, body, dx, dy]) => {
     setTimeout(() => {
       plan.bodies[body].forEach((thing) => {
         const el = elementOf(thing);
