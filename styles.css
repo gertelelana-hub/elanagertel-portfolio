@@ -15,6 +15,11 @@
   --frame-height: 1024;
   --stage-width: min(100vw, 100dvh * var(--frame-width) / var(--frame-height));
 
+  /* One Figma pixel (the frames are 1440 wide), for things fixed on the screen outside the page's
+     main area (the home page's small texts and side names). Inside .flow and .lab it is measured
+     on the page itself. */
+  --u: calc(100vw / 1440);
+
   /* Text: 18px in the 1440px frame, growing and shrinking with the stage,
      but never smaller than 12px so it stays readable on phones */
   --text-font-size: max(12px, var(--stage-width) * 18.16 / 1440);
