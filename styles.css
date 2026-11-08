@@ -698,6 +698,21 @@ a.flow-photo:focus-visible {
   height: 144.70%;
 }
 
+/* Cactus picture (The Israeli Cactus): window 138 × 135 */
+.photo-cactus {
+  width: calc(138 * var(--u));
+  height: calc(135 * var(--u));
+}
+
+.photo-cactus img {
+  --color-x: 50%;
+  --color-y: 66.9%;
+  left: -0.11%;
+  top: -51.11%;
+  width: 100.22%;
+  height: 151.11%;
+}
+
 /* Watercolour poster: window 153 × 138 (a) or 153 × 139 (b), poster 152.8 × 216.1 inside */
 .photo-water-a,
 .photo-water-b {
@@ -829,9 +844,11 @@ a.flow-photo:focus-visible {
 }
 
 /* ===================================================================
-   memory-lab.html — project page "The Memory Lab" (Figma frame 65 + Frame 93)
+   Project pages: memory-lab.html ("The Memory Lab", Figma frame 65 + Frame 93)
+   and israeli-cactus.html ("The Israeli Cactus", Figma frame "'Israeli' Cactus").
    Sizes are in Figma pixels, like the home page: calc(N * var(--u)).
    The shapes, small texts and side names use the home page styles (.flow-…).
+   Each page sets where its black end starts (--end) and how tall its title is (--title-h).
    =================================================================== */
 
 body.lab-page {
@@ -842,14 +859,17 @@ body.lab-page {
 .lab {
   container-type: inline-size;   /* lets --u measure the page width */
   --u: calc(100cqw / 1440);      /* one Figma pixel */
+  --end: calc(6192 * var(--u));  /* where the black end starts (Figma: Frame 93 is 7318 tall) */
+  --title-h: 482;                /* the title's height */
   /* Height of the black end: 1126 like in Figma, or more on tall screens, so that at the very end
-     of the page the white title (482 tall) sits exactly in the middle of the screen */
-  --footer-h: max(calc(1126 * var(--u)), calc(50vh + 580 * var(--u)));
+     of the page the white title sits exactly in the middle of the screen (and at least 339 under
+     the top of the black end, like in Figma) */
+  --footer-h: max(calc(1126 * var(--u)), calc(50vh + (339 + var(--title-h) / 2) * var(--u)));
   /* Where the white title's bottom edge is, measured from the top of the black end */
-  --footer-title-bottom: calc(var(--footer-h) - 50vh + 241 * var(--u));
+  --footer-title-bottom: calc(var(--footer-h) - 50vh + var(--title-h) / 2 * var(--u));
   position: relative;
   width: 100%;
-  height: calc(6192 * var(--u) + var(--footer-h)); /* Figma: Frame 93 is 7318 tall */
+  height: calc(var(--end) + var(--footer-h));
   overflow-x: clip;              /* hide what sticks out, but keep the pictures able to stick while scrolling */
   isolation: isolate;
   background-color: var(--color-background);
@@ -861,7 +881,7 @@ body.lab-page {
   left: 0;
   top: 0;
   width: 100%;
-  height: calc(6192 * var(--u)); /* down to the black end */
+  height: var(--end); /* down to the black end */
 }
 
 /* It sticks with its middle in the middle of the screen */
@@ -934,12 +954,12 @@ body.lab-page {
   object-fit: cover;
 }
 
-/* ----- The black end of the page (Figma: y 6192, 1126 tall) ----- */
+/* ----- The black end of the page (Figma: 1126 tall; The Memory Lab: y 6192) ----- */
 .lab-footer {
   position: absolute;
   z-index: 7; /* above the pictures, which slide under it */
   left: 0;
-  top: calc(6192 * var(--u));
+  top: var(--end);
   width: 100%;
   height: var(--footer-h);
   background-color: #000000;
@@ -950,9 +970,9 @@ body.lab-page {
 .lab-footer-title {
   position: absolute;
   left: 0;
-  top: calc(var(--footer-title-bottom) - 482 * var(--u));
+  top: calc(var(--footer-title-bottom) - var(--title-h) * var(--u));
   width: 100%;
-  height: calc(482 * var(--u));
+  height: calc(var(--title-h) * var(--u));
 }
 
 .lab-piece-white path {
@@ -1053,6 +1073,96 @@ body.lab-page {
   width: 0;
   height: 0;
   overflow: hidden;
+}
+
+/* ===================================================================
+   israeli-cactus.html — differences from The Memory Lab
+   (Figma frame "'Israeli' Cactus": first screen 1024 tall, then 11 book spreads, then the black end)
+   How the page scrolls:
+   1. The spreads slide up one by one and stack in the middle of the screen (transparent: only the book shows).
+   2. After the last one, they all scroll up together and the black title on white shows again.
+   3. Then the black end comes up from below: where it passes, the title turns white.
+   Distances are measured from the bottom of the first screen, so on tall screens the first spread
+   never shows on the first screen.
+   =================================================================== */
+.cactus {
+  /* Where the stacked spreads let go and scroll up together: the last spread (number 10, starting
+     198 + 10 × 917.64 under the first screen, 1054.5 tall) stays one more step (917.64) */
+  --spreads-end: calc(100vh + 11346.54 * var(--u));
+  /* The black end starts one screen later (plus a short pause), so the title shows alone for a moment */
+  --end: calc(var(--spreads-end) + 100vh + 250 * var(--u));
+  --title-h: 447.56;
+}
+
+/* The first screen stays in the middle of the screen until the very end of the page. It has no
+   background and lies over the black end (black on black does not show), under the spreads. */
+.cactus .lab-first-track {
+  height: 100%;
+}
+
+.cactus .lab-first {
+  z-index: 2;
+  background-color: transparent;
+}
+
+.cactus .lab-footer {
+  z-index: 1;
+}
+
+/* Contact Me and HEB, EN: plain black here (the white + "exclusion" trick needs a white layer under it) */
+.cactus .lab-first .flow-small-text {
+  color: var(--color-text);
+  mix-blend-mode: normal;
+}
+
+.cactus .lab-first .flow-lang-current::after {
+  background-color: var(--color-text);
+}
+
+/* The white title: a copy that lies exactly on the black one, but it only shows where the black
+   end is: lab.js cuts off everything above the top of the black end while you scroll.
+   So where the black end passes, the title turns white. */
+.cactus-white {
+  position: absolute;
+  z-index: 7;
+  inset: 0;
+  clip-path: inset(100% 0 0 0); /* hidden until lab.js shows the part over the black end */
+  pointer-events: none;         /* clicks reach the button under it */
+}
+
+/* The white title sits where the black one is (lab.js puts the shapes in it) */
+.cactus .lab-footer-title {
+  top: calc(288 * var(--u));
+}
+
+/* its letters still ooze into organic shapes on hover */
+.cactus-white .lab-title-hover {
+  pointer-events: auto;
+}
+
+/* Each spread (Figma: 1406 × 1054.5 at x 17). --n is its number, from 0. Its track starts where
+   the spread starts and ends where the spreads let go, so all of them scroll away together.
+   They lie on the same layer: a later spread lies on top of the earlier ones. */
+.cactus-track {
+  z-index: 3;
+  left: calc(17 * var(--u));
+  top: calc(100vh + (198 + var(--n) * 917.64) * var(--u));
+  bottom: auto;
+  height: calc((11148.54 - var(--n) * 917.64) * var(--u));
+  --w: 1406;
+  --h: 1054.5;
+}
+
+/* Texts at the bottom: "Digital Art" at x 207, and the description in the same size as the year,
+   490 wide, on the same line as the year */
+.cactus .lab-kind { left: calc(207 * var(--u)); }
+
+.cactus .lab-about {
+  top: min(max(calc(var(--footer-h) - 192 * var(--u)), calc(var(--footer-title-bottom) + 76 * var(--u))),
+           calc(var(--footer-h) - 97 * var(--u)));
+  width: calc(490 * var(--u));
+  font-size: max(9px, calc(14.31 * var(--u)));
+  line-height: 1.07;
 }
 
 /* Visitors who asked their device for less motion: the hover moves happen without sliding */

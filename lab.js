@@ -1,68 +1,9 @@
-// ===== Project page "The Memory Lab" =====
-// Draws the title "THE MEMORY LAB" with the same black shapes as the home page (Figma Frame 84),
-// and again in white at the bottom of the page (Figma Frame 94). Clicking the first screen scrolls
-// down to the pictures (they slide up over the title, which stays). All positions are in Figma pixels (the frame is 1440 wide).
-
-// Each title shape: [shape file number (images/flow-piece-NN.svg), width, x, y]
-const TITLE_PIECES = [
-  ["06", 34, 510.66, 269.6],
-  ["01", 68, 544.63, 269.6],
-  ["01", 68, 544.63, 337.55],
-  ["13", 34, 612.58, 269.6],
-  ["04", 68, 652.55, 269.6],
-  ["14", 68, 720.5, 269.6],
-  ["16", 68, 652.55, 337.55],
-  ["05", 68, 720.5, 337.55],
-  ["01", 68, 794.45, 269.6],
-  ["02", 68, 862.4, 269.6],
-  ["03", 68, 862.4, 303.58],
-  ["02", 68, 862.4, 337.55],
-  ["03", 68, 862.4, 371.53],
-  ["01", 68, 794.45, 337.55],
-  ["07", 68, 296, 425.55],
-  ["09", 68, 363.95, 425.55],
-  ["01", 68, 296, 493.5],
-  ["01", 68, 363.95, 493.5],
-  ["01", 68, 437.9, 425.55],
-  ["02", 68, 505.84, 425.55],
-  ["03", 68, 505.84, 459.53],
-  ["02", 68, 505.84, 493.5],
-  ["03", 68, 505.84, 527.48],
-  ["01", 68, 437.9, 493.5],
-  ["07", 68, 579.79, 425.55],
-  ["09", 68, 647.74, 425.55],
-  ["01", 68, 579.79, 493.5],
-  ["01", 68, 647.74, 493.5],
-  ["09", 68, 721.69, 425.55],
-  ["07", 68, 789.64, 425.55],
-  ["11", 68, 721.69, 493.5],
-  ["10", 68, 789.64, 493.5],
-  ["01", 68, 867.66, 425.55],
-  ["01", 68, 867.66, 493.5],
-  ["03", 68, 935.61, 425.55],
-  ["02", 68, 935.61, 459.52],
-  ["12", 68, 935.61, 493.5],
-  ["05", 68, 1009.56, 425.55],
-  ["16", 68, 1077.51, 425.55],
-  ["01", 68, 1043.54, 493.5],
-  ["01", 68, 510.66, 581.5],
-  ["01", 68, 510.66, 649.45],
-  ["14", 68, 578.6, 649.45],
-  ["09", 68, 652.55, 581.5],
-  ["07", 68, 720.5, 581.5],
-  ["01", 68, 652.55, 649.45],
-  ["01", 68, 720.5, 649.45],
-  ["01", 68, 794.45, 581.5],
-  ["03", 68, 862.4, 581.5],
-  ["02", 68, 862.4, 615.47],
-  ["01", 68, 794.45, 649.45],
-  ["03", 68, 862.4, 649.45],
-  ["02", 68, 862.4, 683.42],
-];
-const TITLE_TOP = 269.6;   // the top edge of the title (the white copy is drawn from this edge)
-// The title's grid is a little bigger than the home page's (67.95 instead of 67.49 per cell):
-// each shape is drawn that much bigger, so touching shapes meet exactly
-const TITLE_SCALE = 67.9483 / 67.493;
+// ===== Project pages ("The Memory Lab", "The Israeli Cactus") =====
+// Draws the project title with the same black shapes as the home page, and again in white at the
+// bottom of the page. Clicking the first screen scrolls down to the pictures (they slide up over the
+// title, which stays). All positions are in Figma pixels (the frame is 1440 wide).
+// Each page loads its own title first: TITLE_PIECES, TITLE_TOP, TITLE_SCALE and ORGANIC_LETTERS
+// (lab-organic.js for The Memory Lab, cactus-title.js for The Israeli Cactus).
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -117,14 +58,29 @@ drawShapes().then(() => {
   setUpMorph(true);    // the white title (black end)
 });
 
+// ----- A white title that only shows over the black end (The Israeli Cactus) -----
+// While you scroll, everything of it above the top of the black end is cut off,
+// so the title turns white exactly where the black end passes behind it.
+const whiteLayer = document.getElementById("lab-white");
+if (whiteLayer) {
+  const footer = document.querySelector(".lab-footer");
+  const cutWhite = () => {
+    const cut = footer.getBoundingClientRect().top - whiteLayer.getBoundingClientRect().top;
+    whiteLayer.style.clipPath = `inset(${Math.max(0, cut)}px 0 0 0)`;
+  };
+  window.addEventListener("scroll", cutWhite, { passive: true });
+  window.addEventListener("resize", cutWhite);
+  cutWhite();
+}
+
 // ----- Clicking the first screen scrolls down until the first picture is in the middle -----
 document.getElementById("lab-first-screen").addEventListener("click", () => {
-  const firstPicture = document.querySelector(".lab-media-brain");
+  const firstPicture = document.querySelector(".lab-media");
   firstPicture.scrollIntoView({ behavior: "smooth", block: "center" });
 });
 
 // ----- Hovering a letter: its shapes ooze into the letter's organic shape, like slime -----
-// (Figma: component "Frame 84", Variant2; the organic letters are in lab-organic.js.)
+// (The organic letters are in the page's title file: ORGANIC_LETTERS.)
 // Each shape's outline and its letter's organic outline are turned into the same number of points;
 // every point slides from one outline to the other, so the shapes melt into the organic letter
 // (all shapes of a letter end up as the same organic shape, on top of each other).

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Israeli Cactus — Elana Gertel</title>
+  <!-- Font from Google Fonts: Comme (the texts at the bottom of the page) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comme:wght@400&display=swap">
+  <link rel="stylesheet" href="styles.css?v=20261108e">
+</head>
+<body class="lab-page">
+  <!-- Project page "The Israeli Cactus", built from Figma frame "'Israeli' Cactus".
+       It works like The Memory Lab page: lab.js adds the black shapes that spell
+       "THE ISRAELI CACTUS" (top, and white at the bottom); cactus-title.js says where they go. -->
+  <main class="lab cactus" id="lab">
+    <h1 class="visually-hidden">The Israeli Cactus</h1>
+
+    <!-- The first screen (title and small texts) stays in place until the end of the page:
+         the spreads slide up over it, and the black end slides up behind it. lab.js puts the title shapes in it. -->
+    <div class="lab-first-track">
+      <div class="lab-first" id="lab-first">
+        <!-- Top left: Contact Me (no link yet). Top right: languages (switching is not built yet). -->
+        <p class="flow-small-text lab-contact">Contact Me</p>
+        <p class="flow-small-text flow-lang">HEB, <span class="flow-lang-current">EN</span></p>
+
+        <!-- Clicking the first screen scrolls down to the first spread -->
+        <button class="lab-first-screen" id="lab-first-screen" type="button" aria-label="Scroll down to the project"></button>
+
+        <!-- The white title: lies exactly on the black one, but only shows over the black end,
+             so the title turns white where the black end passes (lab.js puts the shapes in it) -->
+        <div class="cactus-white" id="lab-white">
+          <div class="lab-footer-title" id="lab-footer-title"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- The small name on the left and right edges, like on the home page: fixed while scrolling -->
+    <img class="flow-logo flow-logo-left" src="images/logo-elana-small.svg" alt="">
+    <img class="flow-logo flow-logo-right" src="images/logo-gertel-small.svg" alt="">
+
+    <!-- The book, spread by spread, in the order of Figma's Frame 131: each one slides up from the
+         bottom of the screen, stops in the middle of the screen, and the next one slides up over it.
+         --n is the spread's number (it sets where the spread starts, see .cactus-track). -->
+    <div class="lab-track cactus-track" style="--n: 0">
+      <img class="lab-media" src="images/cactus-spread-01.webp" alt="The Israeli Cactus: front cover">
+    </div>
+    <div class="lab-track cactus-track" style="--n: 1">
+      <img class="lab-media" src="images/cactus-spread-02.webp" alt="The Israeli Cactus: spread 1" loading="lazy">
+    </div>
+    <div class="lab-track cactus-track" style="--n: 2">
+      <img class="lab-media" src="images/cactus-spread-03.webp" alt="The Israeli Cactus: spread 2" loading="lazy">
+    </div>
+    <div class="lab-track cactus-track" style="--n: 3">
+      <img class="lab-media" src="images/cactus-spread-04.webp" alt="The Israeli Cactus: spread" loading="lazy">
+    </div>
+    <div class="lab-track cactus-track" style="--n: 4">
+      <img class="lab-media" src="images/cactus-spread-05.webp" alt="The Israeli Cactus: spread 4" loading="lazy">
+    </div>
+    <div class="lab-track cactus-track" style="--n: 5">
+      <img class="lab-media" src="images/cactus-spread-06.webp" alt="The Israeli Cactus: spread 5" loading="lazy">
+    </div>
+    <div class="lab-track cactus-track" style="--n: 6">
+      <img class="lab-media" src="images/cactus-spread-07.webp" alt="The Israeli Cactus: spread 6" loading="lazy">
+    </div>
+    <div class="lab-track cactus-track" style="--n: 7">
+      <img class="lab-media" src="images/cactus-spread-08.webp" alt="The Israeli Cactus: spread 7" loading="lazy">
+    </div>
+    <div class="lab-track cactus-track" style="--n: 8">
+      <img class="lab-media" src="images/cactus-spread-09.webp" alt="The Israeli Cactus: spread 8" loading="lazy">
+    </div>
+    <div class="lab-track cactus-track" style="--n: 9">
+      <img class="lab-media" src="images/cactus-spread-10.webp" alt="The Israeli Cactus: spread 3" loading="lazy">
+    </div>
+    <div class="lab-track cactus-track" style="--n: 10">
+      <img class="lab-media" src="images/cactus-spread-11.webp" alt="The Israeli Cactus: back cover" loading="lazy">
+    </div>
+
+    <!-- The black end of the page: the project details -->
+    <footer class="lab-footer">
+      <p class="lab-footer-text lab-year">2023</p>
+      <p class="lab-footer-text lab-kind">Digital Art</p>
+      <p class="lab-footer-text lab-about">An illustrated book centered on cactus forms and symbols in Israel, combining botanical artwork with Hebrew text.</p>
+    </footer>
+  </main>
+
+  <!-- The title (its shapes and organic letters) first, then the code that draws it -->
+  <script src="cactus-title.js?v=20261108a"></script>
+  <script src="lab.js?v=20261108d"></script>
+</body>
+</html>
