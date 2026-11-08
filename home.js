@@ -25,9 +25,10 @@ const ITEMS = [
   { type: "photo", kind: "house",   alt: "Double Families", caption: "Double Families", year: "2023", at: [[1595, 712], [1595, 712], [961, 712]] },
   { type: "photo", kind: "cactus",  alt: "The Israeli Cactus", caption: "The Israeli Cactus", year: "2023", at: [[-406, 877], [-406, 877], [168, 877]],
     link: "israeli-cactus.html", toTitle: "cactus" },   // opens the project page (moves: to-cactus-moves.js)
-  { type: "photo", kind: "brain",   alt: "The Memory Lab",  caption: "The Memory Lab", year: "2023", at: [[-366, 398], [-366, 398], [330, 395]],
+  { type: "photo", kind: "mind",    alt: "The Memory Lab",  caption: "The Memory Lab", year: "2023", at: [[-366, 398], [-366, 398], [330, 395]],
     link: "memory-lab.html", toTitle: "lab" },          // "mind": opens the project page (moves: to-lab-moves.js)
-  { type: "photo", kind: "water-b", alt: "The Memory Lab",  caption: "The Memory Lab", year: "2023", at: [[1652, -18], [1652, -18], [964, 71]] },
+  { type: "photo", kind: "sense",   alt: "Sense",           caption: "Sense", year: "2023", at: [[1650, -17], [1650, -17], [962, 72]],
+    link: "sense.html", toTitle: "sense" },                // opens the project page (moves: to-sense-moves.js)
   { type: "photo", kind: "brain",   alt: "",                at: [[1476, 1360], [1476, 1360], [964, 1360]] },
   { type: "photo", kind: "brain",   alt: "",                at: [[-327, 1681], [-327, 1681], [11, 1681]] },
   { type: "photo", kind: "water-b", alt: "The Memory Lab",  caption: "The Memory Lab", at: [null, null, [329, 1193]] },
@@ -56,7 +57,9 @@ const ITEMS = [
 const PHOTO_FILES = {
   "house": "gallery-house.png",
   "brain": "gallery-brain.png",
+  "mind": "gallery-brain.png",   // the same brain picture, cropped differently
   "cactus": "gallery-cactus.png",
+  "sense": "gallery-sense.jpg",
   "water-a": "gallery-watercolor.png",
   "water-b": "gallery-watercolor.png",
 };
@@ -333,7 +336,8 @@ LETTER_HOVER.forEach((letter) => {
 });
 
 // ----- Clicking a project picture: the shapes puzzle into its title, then the project page opens -----
-// "mind" → "THE MEMORY LAB" (to-lab-moves.js), the cactus → "THE ISRAELI CACTUS" (to-cactus-moves.js).
+// "mind" → "THE MEMORY LAB" (to-lab-moves.js), the cactus → "THE ISRAELI CACTUS" (to-cactus-moves.js),
+// the women on the grass → "SENSE" (to-sense-moves.js).
 // Pictures, names and years slide out; shapes the title does not need leave through an edge, and the
 // missing ones come in from an edge. The project page starts with the title in the same place, so the
 // change of page is not seen.
@@ -343,6 +347,7 @@ let leaving = false;
 function titleMoves(name) {
   if (name === "lab" && typeof TO_LAB !== "undefined") return TO_LAB;
   if (name === "cactus" && typeof TO_CACTUS !== "undefined") return TO_CACTUS;
+  if (name === "sense" && typeof TO_SENSE !== "undefined") return TO_SENSE;
   return null;
 }
 

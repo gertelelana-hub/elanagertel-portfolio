@@ -4,39 +4,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Israeli Cactus — Elana Gertel</title>
-  <!-- Font from Google Fonts: Comme (the texts at the bottom of the page) -->
+  <!-- Fonts from Google Fonts: Comme (the texts at the bottom of the page) and Crimson Text (the small texts) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comme:wght@400&display=swap">
-  <link rel="stylesheet" href="styles.css?v=20261108e">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comme:wght@400&family=Crimson+Text:ital,wght@0,400;1,400&display=swap">
+  <link rel="stylesheet" href="styles.css?v=20261108g">
 </head>
 <body class="lab-page">
   <!-- Project page "The Israeli Cactus", built from Figma frame "'Israeli' Cactus".
        It works like The Memory Lab page: lab.js adds the black shapes that spell
        "THE ISRAELI CACTUS" (top, and white at the bottom); cactus-title.js says where they go. -->
-  <main class="lab cactus" id="lab">
+  <main class="lab lab-invert cactus" id="lab">
     <h1 class="visually-hidden">The Israeli Cactus</h1>
 
     <!-- The first screen (title and small texts) stays in place until the end of the page:
          the spreads slide up over it, and the black end slides up behind it. lab.js puts the title shapes in it. -->
     <div class="lab-first-track">
       <div class="lab-first" id="lab-first">
-        <!-- Top left: Contact Me (no link yet). Top right: languages (switching is not built yet). -->
-        <p class="flow-small-text lab-contact">Contact Me</p>
-        <p class="flow-small-text flow-lang">HEB, <span class="flow-lang-current">EN</span></p>
 
         <!-- Clicking the first screen scrolls down to the first spread -->
         <button class="lab-first-screen" id="lab-first-screen" type="button" aria-label="Scroll down to the project"></button>
 
         <!-- The white title: lies exactly on the black one, but only shows over the black end,
              so the title turns white where the black end passes (lab.js puts the shapes in it) -->
-        <div class="cactus-white" id="lab-white">
+        <div class="lab-white" id="lab-white">
           <div class="lab-footer-title" id="lab-footer-title"></div>
         </div>
       </div>
     </div>
 
-    <!-- The small name on the left and right edges, like on the home page: fixed while scrolling -->
+    <!-- Fixed on the screen, like on the home page: languages at the top right (switching is not built
+         yet), Contact Me at the bottom right (no link yet), and the small name on the left and right edges -->
+    <p class="flow-small-text flow-lang">HEB, <span class="flow-lang-current">EN</span></p>
+    <p class="flow-small-text flow-contact">Contact Me</p>
     <img class="flow-logo flow-logo-left" src="images/logo-elana-small.svg" alt="">
     <img class="flow-logo flow-logo-right" src="images/logo-gertel-small.svg" alt="">
 
@@ -87,6 +87,6 @@
 
   <!-- The title (its shapes and organic letters) first, then the code that draws it -->
   <script src="cactus-title.js?v=20261108a"></script>
-  <script src="lab.js?v=20261108d"></script>
+  <script src="lab.js?v=20261108f"></script>
 </body>
 </html>

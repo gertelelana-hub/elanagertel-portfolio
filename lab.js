@@ -74,9 +74,11 @@ if (whiteLayer) {
 }
 
 // ----- Clicking the first screen scrolls down until the first picture is in the middle -----
+// (a page without pictures yet scrolls down to its black end instead)
 document.getElementById("lab-first-screen").addEventListener("click", () => {
   const firstPicture = document.querySelector(".lab-media");
-  firstPicture.scrollIntoView({ behavior: "smooth", block: "center" });
+  if (firstPicture) firstPicture.scrollIntoView({ behavior: "smooth", block: "center" });
+  else window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
 });
 
 // ----- Hovering a letter: its shapes ooze into the letter's organic shape, like slime -----

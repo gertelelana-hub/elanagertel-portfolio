@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sense — Elana Gertel</title>
+  <!-- Font from Google Fonts: Crimson Text (the small texts) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;1,400&display=swap">
+  <link rel="stylesheet" href="styles.css?v=20261108g">
+</head>
+<body class="lab-page">
+  <!-- Project page "Sense", built from Figma frame "'Sense'". For now only the title and the black end
+       (the pictures and texts come later). It works like The Israeli Cactus page: lab.js adds the black
+       shapes that spell "SENSE"; sense-title.js says where they go. Scrolling brings the black end up
+       from below, and the title turns white where it passes. -->
+  <main class="lab lab-invert sense" id="lab">
+    <h1 class="visually-hidden">Sense</h1>
+
+    <!-- The first screen (the title) stays in place until the end of the page. lab.js puts the title shapes in it. -->
+    <div class="lab-first-track">
+      <div class="lab-first" id="lab-first">
+        <!-- Clicking the first screen scrolls down to the black end -->
+        <button class="lab-first-screen" id="lab-first-screen" type="button" aria-label="Scroll down"></button>
+
+        <!-- The white title: lies exactly on the black one, but only shows over the black end,
+             so the title turns white where the black end passes (lab.js puts the shapes in it) -->
+        <div class="lab-white" id="lab-white">
+          <div class="lab-footer-title" id="lab-footer-title"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fixed on the screen, like on the home page: languages at the top right (switching is not built
+         yet), Contact Me at the bottom right (no link yet), and the small name on the left and right edges -->
+    <p class="flow-small-text flow-lang">HEB, <span class="flow-lang-current">EN</span></p>
+    <p class="flow-small-text flow-contact">Contact Me</p>
+    <img class="flow-logo flow-logo-left" src="images/logo-elana-small.svg" alt="">
+    <img class="flow-logo flow-logo-right" src="images/logo-gertel-small.svg" alt="">
+
+    <!-- The black end of the page -->
+    <footer class="lab-footer"></footer>
+  </main>
+
+  <!-- The title (its shapes and organic letters) first, then the code that draws it -->
+  <script src="sense-title.js?v=20261108f"></script>
+  <script src="lab.js?v=20261108f"></script>
+</body>
+</html>

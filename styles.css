@@ -6,8 +6,8 @@
 
   /* Fonts */
   --font-body: "Simpler Pro", Arial, sans-serif;
-  --font-small: "TheBasics", Arial, sans-serif;               /* home: Contact Me, Process, HEB, EN */
-  --font-serif-italic: "Crimson Text", Georgia, serif;        /* home: project names and years */
+  --font-small: "TheBasics", Arial, sans-serif;               /* not used at the moment */
+  --font-serif-italic: "Crimson Text", Georgia, serif;        /* project names and years, small texts */
 
   /* The Figma frames are 1440 × 1024. The stage keeps this shape on every screen,
      as big as fits: full width, unless the screen is too short for that. */
@@ -683,7 +683,7 @@ a.flow-photo:focus-visible {
   height: 132.09%;
 }
 
-/* Brain picture (The Memory Lab): window 143 × 135 */
+/* Brain picture (the other copies in the gallery): window 143 × 135 */
 .photo-brain {
   width: calc(143 * var(--u));
   height: calc(135 * var(--u));
@@ -711,6 +711,35 @@ a.flow-photo:focus-visible {
   top: -51.11%;
   width: 100.22%;
   height: 151.11%;
+}
+
+/* Sense picture (women sitting on the grass): window 138 × 136, the whole picture fills it */
+.photo-sense {
+  width: calc(138 * var(--u));
+  height: calc(136 * var(--u));
+}
+
+.photo-sense img {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The main brain picture ("mind", it opens The Memory Lab): the same window, cropped a little
+   differently (Figma, Component 2) */
+.photo-mind {
+  width: calc(143 * var(--u));
+  height: calc(135 * var(--u));
+}
+
+.photo-mind img {
+  --color-x: 49.7%;
+  --color-y: 58.4%;
+  left: 0.68%;
+  top: -36.51%;
+  width: 99.32%;
+  height: 148.21%;
 }
 
 /* Watercolour poster: window 153 × 138 (a) or 153 × 139 (b), poster 152.8 × 216.1 inside */
@@ -772,9 +801,10 @@ a.flow-photo:focus-visible {
   mix-blend-mode: exclusion;
 }
 
-/* ----- Small texts at the top: TheBasics 12px, white + exclusion (they show black on white) ----- */
+/* ----- Small texts (Contact Me, HEB, EN): Crimson Text 12px, white + exclusion
+         (they show black on white and white on black) ----- */
 .flow-small-text {
-  font-family: var(--font-small);
+  font-family: var(--font-serif-italic);
   font-size: max(8px, calc(12 * var(--u)));
   font-weight: 400;
   line-height: 1.16;
@@ -785,50 +815,49 @@ a.flow-photo:focus-visible {
   text-decoration: none;
 }
 
-/* Top left at x 22, y 31: Contact Me, then the Process link */
-.flow-top-left {
-  position: absolute;
-  z-index: 4;
-  left: calc(22 * var(--u));
-  top: calc(31 * var(--u));
-  display: flex;
-  gap: max(10px, calc(27 * var(--u)));
-  mix-blend-mode: exclusion; /* the blend works on the whole row (it has its own layer) */
-}
+/* ----- Fixed on the screen on every page, also while scrolling (Figma: x and y in a 1440 × 1024 screen) ----- */
 
-.flow-link:hover,
-.flow-link:focus-visible {
-  text-decoration: underline;
-}
-
-/* Top right at x 1369, y 31: "HEB, EN", with a 15px line under EN (the current language) */
+/* Top right at y 14, 17 from the right edge: "HEB, EN" (EN in italic), with a 14px line under EN
+   (the current language) at y 28 */
 .flow-lang {
-  position: absolute;
-  z-index: 4;
-  right: calc(23 * var(--u)); /* 1440 - 1369 - 48 */
-  top: calc(31 * var(--u));
+  position: fixed;
+  z-index: 9;
+  right: calc(17 * var(--u)); /* 1440 - 1375 - 48 */
+  top: calc(14 * var(--u));
+  margin: 0;
 }
 
 .flow-lang-current {
   position: relative;
+  font-style: italic;
 }
 
 .flow-lang-current::after {
   content: "";
   position: absolute;
-  left: calc(1 * var(--u));
-  top: calc(16 * var(--u)); /* the line is at y 47 */
-  width: calc(15 * var(--u));
+  left: 0;
+  top: calc(14 * var(--u)); /* the line is at y 28 */
+  width: calc(14 * var(--u));
   height: 1px;
   background-color: #ffffff; /* white + exclusion = black on white, like the text */
 }
 
-/* The small name on the edges at y 433: "ELANA" (x 17) and "GERTEL" (x 1289) */
-/* The small names stay fixed on the sides of the screen on every page, also while scrolling */
+/* Bottom right: "Contact Me" (no link yet), 14 above the bottom and 17 from the right edge */
+.flow-contact {
+  position: fixed;
+  z-index: 9;
+  right: calc(17 * var(--u)); /* 1440 - 1367 - 56 */
+  bottom: calc(14 * var(--u)); /* 1024 - 996 - 14 */
+  margin: 0;
+  letter-spacing: 0;
+}
+
+/* The small names on the left and right edges, in the middle of the screen (y 502 of 1024):
+   "ELANA" 17 from the left, "GERTEL" 17 from the right */
 .flow-logo {
   position: fixed;
-  z-index: 4;
-  top: calc(433 * var(--u));
+  z-index: 9;
+  top: calc(50vh - 10.2 * var(--u)); /* half of the names' height (20.4) above the middle */
   height: auto;
   mix-blend-mode: exclusion; /* white shapes: black on white, white on black */
 }
@@ -839,7 +868,7 @@ a.flow-photo:focus-visible {
 }
 
 .flow-logo-right {
-  left: calc(1289 * var(--u));
+  right: calc(17 * var(--u));
   width: calc(130 * var(--u));
 }
 
@@ -891,25 +920,6 @@ body.lab-page {
   top: calc(50vh - 512 * var(--u));   /* the first screen is 1024 tall */
   height: calc(1024 * var(--u));
   background-color: var(--color-background); /* white, so the "exclusion" texts show black */
-}
-
-/* Top left at x 22, y 31: Contact Me */
-.lab-contact {
-  position: absolute;
-  z-index: 6;
-  left: calc(22 * var(--u));
-  top: calc(31 * var(--u));
-}
-
-.lab .flow-lang {
-  z-index: 6;
-}
-
-/* The side names lie over everything on this page (pictures and the black end too), and stay at
-   the same height as the first screen's (433, or the middle of a tall screen like the title) */
-.lab .flow-logo {
-  z-index: 9;
-  top: max(calc(433 * var(--u)), calc(50vh - 79 * var(--u)));
 }
 
 /* The first screen is one big invisible button: clicking it scrolls down to the pictures */
@@ -1076,6 +1086,45 @@ body.lab-page {
 }
 
 /* ===================================================================
+   Pages whose title turns white over the black end (class "lab-invert": The Israeli Cactus, Sense)
+   =================================================================== */
+/* The first screen stays in the middle of the screen until the very end of the page. It has no
+   background and lies over the black end (black on black does not show), under the pictures. */
+.lab-invert .lab-first-track {
+  height: 100%;
+}
+
+.lab-invert .lab-first {
+  z-index: 2;
+  background-color: transparent;
+}
+
+.lab-invert .lab-footer {
+  z-index: 1;
+}
+
+/* The white title: a copy that lies exactly on the black one, but it only shows where the black
+   end is: lab.js cuts off everything above the top of the black end while you scroll.
+   So where the black end passes, the title turns white. */
+.lab-white {
+  position: absolute;
+  z-index: 7;
+  inset: 0;
+  clip-path: inset(100% 0 0 0); /* hidden until lab.js shows the part over the black end */
+  pointer-events: none;         /* clicks reach the button under it */
+}
+
+/* The white title sits where the black one is (--title-top: the title's top edge; lab.js puts the shapes in it) */
+.lab-invert .lab-footer-title {
+  top: calc(var(--title-top) * var(--u));
+}
+
+/* its letters still ooze into organic shapes on hover */
+.lab-white .lab-title-hover {
+  pointer-events: auto;
+}
+
+/* ===================================================================
    israeli-cactus.html — differences from The Memory Lab
    (Figma frame "'Israeli' Cactus": first screen 1024 tall, then 11 book spreads, then the black end)
    How the page scrolls:
@@ -1092,52 +1141,7 @@ body.lab-page {
   /* The black end starts one screen later (plus a short pause), so the title shows alone for a moment */
   --end: calc(var(--spreads-end) + 100vh + 250 * var(--u));
   --title-h: 447.56;
-}
-
-/* The first screen stays in the middle of the screen until the very end of the page. It has no
-   background and lies over the black end (black on black does not show), under the spreads. */
-.cactus .lab-first-track {
-  height: 100%;
-}
-
-.cactus .lab-first {
-  z-index: 2;
-  background-color: transparent;
-}
-
-.cactus .lab-footer {
-  z-index: 1;
-}
-
-/* Contact Me and HEB, EN: plain black here (the white + "exclusion" trick needs a white layer under it) */
-.cactus .lab-first .flow-small-text {
-  color: var(--color-text);
-  mix-blend-mode: normal;
-}
-
-.cactus .lab-first .flow-lang-current::after {
-  background-color: var(--color-text);
-}
-
-/* The white title: a copy that lies exactly on the black one, but it only shows where the black
-   end is: lab.js cuts off everything above the top of the black end while you scroll.
-   So where the black end passes, the title turns white. */
-.cactus-white {
-  position: absolute;
-  z-index: 7;
-  inset: 0;
-  clip-path: inset(100% 0 0 0); /* hidden until lab.js shows the part over the black end */
-  pointer-events: none;         /* clicks reach the button under it */
-}
-
-/* The white title sits where the black one is (lab.js puts the shapes in it) */
-.cactus .lab-footer-title {
-  top: calc(288 * var(--u));
-}
-
-/* its letters still ooze into organic shapes on hover */
-.cactus-white .lab-title-hover {
-  pointer-events: auto;
+  --title-top: 288;
 }
 
 /* Each spread (Figma: 1406 × 1054.5 at x 17). --n is its number, from 0. Its track starts where
@@ -1163,6 +1167,16 @@ body.lab-page {
   width: calc(490 * var(--u));
   font-size: max(9px, calc(14.31 * var(--u)));
   line-height: 1.07;
+}
+
+/* ===================================================================
+   sense.html — "Sense" (Figma frame "'Sense'"): for now only the title and the black end.
+   Scrolling brings the black end up from below; where it passes, the title turns white.
+   =================================================================== */
+.sense {
+  --end: 100vh;          /* the black end starts right under the first screen */
+  --title-h: 135.85;
+  --title-top: 444;
 }
 
 /* Visitors who asked their device for less motion: the hover moves happen without sliding */
