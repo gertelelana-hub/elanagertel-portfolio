@@ -960,10 +960,10 @@ body.lab-page {
 }
 
 /* Where each picture is in Figma (its visible part) and how big it is */
-.lab-track-1 { z-index: 1; left: calc(450.03 * var(--u)); top: 100vh; --w: 555.54; --h: 784.2; }
-.lab-track-2 { z-index: 2; left: calc(443.89 * var(--u)); top: calc(2544 * var(--u)); --w: 564.23; --h: 798.02; }
-.lab-track-3 { z-index: 3; left: calc(147 * var(--u)); top: calc(3632 * var(--u)); --w: 1157; --h: 855; }
-.lab-track-4 { z-index: 4; left: calc(147 * var(--u)); top: calc(4829 * var(--u)); --w: 1158; --h: 856; }
+.lab-track-1 { z-index: 1; left: calc(437.2 * var(--u)); top: 100vh; --w: 566.4; --h: 799; }
+.lab-track-2 { z-index: 2; left: calc(437 * var(--u)); top: calc(2400.4 * var(--u)); --w: 566; --h: 800.6; }
+.lab-track-3 { z-index: 3; left: calc(296 * var(--u)); top: calc(3358 * var(--u)); --w: 850; --h: 623; }
+.lab-track-4 { z-index: 4; left: calc(296 * var(--u)); top: calc(4159 * var(--u)); --w: 850; --h: 626; }
 
 .lab-media {
   position: sticky;
@@ -1104,6 +1104,13 @@ body.lab-page {
    from where the title's bottom edge then is. */
 .lab-invert {
   overflow-y: clip; /* the title's track never makes the page longer */
+  /* THE RULE FOR EVERY PROJECT PAGE:
+     1. The pictures slide up one by one and pile up in the middle of the screen.
+     2. After the last one, they all scroll up together and the black title on white shows again.
+     3. Then the black end comes up from below: where it passes, the title turns white.
+     Each page only sets --stack-end: where the piled pictures let go (the last picture's start,
+     plus one more step, plus its height). The black end starts one screen later, plus a short pause. */
+  --end: calc(var(--stack-end) + 100vh + 250 * var(--u));
   --footer-h: max(calc(1126 * var(--u)), calc(50vh + (var(--title-mid) + 339 - var(--title-top)) * var(--u)));
   --footer-title-bottom: calc(var(--footer-h) - 50vh + (var(--title-top) + var(--title-h) - var(--title-mid)) * var(--u));
 }
@@ -1123,6 +1130,12 @@ body.lab-page {
 
 .lab-invert .lab-footer {
   z-index: 1;
+}
+
+/* The pictures lie over the title. Their tracks all end at --stack-end, so they leave together. */
+.lab-invert .lab-track {
+  z-index: 3;
+  bottom: calc(100% - var(--stack-end));
 }
 
 /* The white title: a copy that lies exactly on the black one, but it only shows where the black
@@ -1151,12 +1164,16 @@ body.lab-page {
    =================================================================== */
 .memory {
   --title-top: 269.6;
+  /* The last picture (starting at 4159, 626 tall) stays one more step (801, the distance between the two videos) */
+  --stack-end: calc((4159 + 801 + 626) * var(--u));
 }
 
-/* The pictures lie over the title, and scroll away with the top of the black end */
-.memory .lab-track {
-  z-index: 3;
-  bottom: calc(100% - var(--end));
+/* The videos and the wide book folds are exactly as wide as the title under them (like in Figma).
+   They are drawn 1% larger, so the title's edges never peek out next to them as a thin black line. */
+.memory .lab-media-video-1,
+.memory .lab-media-video-2,
+.cactus-fold .lab-media {
+  transform: scale(1.01);
 }
 
 /* ===================================================================
@@ -1171,25 +1188,19 @@ body.lab-page {
    =================================================================== */
 .cactus {
   /* Where the stacked spreads let go and scroll up together: the last spread (number 10, starting
-     198 + 10 × 917.64 under the first screen, 1054.5 tall) stays one more step (917.64) */
-  --spreads-end: calc(100vh + 11346.54 * var(--u));
-  /* The black end starts one screen later (plus a short pause), so the title shows alone for a moment */
-  --end: calc(var(--spreads-end) + 100vh + 250 * var(--u));
+     9368 under the first screen, 1059 tall) stays one more step (about 920) */
+  --stack-end: calc(100vh + 11346.54 * var(--u));
   --title-h: 447.56;
   --title-top: 288;
 }
 
-/* Each spread (Figma: 1406 × 1054.5 at x 17). --n is its number, from 0. Its track starts where
-   the spread starts and ends where the spreads let go, so all of them scroll away together.
+/* Each spread has its own place and size in Figma (set on it in the HTML):
+   --x = left edge, --y = where it starts under the first screen, --w and --h = its size.
+   Its track starts there and ends where the spreads let go, so all of them scroll away together.
    They lie on the same layer: a later spread lies on top of the earlier ones. */
 .cactus-track {
-  z-index: 3;
-  left: calc(17 * var(--u));
-  top: calc(100vh + (198 + var(--n) * 917.64) * var(--u));
-  bottom: auto;
-  height: calc((11148.54 - var(--n) * 917.64) * var(--u));
-  --w: 1406;
-  --h: 1054.5;
+  left: calc(var(--x) * var(--u));
+  top: calc(100vh + var(--y) * var(--u));
 }
 
 /* Texts at the bottom: "Digital Art" at x 207, and the description in the same size as the year,
@@ -1209,7 +1220,9 @@ body.lab-page {
    Scrolling brings the black end up from below; where it passes, the title turns white.
    =================================================================== */
 .sense {
-  --end: 100vh;          /* the black end starts right under the first screen */
+  /* No pictures yet: the black end starts right under the first screen.
+     (When pictures are added, set --stack-end instead and delete this line: the shared rule does the rest.) */
+  --end: 100vh;
   --title-h: 135.85;
   --title-top: 444;
 }
