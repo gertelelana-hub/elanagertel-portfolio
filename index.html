@@ -24,8 +24,11 @@
        left and right edges, in the middle of the screen -->
   <p class="flow-small-text flow-lang">HEB, <span class="flow-lang-current">EN</span></p>
   <p class="flow-small-text flow-contact">Contact Me</p>
-  <img class="flow-logo flow-logo-left" src="images/logo-elana-small.svg" alt="">
-  <img class="flow-logo flow-logo-right" src="images/logo-gertel-small.svg" alt="">
+  <!-- The small name: clicking it goes back to the home page, straight to the gallery (no intro) -->
+  <a href="index.html?gallery" aria-label="Elana Gertel — home page">
+    <img class="flow-logo flow-logo-left" src="images/logo-elana-small.svg" alt="">
+    <img class="flow-logo flow-logo-right" src="images/logo-gertel-small.svg" alt="">
+  </a>
 
   <!-- The planned puzzle moves first, then the code that plays them -->
   <!-- ?v=… : change the number after an update, so browsers load the new files instead of old saved copies -->
@@ -34,6 +37,6 @@
   <script src="to-lab-moves.js?v=20261108r"></script>
   <script src="to-cactus-moves.js?v=20261108r"></script>
   <script src="to-sense-moves.js?v=20261108r"></script>
-  <script src="home.js?v=20261108s"></script>
+  <script src="home.js?v=20261109b"></script>
 </body>
 </html>

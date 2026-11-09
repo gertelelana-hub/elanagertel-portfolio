@@ -470,8 +470,10 @@ function playOpening() {
   setTimeout(finishOpening, end);
 }
 
-// Visitors who asked their device for less motion see the gallery right away
-if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+// Visitors who asked their device for less motion see the gallery right away, and so does anyone
+// coming back from another page through the small name on the edges (index.html?gallery)
+const skipIntro = new URLSearchParams(window.location.search).has("gallery");
+if (skipIntro || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   showGallery();
 } else {
   playOpening();
