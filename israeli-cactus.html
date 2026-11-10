@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comme:wght@400&family=Crimson+Text:ital,wght@0,400;1,400&display=swap">
-  <link rel="stylesheet" href="styles.css?v=20261109g">
+  <link rel="stylesheet" href="styles.css?v=20261110e">
   <!-- Show the page only once the title is drawn (the marker "page-ready" comes after the scripts),
        so coming from the home page the title is simply there, without blinking -->
   <link rel="expect" href="#page-ready" blocking="render">
@@ -46,41 +46,72 @@
       <img class="flow-logo flow-logo-right" src="images/logo-gertel-small.svg" alt="">
     </a>
 
-    <!-- The book, spread by spread, in the order of Figma's Frame 131: each one slides up from the
+    <!-- The book, spread by spread, in the order of Figma's Frame 139: each one slides up from the
          bottom of the screen, stops in the middle of the screen, and the next one slides up over it.
-         --x, --y, --w, --h: where the spread is and how big (Figma pixels, see .cactus-track). -->
-    <div class="lab-track cactus-track" style="--x: 22; --y: 173; --w: 1395; --h: 1059">
+         --x, --w, --h: where the spread is and how big (Figma pixels); --top: where it starts (the chain of places in styles.css, .cactus). -->
+    <!-- The front cover lies under the title (the title inverts over it); the others lie over the title -->
+    <div class="lab-track cactus-track cactus-under-title" style="--x: 22; --top: var(--c-cover); --w: 1395; --h: 1059">
       <img class="lab-media" src="images/cactus-spread-01.webp" alt="The Israeli Cactus: front cover">
     </div>
-    <div class="lab-track cactus-track cactus-fold" style="--x: -4; --y: 1077.59; --w: 1458; --h: 1057">
+    <div class="lab-track cactus-track cactus-fold" style="--x: -4; --top: var(--c-fold-1); --w: 1458; --h: 1057">
       <img class="lab-media" src="images/cactus-spread-02.webp" alt="The Israeli Cactus: spread 1" loading="lazy">
     </div>
-    <div class="lab-track cactus-track cactus-fold" style="--x: -4; --y: 1999.59; --w: 1458; --h: 1057">
+    <div class="lab-track cactus-track cactus-fold" style="--x: -4; --top: var(--c-fold-2); --w: 1458; --h: 1057">
       <img class="lab-media" src="images/cactus-spread-03.webp" alt="The Israeli Cactus: spread 2" loading="lazy">
     </div>
-    <div class="lab-track cactus-track cactus-fold" style="--x: -8; --y: 2911; --w: 1462; --h: 1066">
+    <div class="lab-track cactus-track cactus-fold" style="--x: -8; --top: var(--c-fold-x); --w: 1462; --h: 1066">
       <img class="lab-media" src="images/cactus-spread-04.webp" alt="The Israeli Cactus: spread" loading="lazy">
     </div>
-    <div class="lab-track cactus-track cactus-fold" style="--x: -8; --y: 3844; --w: 1462; --h: 1054">
-      <img class="lab-media" src="images/cactus-spread-05.webp" alt="The Israeli Cactus: spread 4" loading="lazy">
-    </div>
-    <div class="lab-track cactus-track cactus-fold" style="--x: -8; --y: 4755; --w: 1462; --h: 1064">
-      <img class="lab-media" src="images/cactus-spread-06.webp" alt="The Israeli Cactus: spread 5" loading="lazy">
-    </div>
-    <div class="lab-track cactus-track cactus-fold" style="--x: -8; --y: 5685; --w: 1462; --h: 1056">
-      <img class="lab-media" src="images/cactus-spread-07.webp" alt="The Israeli Cactus: spread 6" loading="lazy">
-    </div>
-    <div class="lab-track cactus-track cactus-fold" style="--x: -4; --y: 6605.59; --w: 1458; --h: 1057">
-      <img class="lab-media" src="images/cactus-spread-08.webp" alt="The Israeli Cactus: spread 7" loading="lazy">
-    </div>
-    <div class="lab-track cactus-track cactus-fold" style="--x: -8; --y: 7504; --w: 1463; --h: 1080">
-      <img class="lab-media" src="images/cactus-spread-09.webp" alt="The Israeli Cactus: spread 8" loading="lazy">
-    </div>
-    <div class="lab-track cactus-track cactus-fold" style="--x: -4; --y: 8447.59; --w: 1458; --h: 1060">
+    <div class="lab-track cactus-track cactus-fold" style="--x: -4; --top: var(--c-fold-3); --w: 1458; --h: 1060">
       <img class="lab-media" src="images/cactus-spread-10.webp" alt="The Israeli Cactus: spread 3" loading="lazy">
     </div>
-    <div class="lab-track cactus-track" style="--x: 16; --y: 9368; --w: 1407; --h: 1059">
+    <div class="lab-track cactus-track cactus-fold" style="--x: -8; --top: var(--c-fold-4); --w: 1462; --h: 1054">
+      <img class="lab-media" src="images/cactus-spread-05.webp" alt="The Israeli Cactus: spread 4" loading="lazy">
+    </div>
+    <div class="lab-track cactus-track cactus-fold" style="--x: -8; --top: var(--c-fold-5); --w: 1462; --h: 1064">
+      <img class="lab-media" src="images/cactus-spread-06.webp" alt="The Israeli Cactus: spread 5" loading="lazy">
+    </div>
+    <div class="lab-track cactus-track cactus-fold" style="--x: -8; --top: var(--c-fold-6); --w: 1462; --h: 1056">
+      <img class="lab-media" src="images/cactus-spread-07.webp" alt="The Israeli Cactus: spread 6" loading="lazy">
+    </div>
+    <div class="lab-track cactus-track cactus-fold" style="--x: -4; --top: var(--c-fold-7); --w: 1458; --h: 1057">
+      <img class="lab-media" src="images/cactus-spread-08.webp" alt="The Israeli Cactus: spread 7" loading="lazy">
+    </div>
+    <div class="lab-track cactus-track cactus-fold" style="--x: -8; --top: var(--c-fold-8); --w: 1463; --h: 1080">
+      <img class="lab-media" src="images/cactus-spread-09.webp" alt="The Israeli Cactus: spread 8" loading="lazy">
+    </div>
+    <div class="lab-track cactus-track" style="--x: 16; --top: var(--c-back); --w: 1407; --h: 1059">
       <img class="lab-media" src="images/cactus-spread-11.webp" alt="The Israeli Cactus: back cover" loading="lazy">
+    </div>
+
+    <!-- The story, in paragraphs (Figma: white with "exclusion", so they show black on the white
+         page and inverted over the book). Each one sticks at the top left of the screen while you
+         scroll, until the next one reaches it and pushes it out. The last one leaves together with the book.
+         --x, --w: left edge and width (Figma pixels); --top: where it starts (the chain of places in styles.css, .cactus)
+         --next: where the next paragraph starts (the last one has the class "lab-text-last" instead)
+         --gap: the empty line above the text in Figma -->
+    <div class="lab-text-track" style="--x: 17; --top: var(--c-text-1); --w: 256; --next: var(--c-text-2); --gap: 19.91">
+      <p class="lab-text">In a scientific illustration course, we were given an assignment: choose a plant and research it. I chose the sabra. I feel like the most Israeli person in the world, Israel is the only home I have, but I don't get the title "tzabar", because I was born in America and came to Israel at the age of three. Early in my research I discovered that the sabra itself came from America. That's where the project's question was born: why did an immigrant plant, of all things, become the symbol of the rooted Israeli, and what actually makes someone a tzabar?</p>
+    </div>
+    <div class="lab-text-track" style="--x: 17; --top: var(--c-text-2); --w: 260; --next: var(--c-text-3); --gap: 19.91">
+      <p class="lab-text">I researched the sabra both biologically and culturally. The sabra spreads quickly, puts down deep roots, grows upward, reproduces easily, and survives a harsh climate with little water. The more I learned about it, the more I understood that these traits describe the Israeli very precisely, just not the way we usually think. A tzabar isn't necessarily someone who was born here. A tzabar is someone who puts down roots here and survives the hardship. And suddenly I understood that I, of all people, am the most tzabar in the world.</p>
+    </div>
+    <div class="lab-text-track" style="--x: 17; --top: var(--c-text-3); --w: 266; --next: var(--c-text-4); --gap: 19.91">
+      <p class="lab-text">Every design decision was meant to tell the same story. I chose the David font, because its shapes recall the cactus: a little spiky and a little rounded, large and impressive. I created the illustrations in colored pencil on a black background. The vivid color stands out, and the pencil gives a slightly dry feel, so hardship and vitality meet. Before that I tried other techniques: watercolor was too romantic and pastoral for a story of toil and hardship, pen was too clean and simple, and chalk was too dry and forced.</p>
+    </div>
+    <!-- The pictures on the right next to the paragraph above (Figma: Frame 140, a column 204 wide, gap 56).
+         Their track starts like the paragraph's, so they come in together with it. It ends 544 later than the
+         paragraph's (the column is 544 taller than the paragraph), so both start leaving at the same moment.
+         --pad-top: they sit 8 lower than the paragraph's first line, like in Figma. -->
+    <div class="lab-side-track" style="--x: 1219; --top: var(--c-text-3); --next: calc(var(--c-text-4) + 544 * var(--u)); --pad-top: 27.91">
+      <div class="lab-side">
+        <img src="images/cactus-side-1.png" alt="Cactus pads with red fruit, colored pencil" style="aspect-ratio: 1024 / 1024" loading="lazy">
+        <img src="images/cactus-side-2.png" alt="Pink cactus fruit against a blue sky" style="aspect-ratio: 736 / 624" loading="lazy">
+        <img src="images/cactus-side-4.png" alt="Close-up of ripe cactus fruit" style="aspect-ratio: 534 / 800" loading="lazy">
+      </div>
+    </div>
+    <div class="lab-text-track lab-text-last" style="--x: 17; --top: var(--c-text-4); --w: 265; --gap: 19.91">
+      <p class="lab-text">The final product is a booklet, not a bound book and not a poster, because I wanted a personal and intimate experience in which the reader moves forward slowly, page after page. The lecturer gave the project an award-worthy grade, but the readers' responses moved me most of all. Some said they reached the end with goosebumps, some identified with it, and some thought of their grandparents, who always felt like immigrants even though they were the truest tzabarim there are. If I did the project again, I would break the tidy grid of the illustrations a little and let them step outside the lines. That way they would be strong, less apologetic and less obedient, exactly like the sabra.</p>
     </div>
 
     <!-- The black end of the page: the project details -->

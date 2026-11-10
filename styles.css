@@ -342,9 +342,21 @@ body.scroll-page {
   gap: calc(110 * var(--u));
 }
 
-.entry-images-free img {
+.entry-images-free img,
+.entry-images-free video {
+  display: block;
+  height: auto;
   width: calc(var(--w) * var(--u));
   margin-left: calc((var(--x) - 47) * var(--u)); /* the entry already starts at x 47 */
+}
+
+/* "Even More": starts 186px under the last picture, its video 64px under the title */
+.process-entry.process-entry-even-more {
+  margin-top: calc(184 * var(--u));
+}
+
+.process-entry-even-more .entry-group.entry-group-free {
+  margin-top: calc(43 * var(--u));
 }
 
 .process-entries {
@@ -404,13 +416,19 @@ body.scroll-page {
     gap: 16px;
   }
 
-  .entry-images-free img {
+  .entry-images-free img,
+  .entry-images-free video {
     width: 100%;
     margin-left: 0;
   }
 
-  .process-entry.process-entry-far {
+  .process-entry.process-entry-far,
+  .process-entry.process-entry-even-more {
     margin-top: 40px;
+  }
+
+  .process-entry-even-more .entry-group.entry-group-free {
+    margin-top: 16px;
   }
 
   .process-entries {
@@ -961,9 +979,10 @@ body.lab-page {
 
 /* Where each picture is in Figma (its visible part) and how big it is */
 .lab-track-1 { z-index: 1; left: calc(437.2 * var(--u)); top: 100vh; --w: 566.4; --h: 799; }
-.lab-track-2 { z-index: 2; left: calc(437 * var(--u)); top: calc(2400.4 * var(--u)); --w: 566; --h: 800.6; }
-.lab-track-3 { z-index: 3; left: calc(296 * var(--u)); top: calc(3358 * var(--u)); --w: 850; --h: 623; }
-.lab-track-4 { z-index: 4; left: calc(296 * var(--u)); top: calc(4159 * var(--u)); --w: 850; --h: 626; }
+/* The other pictures start where the page's chain of places says (see .memory) */
+.lab-track-2 { z-index: 2; left: calc(437 * var(--u)); top: var(--m-cover); --w: 566; --h: 800.6; }
+.lab-track-3 { z-index: 3; left: calc(296 * var(--u)); top: var(--m-video-1); --w: 850; --h: 623; }
+.lab-track-4 { z-index: 4; left: calc(296 * var(--u)); top: var(--m-video-2); --w: 850; --h: 626; }
 
 .lab-media {
   position: sticky;
@@ -1108,9 +1127,12 @@ body.lab-page {
      1. The pictures slide up one by one and pile up in the middle of the screen.
      2. After the last one, they all scroll up together and the black title on white shows again.
      3. Then the black end comes up from below: where it passes, the title turns white.
-     Each page only sets --stack-end: where the piled pictures let go (the last picture's start,
-     plus one more step, plus its height). The black end starts one screen later, plus a short pause. */
-  --end: calc(var(--stack-end) + 100vh + 250 * var(--u));
+     Each page only sets two numbers:
+       --stack-end: where the middle of the pile is when it lets go (the last picture's start,
+                    plus one more step, plus half its height);
+       --pile-h:    the height of the tallest picture in the pile (Figma pixels).
+     The black end starts once the whole pile has left the screen, plus a short pause. */
+  --end: calc(var(--stack-end) + var(--pile-h) / 2 * var(--u) + 100vh + 250 * var(--u));
   --footer-h: max(calc(1126 * var(--u)), calc(50vh + (var(--title-mid) + 339 - var(--title-top)) * var(--u)));
   --footer-title-bottom: calc(var(--footer-h) - 50vh + (var(--title-top) + var(--title-h) - var(--title-mid)) * var(--u));
 }
@@ -1132,10 +1154,12 @@ body.lab-page {
   z-index: 1;
 }
 
-/* The pictures lie over the title. Their tracks all end at --stack-end, so they leave together. */
+/* The pictures lie over the title. Each picture's track ends half its own height (--h) under
+   --stack-end, so all of them let go at the same moment, still centered on each other:
+   the pile moves up as one, exactly as it is. */
 .lab-invert .lab-track {
   z-index: 3;
-  bottom: calc(100% - var(--stack-end));
+  bottom: calc(100% - var(--stack-end) - var(--h) / 2 * var(--u));
 }
 
 /* The white title: a copy that lies exactly on the black one, but it only shows where the black
@@ -1164,8 +1188,23 @@ body.lab-page {
    =================================================================== */
 .memory {
   --title-top: 269.6;
-  /* The last picture (starting at 4159, 626 tall) stays one more step (801, the distance between the two videos) */
-  --stack-end: calc((4159 + 801 + 626) * var(--u));
+  --pile-h: 801; /* the ELSC cover */
+
+  /* THE CHAIN OF PLACES: where each paragraph and picture starts on the page, in the order of Figma
+     (frame "the memory lab"). Each one is measured from the one before it, with Figma's distance.
+     THE RULE: after a paragraph, the next thing waits at least one screen (100vh), so it only comes in
+     once the paragraph has reached its sticky place at the top: max(100vh, Figma's distance). */
+  --m-text-1:  calc(2103 * var(--u));                              /* the first picture is at 100vh */
+  --m-cover:   calc(var(--m-text-1)  + max(100vh, 973.4 * var(--u)));
+  --m-video-1: calc(var(--m-cover)   + 834.6 * var(--u));
+  --m-text-2:  calc(var(--m-video-1) + 912 * var(--u));
+  --m-video-2: calc(var(--m-text-2)  + max(100vh, 638 * var(--u)));
+  --m-text-3:  calc(var(--m-video-2) + 866 * var(--u));
+  --m-text-4:  calc(var(--m-text-3)  + max(100vh, 519 * var(--u)));
+  /* The last paragraph comes after the last picture, so the pile stays until that paragraph has
+     stuck at the top for one step (519, the distance between the last two paragraphs).
+     The pile lets go when its middle is in the middle of the screen, hence the 50vh. */
+  --stack-end: calc(var(--m-text-4) + 50vh + 519 * var(--u));
 }
 
 /* The videos and the wide book folds are exactly as wide as the title under them (like in Figma).
@@ -1187,27 +1226,142 @@ body.lab-page {
    never shows on the first screen.
    =================================================================== */
 .cactus {
-  /* Where the stacked spreads let go and scroll up together: the last spread (number 10, starting
-     9368 under the first screen, 1059 tall) stays one more step (about 920) */
-  --stack-end: calc(100vh + 11346.54 * var(--u));
+  /* THE CHAIN OF PLACES: where each spread and paragraph starts on the page, in the order of Figma
+     (Frame 139). Each one is measured from the one before it, with Figma's distance.
+     THE RULE: after a paragraph, the next thing waits at least one screen (100vh), so it only comes in
+     once the paragraph has reached its sticky place at the top: max(100vh, Figma's distance). */
+  --c-cover:   calc(100vh - 231 * var(--u));
+  --c-text-1:  calc(100vh + 945 * var(--u));
+  --c-fold-1:  calc(var(--c-text-1) + max(100vh, 908.59 * var(--u)));
+  --c-fold-2:  calc(var(--c-fold-1) + 922 * var(--u));
+  --c-fold-x:  calc(var(--c-fold-2) + 911.41 * var(--u));        /* "the forgotten fold" */
+  --c-fold-3:  calc(var(--c-fold-x) + 926 * var(--u));
+  --c-fold-4:  calc(var(--c-fold-3) + 898 * var(--u));
+  --c-text-2:  calc(var(--c-fold-4) + 1021 * var(--u));
+  --c-fold-5:  calc(var(--c-text-2) + max(100vh, 1139 * var(--u)));
+  --c-fold-6:  calc(var(--c-fold-5) + 930 * var(--u));
+  --c-fold-7:  calc(var(--c-fold-6) + 945 * var(--u));
+  --c-text-3:  calc(var(--c-fold-7) + 1216 * var(--u));
+  --c-fold-8:  calc(var(--c-text-3) + max(100vh, 954 * var(--u)));
+  --c-text-4:  calc(var(--c-fold-8) + 1224 * var(--u));
+  --c-back:    calc(var(--c-text-4) + max(100vh, 1000 * var(--u)));
+  /* Where the middle of the pile is when it lets go: the back cover (1059 tall) stays one more step (about 920) */
+  --stack-end: calc(var(--c-back) + (919.54 + 1059 / 2) * var(--u));
+  --pile-h: 1080; /* the tallest spread */
   --title-h: 447.56;
   --title-top: 288;
 }
 
 /* Each spread has its own place and size in Figma (set on it in the HTML):
-   --x = left edge, --y = where it starts under the first screen, --w and --h = its size.
+   --x = left edge, --top = where it starts (from the chain of places above), --w and --h = its size.
    Its track starts there and ends where the spreads let go, so all of them scroll away together.
    They lie on the same layer: a later spread lies on top of the earlier ones. */
 .cactus-track {
   left: calc(var(--x) * var(--u));
-  top: calc(100vh + var(--y) * var(--u));
+  top: var(--top);
 }
 
-/* Texts at the bottom: "Digital Art" at x 207, and the description in the same size as the year,
-   490 wide, on the same line as the year */
+/* Like in Figma, the title lies OVER the front cover and inverts what is under it ("exclusion"):
+   black on the white page, white on the black cover. The other spreads still lie over the title.
+   The title's shapes are black, so invert(1) first makes them white, then "difference" blends them.
+   Over the black end this already turns the title white, so the white copy is not needed here. */
+.cactus .lab-first {
+  filter: invert(1);
+  mix-blend-mode: difference;
+}
+
+.cactus .lab-white {
+  display: none;
+}
+
+/* The front cover: under the title (the other spreads are on layer 3, over it) */
+.cactus .cactus-under-title {
+  z-index: 1;
+}
+
+/* ----- The story paragraphs (Figma: Crimson Text 13.64, a narrow column on the left edge, white with "exclusion") -----
+   Each paragraph lies in a track (like the pictures) and sticks at the top of the screen.
+   --x, --w: its left edge and width (Figma pixels); --top: where it starts (from the page's chain of places).
+   Its track ends exactly where the next paragraph starts (--next), so the next one pushes it out. */
+.lab-text-track {
+  position: absolute;
+  z-index: 4;                       /* over the book */
+  left: calc(var(--x) * var(--u));
+  top: var(--top);
+  height: calc(var(--next) - var(--top));
+  mix-blend-mode: exclusion;        /* white text: black on white, inverted over the pictures */
+  pointer-events: none;
+}
+
+.lab-text {
+  position: sticky;
+  top: 0;
+  width: calc(var(--w) * var(--u));
+  margin: 0;
+  padding-top: calc(var(--gap, 0) * var(--u));  /* Figma: an empty line above some of the texts */
+  font-family: "Crimson Text", Georgia, serif;
+  font-size: max(11px, calc(13.64 * var(--u)));
+  line-height: 1.46;
+  letter-spacing: 0.06em;
+  color: #ffffff;
+}
+
+/* ----- Pictures beside a paragraph (Figma: a column of pictures, 204 wide, 56 apart) -----
+   Their track is placed like the paragraph's (--x, --top, --next), so they stick at the top
+   of the screen while the paragraph does, and the next paragraph pushes both out together.
+   Unlike the texts they are not inverted ("exclusion"), so they keep their colors. */
+.lab-side-track {
+  position: absolute;
+  z-index: 4;                       /* over the book, like the texts */
+  left: calc(var(--x) * var(--u));
+  top: var(--top);
+  height: calc(var(--next) - var(--top));
+  pointer-events: none;
+}
+
+.lab-side {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: calc(56 * var(--u));
+  width: calc(204 * var(--u));
+  padding-top: calc(var(--pad-top, 0) * var(--u));
+}
+
+/* Each picture fills the column's width; its height comes from its aspect-ratio (set in the HTML) */
+.lab-side img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* The last paragraph sticks until the pictures let go, and then leaves together with them.
+   An empty block after it makes its track exactly long enough: from where it starts
+   to where the pictures let go (--stack-end - 50vh), plus the paragraph itself. */
+.lab-text-track.lab-text-last {
+  height: auto;
+}
+
+.lab-text-last::after {
+  content: "";
+  display: block;
+  height: calc(var(--stack-end) - 50vh - var(--top));
+}
+
+/* Texts at the bottom (The Israeli Cactus and The Memory Lab): the description in the same size
+   as the year, 490 wide, on the same line as the year.
+   The Israeli Cactus: 2023 at x 90, "Digital Art" at 207, the description at 342.
+   The Memory Lab: each one 5 more to the left (85, 202, 337), like in Figma. */
 .cactus .lab-kind { left: calc(207 * var(--u)); }
 
-.cactus .lab-about {
+.memory .lab-year  { left: calc(85 * var(--u)); }
+.memory .lab-kind  { left: calc(202 * var(--u)); }
+.memory .lab-about { left: calc(337 * var(--u)); }
+
+.cactus .lab-about,
+.memory .lab-about {
   top: min(max(calc(var(--footer-h) - 192 * var(--u)), calc(var(--footer-title-bottom) + 76 * var(--u))),
            calc(var(--footer-h) - 97 * var(--u)));
   width: calc(490 * var(--u));
