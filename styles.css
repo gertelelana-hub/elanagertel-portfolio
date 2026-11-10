@@ -1201,10 +1201,10 @@ body.lab-page {
   --m-video-2: calc(var(--m-text-2)  + max(100vh, 638 * var(--u)));
   --m-text-3:  calc(var(--m-video-2) + 866 * var(--u));
   --m-text-4:  calc(var(--m-text-3)  + max(100vh, 519 * var(--u)));
-  /* The last paragraph comes after the last picture, so the pile stays until that paragraph has
-     stuck at the top for one step (519, the distance between the last two paragraphs).
-     The pile lets go when its middle is in the middle of the screen, hence the 50vh. */
-  --stack-end: calc(var(--m-text-4) + 50vh + 519 * var(--u));
+  /* The last paragraph comes after the last picture: it stays stuck at the top for one step
+     (519, the distance between the last two paragraphs) and leaves, and half a screen later the pile
+     lets go. The pile lets go when its middle is in the middle of the screen, hence 50vh + 50vh. */
+  --stack-end: calc(var(--m-text-4) + 100vh + 519 * var(--u));
 }
 
 /* The videos and the wide book folds are exactly as wide as the title under them (like in Figma).
@@ -1337,9 +1337,9 @@ body.lab-page {
   object-fit: cover;
 }
 
-/* The last paragraph sticks until the pictures let go, and then leaves together with them.
+/* The last paragraph sticks at the top, and leaves half a screen (50vh) before the pile of pictures does.
    An empty block after it makes its track exactly long enough: from where it starts
-   to where the pictures let go (--stack-end - 50vh), plus the paragraph itself. */
+   to half a screen before the pictures let go (--stack-end - 50vh - 50vh), plus the paragraph itself. */
 .lab-text-track.lab-text-last {
   height: auto;
 }
@@ -1347,7 +1347,7 @@ body.lab-page {
 .lab-text-last::after {
   content: "";
   display: block;
-  height: calc(var(--stack-end) - 50vh - var(--top));
+  height: calc(var(--stack-end) - 100vh - var(--top));
 }
 
 /* Texts at the bottom (The Israeli Cactus and The Memory Lab): the description in the same size
