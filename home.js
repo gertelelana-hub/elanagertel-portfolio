@@ -1,12 +1,15 @@
 // ===== Home page: the opening animation and the project gallery =====
-// Figma flow: frame 74 (scattered) → 71 ("ELANA GERTEL") → 70 (gallery).
+// Figma flow: frame 77 (scattered) → 76 ("ELANA GERTEL") → 75 (gallery).
 //   - Opening: the scattered black shapes (FLOW_PIECES in home-moves.js) slide into "ELANA GERTEL"
 //     from outside the word in a few long straight slides of 0.55s each, like the move to
 //     "THE MEMORY LAB" (FLOW_TIMELINE).
 //   - Then each letter moves to the gallery as one block, and the project pictures, names and
 //     years (ITEMS below) slide in from the edges like puzzle pieces (ITEM_TIMELINE).
 //     Before that they wait outside the page.
-// All positions are in Figma pixels (the frame is 1440 wide); CSS turns them into page sizes.
+// All positions are in home units: Figma pixels divided by HOME_SCALE. In Figma the home shapes got
+// smaller (like the project titles); here they keep one size (68) and the page draws everything
+// HOME_SCALE times as big (.flow in styles.css uses the same number).
+const HOME_SCALE = 0.9351;
 
 // Timing (milliseconds) — must match the planning scripts
 const START_PAUSE = 800;    // the scattered shapes stay still for 0.8s, like in Figma
@@ -17,40 +20,40 @@ const STEP_PAUSE = 800;     // pause once "ELANA GERTEL" is complete
 const STEP_STARTS = [0, FLOW_STEP_ENDS[0] + STEP_PAUSE];
 
 // ----- Project pictures and names -----
-// at: [x, y] in frames 74, 71, 70. null = not on the page yet (it slides in from the edge later).
+// at: [x, y] in frames 77, 76, 75 (home units). null = not on the page yet (it slides in from the edge later).
 // Pictures: "kind" picks the picture and how it is cropped (see .photo-… in styles.css).
 // caption / year: shown under / above the picture while it is hovered (Figma: Component 2).
 const ITEMS = [
   // pictures
-  { type: "photo", kind: "house",   alt: "Double Families", caption: "Double Families", year: "2023", at: [[1595, 712], [1595, 712], [961, 712]] },
-  { type: "photo", kind: "cactus",  alt: "The Israeli Cactus", caption: "The Israeli Cactus", year: "2023", at: [[-406, 877], [-406, 877], [168, 877]],
-    link: "israeli-cactus.html", toTitle: "cactus", titleMid: 512.03 },   // opens the project page (moves: to-cactus-moves.js)
-  { type: "photo", kind: "mind",    alt: "The Memory Lab",  caption: "The Memory Lab", year: "2023", at: [[-366, 398], [-366, 398], [330, 395]],
-    link: "memory-lab.html", toTitle: "lab", titleMid: 493.75 },          // "mind": opens the project page (moves: to-lab-moves.js)
-  { type: "photo", kind: "sense",   alt: "Sense",           caption: "Sense", year: "2023", at: [[1650, -17], [1650, -17], [962, 72]],
-    link: "sense.html", toTitle: "sense", titleMid: 512.18 },                // opens the project page (moves: to-sense-moves.js)
-  { type: "photo", kind: "brain",   alt: "",                at: [[1476, 1360], [1476, 1360], [964, 1360]] },
-  { type: "photo", kind: "brain",   alt: "",                at: [[-327, 1681], [-327, 1681], [11, 1681]] },
-  { type: "photo", kind: "water-b", alt: "The Memory Lab",  caption: "The Memory Lab", at: [null, null, [329, 1193]] },
-  { type: "photo", kind: "house",   alt: "Double Families", caption: "Double Families", year: "2023", at: [null, null, [646, 1685]] },
+  { type: "photo", kind: "house",   alt: "Double Families", caption: "Double Families", year: "2023", at: [[1705.7, 761.42], [1705.7, 761.42], [1046.76, 631.73]] },
+  { type: "photo", kind: "cactus",  alt: "The Israeli Cactus", caption: "The Israeli Cactus", year: "2023", at: [[-434.18, 937.87], [-434.18, 937.87], [350.27, 635.81]],
+    link: "israeli-cactus.html", toTitle: "cactus" },   // opens the project page (moves: to-cactus-moves.js)
+  { type: "photo", kind: "mind",    alt: "The Memory Lab",  caption: "The Memory Lab", year: "2023", at: [[-391.4, 425.62], [-238.76, 389.96], [344.53, 327.42]],
+    link: "memory-lab.html", toTitle: "lab" },          // "mind": opens the project page (moves: to-lab-moves.js)
+  { type: "photo", kind: "sense",   alt: "Sense",           caption: "Sense", year: "2023", at: [[1764.52, -18.18], [1764.52, -18.18], [1052.93, 19.25]],
+    link: "sense.html", toTitle: "sense" },                // opens the project page (moves: to-sense-moves.js)
+  { type: "photo", kind: "brain",   alt: "",                at: [[1578.44, 1454.39], [1578.44, 1454.39], [1329.85, 1245.37]] },
+  { type: "photo", kind: "brain",   alt: "",                at: [[-349.7, 1797.67], [-349.7, 1797.67], [1329.85, 172.75]] },
+  { type: "photo", kind: "water-b", alt: "The Memory Lab",  caption: "The Memory Lab", at: [null, null, [344.78, 1091.6]] },
+  { type: "photo", kind: "house",   alt: "Double Families", caption: "Double Families", year: "2023", at: [null, null, [689.81, 1613.67]] },
 
   // project names (width in Figma pixels; text centred inside it). They show in the opening only:
   // in the gallery each picture shows its own caption while hovered (see "caption" above)
-  { type: "name", text: "Shintana",          width: 124, at: [[-239, 930], [-239, 930], [335, 930]] },
-  { type: "name", text: "Double Families",   width: 192, at: [[1727, 756], [1727, 756], [1093, 756]] },
-  { type: "name", text: "The  \nMemory Lab", width: 175, at: [[-203, 428], [-203, 428], [520, 428]],
+  { type: "name", text: "Shintana",          width: 124, at: [[-255.59, 994.55], [-255.59, 994.55], [382.27, 868.32]] },
+  { type: "name", text: "Double Families",   width: 192, at: [[1846.86, 808.47], [1846.86, 808.47], [1129.86, 696.56]] },
+  { type: "name", text: "The  \nMemory Lab", width: 175, at: [[-217.09, 457.71], [-217.09, 457.71], [564.7, 372.75]],
     finalText: "The  \nMemory\nLab", finalWidth: 118 },
-  { type: "name", text: "The  \nMemory Lab", width: 175, at: [[1818, 29], [1818, 29], [1158, 118]],
+  { type: "name", text: "The  \nMemory Lab", width: 175, at: [[1944.18, 31.01], [1944.18, 31.01], [1194.53, 66.72]],
     finalText: "The  \nMemory\nLab", finalWidth: 118 },
-  { type: "name", text: "The  \nMemory\nLab", width: 118, at: [null, null, [523, 1240]] },
-  { type: "name", text: "Double Families",   width: 192, at: [null, null, [778, 1729]] },
+  { type: "name", text: "The  \nMemory\nLab", width: 118, at: [null, null, [567.66, 1174.36]] },
+  { type: "name", text: "Double Families",   width: 192, at: [null, null, [818.89, 1657.11]] },
 
   // years ("2023" next to The Memory Lab waits outside the frame and comes in with the gallery)
-  { type: "year", text: "2023", at: [[-88, 408], [-81, 408], [588, 408]] },
-  { type: "year", text: "2023", at: [[1865, 736], [1865, 736], [1231, 736]] },
-  { type: "year", text: "2023", at: [[-132, 901], [-132, 901], [442, 901]] },
-  { type: "year", text: "2023", at: [[1935, 14], [1935, 14], [1243, 102]] }, // comes in with The Memory Lab (top right)
-  { type: "year", text: "2023", at: [null, null, [916, 1709]] },
+  { type: "year", text: "2023", at: [[-94.11, 436.32], [-86.62, 436.32], [632.55, 353.01]] },
+  { type: "year", text: "2023", at: [[1994.44, 787.08], [1994.44, 787.08], [1267.32, 676.81]] },
+  { type: "year", text: "2023", at: [[-141.16, 963.53], [-141.16, 963.53], [488.42, 839.7]] },
+  { type: "year", text: "2023", at: [[2069.3, 14.97], [2069.3, 14.97], [1279.17, 50.92]] }, // comes in with The Memory Lab (top right)
+  { type: "year", text: "2023", at: [null, null, [956.35, 1637.36]] },
 ];
 
 // Which picture file each kind of picture uses
@@ -163,7 +166,7 @@ const itemElements = ITEMS.map((item) => {
   return el;
 });
 
-// Move every picture/name to its place in frame number `frame` (0 = 74, 1 = 71, 2 = 70)
+// Move every picture/name to its place in frame number `frame` (0 = 77, 1 = 76, 2 = 75)
 function glideItemsTo(frame) {
   ITEMS.forEach((item, i) => {
     const el = itemElements[i];
@@ -362,19 +365,19 @@ function goToProject(event, i) {
     return;
   }
   leaving = true;
-  // The title is built right where it is on the project page: its middle (titleMid, Figma y) in the
+  // The title is built right where it is on the project page: its middle (titleMid, home units) in the
   // middle of the screen, level with the side names. The page does not move: the title's place in the
   // plan is moved up or down by `shift` (Figma pixels) instead.
-  const u = flow.getBoundingClientRect().width / 1440;   // one Figma pixel
-  const shift = (window.innerHeight / 2 + window.scrollY) / u - ITEMS[i].titleMid;
+  const u = flow.getBoundingClientRect().width / 1440 * HOME_SCALE;   // one home unit
+  const shift = (window.innerHeight / 2 + window.scrollY) / u - plan.titleMid;
   flow.classList.add("is-leaving");
   // the plan starts from the shapes this picture spreads out (the mouse is on it): make sure they are there
   const key = PHOTO_SCATTERS[i] ? "scatter-" + i : "scatter";
   const ready = () => {
     if (busy) { setTimeout(ready, 50); return; }
-    if (showing === key) { playToTitle(plan, link, shift); return; }
+    if (showing === key) { playToTitle(plan, link, shift, plan.shrink); return; }
     busy = true;
-    const spread = () => { showing = key; playPlan(planFor(key), true, () => { busy = false; playToTitle(plan, link, shift); }); };
+    const spread = () => { showing = key; playPlan(planFor(key), true, () => { busy = false; playToTitle(plan, link, shift, plan.shrink); }); };
     if (showing === null) spread();
     else if (typeof showing === "string") glideHome(planFor(showing), spread);   // first take back another effect
     else playPlan(planFor(showing), false, spread);
@@ -383,8 +386,10 @@ function goToProject(event, i) {
 }
 
 // shift: how far (Figma pixels, down) the title is built from its place in the plan, so that it is
-// built where it is on the project page
-function playToTitle(plan, link, shift) {
+// built where it is on the project page.
+// size: the title is built with the home shapes, a little bigger than the project page's title, so
+// once it is built it shrinks to that size around the middle of the screen, and then the page opens
+function playToTitle(plan, link, shift, size = 1) {
   // the shapes that come in from the edges (they start shifted too, so their way in stays the same)
   const newPieces = plan.newPieces.map((piece) => {
     const svg = document.createElementNS(SVG_NS, "svg");
@@ -408,7 +413,7 @@ function playToTitle(plan, link, shift) {
     if (!own.length || things[0][0] !== "p" || things[0][1] >= pieceElements.length) return;
     const [x, y] = at(elementOf(things[0]));
     const end = [x + own.reduce((s, m) => s + m[2], 0), y + own.reduce((s, m) => s + m[3], 0)];
-    const intoTitle = end[0] > -10 && end[0] < 1440 && end[1] > -10 && end[1] < 1100;   // the others leave the page
+    const intoTitle = end[0] > -10 && end[0] < 1440 / HOME_SCALE && end[1] > -10 && end[1] < 1100 / HOME_SCALE;   // the others leave the page
     if (!intoTitle) return;
     const upDown = own.filter((move) => move[2] === 0);
     (upDown.length ? upDown[upDown.length - 1] : own[own.length - 1])[3] += shift;
@@ -425,7 +430,14 @@ function playToTitle(plan, link, shift) {
       });
     }, time);
   });
-  setTimeout(() => { window.location.href = link; }, plan.total + 150);
+  const SHRINK = 300;   // ms
+  setTimeout(() => {
+    const box = flow.getBoundingClientRect();
+    flow.style.transformOrigin = `${box.width / 2}px ${window.innerHeight / 2 - box.top}px`;
+    flow.style.transition = `transform ${SHRINK}ms ease-in-out`;
+    flow.style.transform = `scale(${size})`;
+  }, plan.total + 150);
+  setTimeout(() => { window.location.href = link; }, plan.total + 150 + (size === 1 ? 0 : SHRINK + 50));
 }
 
 ITEMS.forEach((item, i) => {

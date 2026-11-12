@@ -22,4 +22,7 @@ const PIECE_SHAPES = {
   "flow-piece-16.svg": { viewBox: "0 0 68 68", outlines: ["M67.4929 0.191C67.4929 0.191 67.4929 0.0637 67.4929 0L-0.0001 0L-0.0001 67.3147C-0.0001 67.3147 -0.0001 67.4421 -0.0001 67.493L34.9817 67.493C52.9374 67.5058 67.4929 52.9502 67.4929 35.0072L67.4929 0.191Z"] },
   "flow-piece-17.svg": { viewBox: "0 0 68 34", outlines: ["M0 0H67.4927V33.7465H0V0Z"] },
   "flow-piece-18.svg": { viewBox: "0 0 68 34", outlines: ["M67.4927 33.7461H0C0 15.1155 15.1158 -0.000442505 33.7464 -0.000442505H67.4927V33.7461Z"] },
+  // The two halves of the point of a V (triangles; added for "ISRAELI MOVIE ARCHIVE")
+  "flow-piece-19.svg": { viewBox: "0 0 68 68", outlines: ["M67.4928 0V67.4928L0 0H67.4928Z"] },
+  "flow-piece-20.svg": { viewBox: "0 0 68 68", outlines: ["M0 0V67.4928L67.4928 0H0Z"] },
 };

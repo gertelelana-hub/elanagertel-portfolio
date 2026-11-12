@@ -8,6 +8,7 @@
   --font-body: "Simpler Pro", Arial, sans-serif;
   --font-small: "TheBasics", Arial, sans-serif;               /* not used at the moment */
   --font-serif-italic: "Crimson Text", Georgia, serif;        /* project names and years, small texts */
+  --font-edge: "Averia Serif Libre", Georgia, serif;         /* the names' hover texts and contact Me */
 
   /* The Figma frames are 1440 × 1024. The stage keeps this shape on every screen,
      as big as fits: full width, unless the screen is too short for that. */
@@ -437,10 +438,11 @@ body.scroll-page {
 }
 
 /* ===================================================================
-   index.html — new home page (Figma flow: frames 74 → 72 → 71 → 70)
-   Every size is in "frame pixels": calc(N * var(--u)), one Figma pixel at the
-   current page width (the frame is 1440 wide). home.js sets --x, --y and --w
-   on each shape, picture and name.
+   index.html — new home page (Figma flow: frames 77 → 76 → 75)
+   Every size is in "home units": calc(N * var(--u)). One home unit is a Figma pixel (the frame is
+   1440 wide) divided by 0.9351: in Figma the home shapes got smaller, like the project titles, so the
+   page draws everything 0.9351 times as big (HOME_SCALE in home.js: keep the two the same).
+   home.js sets --x, --y and --w on each shape, picture and name.
    =================================================================== */
 
 body.home-page {
@@ -460,10 +462,10 @@ body.home-page {
 
 .flow {
   container-type: inline-size;   /* lets --u measure the page width */
-  --u: calc(100cqw / 1440);      /* one Figma pixel */
+  --u: calc(100cqw / 1440 * 0.9351);   /* one home unit (see above) */
   position: relative;
   width: 100%;
-  height: calc(2048 * var(--u)); /* the Figma frames are 1440 × 2048 */
+  height: calc(1977.3 * var(--u)); /* the gallery (Figma frame 75): 1849 Figma pixels tall */
   overflow: hidden;              /* shapes waiting outside the frame stay hidden */
   isolation: isolate;            /* the "exclusion" texts blend with this white page only */
   background-color: var(--color-background);
@@ -691,10 +693,11 @@ a.flow-photo:focus-visible {
   }
 }
 
-/* House picture (Double Families): window 151 × 150 */
+/* The picture windows: Figma sizes (Component 2) / 0.9351, in home units */
+/* House picture (Double Families): window 139.39 × 138.47 in Figma */
 .photo-house {
-  width: calc(151 * var(--u));
-  height: calc(150 * var(--u));
+  width: calc(149.07 * var(--u));
+  height: calc(148.08 * var(--u));
 }
 
 .photo-house img {
@@ -706,10 +709,10 @@ a.flow-photo:focus-visible {
   height: 132.09%;
 }
 
-/* Brain picture (the other copies in the gallery): window 143 × 135 */
+/* Brain picture (the other copies in the gallery): window 132.01 × 124.62 in Figma */
 .photo-brain {
-  width: calc(143 * var(--u));
-  height: calc(135 * var(--u));
+  width: calc(141.17 * var(--u));
+  height: calc(133.27 * var(--u));
 }
 
 .photo-brain img {
@@ -721,10 +724,10 @@ a.flow-photo:focus-visible {
   height: 144.70%;
 }
 
-/* Cactus picture (The Israeli Cactus): window 138 × 135 */
+/* Cactus picture (The Israeli Cactus): window 126 × 122 in Figma */
 .photo-cactus {
-  width: calc(138 * var(--u));
-  height: calc(135 * var(--u));
+  width: calc(134.74 * var(--u));
+  height: calc(130.47 * var(--u));
 }
 
 .photo-cactus img {
@@ -736,10 +739,10 @@ a.flow-photo:focus-visible {
   height: 151.11%;
 }
 
-/* Sense picture (women sitting on the grass): window 138 × 136, the whole picture fills it */
+/* Sense picture (women sitting on the grass): window 127.36 × 125.58 in Figma, the whole picture fills it */
 .photo-sense {
-  width: calc(138 * var(--u));
-  height: calc(136 * var(--u));
+  width: calc(136.2 * var(--u));
+  height: calc(134.3 * var(--u));
 }
 
 .photo-sense img {
@@ -752,8 +755,8 @@ a.flow-photo:focus-visible {
 /* The main brain picture ("mind", it opens The Memory Lab): the same window, cropped a little
    differently (Figma, Component 2) */
 .photo-mind {
-  width: calc(143 * var(--u));
-  height: calc(135 * var(--u));
+  width: calc(141.17 * var(--u));
+  height: calc(133.27 * var(--u));
 }
 
 .photo-mind img {
@@ -765,34 +768,19 @@ a.flow-photo:focus-visible {
   height: 148.21%;
 }
 
-/* Watercolour poster: window 153 × 138 (a) or 153 × 139 (b), poster 152.8 × 216.1 inside */
+/* Watercolour poster: window 141.24 × 128.32 in Figma, poster 141.07 × 199.52 inside, 10.15 up */
 .photo-water-a,
 .photo-water-b {
-  width: calc(153 * var(--u));
-}
-
-.photo-water-a {
-  height: calc(138 * var(--u));
-}
-
-.photo-water-b {
-  height: calc(139 * var(--u));
+  width: calc(151.04 * var(--u));
+  height: calc(137.22 * var(--u));
 }
 
 .photo-water-a img,
 .photo-water-b img {
   left: 0;
-  width: calc(152.82 * var(--u));
-  height: calc(216.14 * var(--u));
-}
-
-.photo-water-a img {
-  top: calc(-30 * var(--u));
-  --color-y: 45.8%;
-}
-
-.photo-water-b img {
-  top: calc(-11 * var(--u));
+  top: calc(-10.86 * var(--u));
+  width: calc(150.86 * var(--u));
+  height: calc(213.37 * var(--u));
   --color-y: 37.2%;
 }
 
@@ -824,7 +812,7 @@ a.flow-photo:focus-visible {
   mix-blend-mode: exclusion;
 }
 
-/* ----- Small texts (Contact Me, HEB, EN): Crimson Text 12px, white + exclusion
+/* ----- Small texts (contact Me): 12px, white + exclusion
          (they show black on white and white on black) ----- */
 .flow-small-text {
   font-family: var(--font-serif-italic);
@@ -840,59 +828,109 @@ a.flow-photo:focus-visible {
 
 /* ----- Fixed on the screen on every page, also while scrolling (Figma: x and y in a 1440 × 1024 screen) ----- */
 
-/* Top right at y 14, 17 from the right edge: "HEB, EN" (EN in italic), with a 14px line under EN
-   (the current language) at y 28 */
-.flow-lang {
-  position: fixed;
-  z-index: 9;
-  right: calc(17 * var(--u)); /* 1440 - 1375 - 48 */
-  top: calc(14 * var(--u));
-  margin: 0;
-}
-
-.flow-lang-current {
-  position: relative;
-  font-style: italic;
-}
-
-.flow-lang-current::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: calc(14 * var(--u)); /* the line is at y 28 */
-  width: calc(14 * var(--u));
-  height: 1px;
-  background-color: #ffffff; /* white + exclusion = black on white, like the text */
-}
-
-/* Bottom right: "Contact Me" (no link yet), 14 above the bottom and 17 from the right edge */
+/* "contact Me" (no link yet): Averia Serif Libre bold italic 12px, in the middle at the bottom
+   (Figma: x 686, y 995 on the project pages; y 1007 on the home page) */
 .flow-contact {
+  --u: calc(100vw / 1440);   /* one Figma pixel of the screen (not the page's own scale, e.g. on About) */
   position: fixed;
   z-index: 9;
-  right: calc(17 * var(--u)); /* 1440 - 1367 - 56 */
-  bottom: calc(14 * var(--u)); /* 1024 - 996 - 14 */
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--contact-bottom, 15) * var(--u)); /* 1024 - 995 - 14 */
   margin: 0;
-  letter-spacing: 0;
+  font-family: var(--font-edge);
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0.08em; /* 0.96px */
 }
 
-/* The small names on the left and right edges, in the middle of the screen (y 502 of 1024):
-   "ELANA" 17 from the left, "GERTEL" 17 from the right */
-.flow-logo {
+/* The small names on the left and right edges, in the middle of the screen (Figma: Frame 193 at
+   x 65 and Frame 188 at x 1248, y 491 of 1024; y 497 on the home page).
+   Each one is a link with a small text under it, hidden until the name is hovered */
+.flow-edge {
+  --u: calc(100vw / 1440);   /* one Figma pixel of the screen (not the page's own scale, e.g. on About) */
   position: fixed;
   z-index: 9;
-  top: calc(50vh - 10.2 * var(--u)); /* half of the names' height (20.4) above the middle */
+  top: calc(50vh - var(--edge-above-middle, 21) * var(--u)); /* 512 - 491 */
+  display: flex;
+  flex-direction: column;
+  gap: calc(9 * var(--u));
+  text-decoration: none;
+  mix-blend-mode: exclusion; /* white shapes and text: black on white, white on black */
+}
+
+.flow-edge-left {
+  left: calc(65 * var(--u));
+}
+
+.flow-edge-right {
+  right: calc(62 * var(--u)); /* 1440 - 1248 - 130 */
+}
+
+.flow-logo {
+  display: block;
   height: auto;
-  mix-blend-mode: exclusion; /* white shapes: black on white, white on black */
 }
 
-.flow-logo-left {
-  left: calc(17 * var(--u));
-  width: calc(108.49 * var(--u));
+.flow-edge-left .flow-logo  { width: calc(108.49 * var(--u)); }
+.flow-edge-right .flow-logo { width: calc(130 * var(--u)); }
+
+/* "home|" and "about me|" (Averia Serif Libre bold 12px). In Figma a white box covers the text and
+   shrinks away to the right on hover: here the text is cut off from the right instead (clip-path),
+   and on hover it is uncovered from left to right, like typing */
+.flow-edge-text {
+  font-family: var(--font-edge);
+  font-size: max(8px, calc(12 * var(--u)));
+  font-weight: 700;
+  line-height: 1.16;
+  letter-spacing: 0.08em; /* 0.96px */
+  white-space: nowrap;
+  color: #ffffff;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.4s ease-out;
 }
 
-.flow-logo-right {
-  right: calc(17 * var(--u));
-  width: calc(130 * var(--u));
+.flow-edge:hover .flow-edge-text,
+.flow-edge:focus-visible .flow-edge-text {
+  clip-path: inset(0 0 0 0);
+}
+
+/* The bar at the end blinks like a typing cursor (Figma: the text switches between "home|" and "home") */
+.flow-edge-cursor {
+  animation: flow-cursor-blink 1s steps(1) infinite;
+}
+
+/* The small texts on About end with the same blinking bar, in bold */
+.about-text-cursor {
+  font-weight: 700;
+}
+
+/* The typewriter (about.js): a small text is hidden until it is reached; while its letters are being
+   typed the bar stands still, before and after it blinks */
+.about-text {
+  visibility: hidden;
+}
+
+.about-text.is-shown {
+  visibility: visible;
+}
+
+.about-text.is-typing .about-text-cursor {
+  animation: none;
+}
+
+@keyframes flow-cursor-blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-edge-cursor { animation: none; }
+}
+
+/* The home page (Figma frames 75–77): the names are 6 lower and contact Me is 3 above the bottom */
+.home-page {
+  --edge-above-middle: 15;  /* 512 - 497 */
+  --contact-bottom: 3;      /* 1024 - 1007 - 14 */
 }
 
 /* ===================================================================
@@ -1187,24 +1225,25 @@ body.lab-page {
    memory-lab.html — with its title turning white over the black end
    =================================================================== */
 .memory {
-  --title-top: 269.6;
+  --title-top: 305.63;  /* Figma: the title got smaller (62.66 per cell) */
+  --title-h: 444.5;
   --pile-h: 801; /* the ELSC cover */
 
   /* THE CHAIN OF PLACES: where each paragraph and picture starts on the page, in the order of Figma
      (frame "the memory lab"). Each one is measured from the one before it, with Figma's distance.
-     THE RULE: after a paragraph, the next thing waits at least one screen (100vh), so it only comes in
-     once the paragraph has reached its sticky place at the top: max(100vh, Figma's distance). */
+     THE RULE: after a paragraph, the next thing only comes in once the paragraph has reached its sticky
+     place at the bottom of the screen: at least the paragraph's height + 19.91 after it.
+     (Figma's distances already allow for that; max() keeps the rule if the distances ever get smaller.) */
   --m-text-1:  calc(2103 * var(--u));                              /* the first picture is at 100vh */
-  --m-cover:   calc(var(--m-text-1)  + max(100vh, 973.4 * var(--u)));
+  --m-cover:   calc(var(--m-text-1)  + max(973.4, 239 + 19.91) * var(--u));
   --m-video-1: calc(var(--m-cover)   + 834.6 * var(--u));
   --m-text-2:  calc(var(--m-video-1) + 912 * var(--u));
-  --m-video-2: calc(var(--m-text-2)  + max(100vh, 638 * var(--u)));
+  --m-video-2: calc(var(--m-text-2)  + max(638, 219 + 19.91) * var(--u));
   --m-text-3:  calc(var(--m-video-2) + 866 * var(--u));
-  --m-text-4:  calc(var(--m-text-3)  + max(100vh, 519 * var(--u)));
-  /* The last paragraph comes after the last picture: it stays stuck at the top for one step
-     (519, the distance between the last two paragraphs) and leaves, and half a screen later the pile
-     lets go. The pile lets go when its middle is in the middle of the screen, hence 50vh + 50vh. */
-  --stack-end: calc(var(--m-text-4) + 100vh + 519 * var(--u));
+  --m-text-4:  calc(var(--m-text-3)  + max(519, 199 + 19.91) * var(--u));
+  /* The last paragraph does not stick: it scrolls straight up and out (219 tall). Once it has left
+     the top of the screen, the pile lets go (when its middle is in the middle of the screen, hence 50vh). */
+  --stack-end: calc(var(--m-text-4) + 219 * var(--u) + 50vh);
 }
 
 /* The videos and the wide book folds are exactly as wide as the title under them (like in Figma).
@@ -1226,30 +1265,32 @@ body.lab-page {
    never shows on the first screen.
    =================================================================== */
 .cactus {
-  /* THE CHAIN OF PLACES: where each spread and paragraph starts on the page, in the order of Figma
-     (Frame 139). Each one is measured from the one before it, with Figma's distance.
-     THE RULE: after a paragraph, the next thing waits at least one screen (100vh), so it only comes in
-     once the paragraph has reached its sticky place at the top: max(100vh, Figma's distance). */
+  /* THE CHAIN OF PLACES: where each spread, paragraph and picture column starts on the page, in the
+     order of Figma (Frame 139). Each one is measured from the one before it, with Figma's distance.
+     THE RULE: after a paragraph, the next thing only comes in once the paragraph has reached its sticky
+     place at the bottom of the screen: at least the paragraph's height + 19.91 after it.
+     (Figma's distances already allow for that; max() keeps the rule if the distances ever get smaller.) */
   --c-cover:   calc(100vh - 231 * var(--u));
   --c-text-1:  calc(100vh + 945 * var(--u));
-  --c-fold-1:  calc(var(--c-text-1) + max(100vh, 908.59 * var(--u)));
+  --c-fold-1:  calc(var(--c-text-1) + max(908.59, 279 + 19.91) * var(--u));
   --c-fold-2:  calc(var(--c-fold-1) + 922 * var(--u));
   --c-fold-x:  calc(var(--c-fold-2) + 911.41 * var(--u));        /* "the forgotten fold" */
   --c-fold-3:  calc(var(--c-fold-x) + 926 * var(--u));
   --c-fold-4:  calc(var(--c-fold-3) + 898 * var(--u));
-  --c-text-2:  calc(var(--c-fold-4) + 1021 * var(--u));
-  --c-fold-5:  calc(var(--c-text-2) + max(100vh, 1139 * var(--u)));
+  --c-text-2:  calc(var(--c-fold-4) + 1061 * var(--u));
+  --c-fold-5:  calc(var(--c-text-2) + max(309, 279 + 19.91) * var(--u));
   --c-fold-6:  calc(var(--c-fold-5) + 930 * var(--u));
   --c-fold-7:  calc(var(--c-fold-6) + 945 * var(--u));
-  --c-text-3:  calc(var(--c-fold-7) + 1216 * var(--u));
-  --c-fold-8:  calc(var(--c-text-3) + max(100vh, 954 * var(--u)));
-  --c-text-4:  calc(var(--c-fold-8) + 1224 * var(--u));
-  --c-back:    calc(var(--c-text-4) + max(100vh, 1000 * var(--u)));
+  --c-side:    calc(var(--c-fold-7) + 1224 * var(--u));          /* the picture column (Frame 140) */
+  --c-text-3:  calc(var(--c-side)   + 541 * var(--u));
+  --c-fold-8:  calc(var(--c-text-3) + max(405, 259 + 19.91) * var(--u));
+  --c-text-4:  calc(var(--c-fold-8) + 1134 * var(--u));
+  --c-back:    calc(var(--c-text-4) + max(410, 339 + 19.91) * var(--u));
   /* Where the middle of the pile is when it lets go: the back cover (1059 tall) stays one more step (about 920) */
   --stack-end: calc(var(--c-back) + (919.54 + 1059 / 2) * var(--u));
   --pile-h: 1080; /* the tallest spread */
-  --title-h: 447.56;
-  --title-top: 288;
+  --title-h: 412.58;   /* Figma: the title got smaller (62.62 per cell) */
+  --title-top: 306;
 }
 
 /* Each spread has its own place and size in Figma (set on it in the HTML):
@@ -1280,11 +1321,16 @@ body.lab-page {
 }
 
 /* ----- The story paragraphs (Figma: Crimson Text 13.64, a narrow column on the left edge, white with "exclusion") -----
-   Each paragraph lies in a track (like the pictures) and sticks at the top of the screen.
+   Each paragraph lies in a track (like the pictures). It comes up from the bottom of the screen and
+   sticks there, 19.91 above the bottom edge, until the next paragraph comes up and pushes it out.
    --x, --w: its left edge and width (Figma pixels); --top: where it starts (from the page's chain of places).
-   Its track ends exactly where the next paragraph starts (--next), so the next one pushes it out. */
+   Its track ends exactly where the next paragraph starts (--next). The paragraph lies at the END of its
+   track: that is how a paragraph stuck to the bottom stays there for the whole track. */
 .lab-text-track {
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   z-index: 4;                       /* over the book */
   left: calc(var(--x) * var(--u));
   top: var(--top);
@@ -1295,10 +1341,9 @@ body.lab-page {
 
 .lab-text {
   position: sticky;
-  top: 0;
+  bottom: calc(19.91 * var(--u));   /* the same distance from the bottom as it used to have from the top */
   width: calc(var(--w) * var(--u));
   margin: 0;
-  padding-top: calc(var(--gap, 0) * var(--u));  /* Figma: an empty line above some of the texts */
   font-family: "Crimson Text", Georgia, serif;
   font-size: max(11px, calc(13.64 * var(--u)));
   line-height: 1.46;
@@ -1307,11 +1352,14 @@ body.lab-page {
 }
 
 /* ----- Pictures beside a paragraph (Figma: a column of pictures, 204 wide, 56 apart) -----
-   Their track is placed like the paragraph's (--x, --top, --next), so they stick at the top
-   of the screen while the paragraph does, and the next paragraph pushes both out together.
+   Like the paragraphs, they come up from the bottom and stick there (--bottom above the bottom edge),
+   and their track ends so they leave together with the paragraph beside them.
    Unlike the texts they are not inverted ("exclusion"), so they keep their colors. */
 .lab-side-track {
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   z-index: 4;                       /* over the book, like the texts */
   left: calc(var(--x) * var(--u));
   top: var(--top);
@@ -1321,12 +1369,11 @@ body.lab-page {
 
 .lab-side {
   position: sticky;
-  top: 0;
+  bottom: calc(var(--bottom, 19.91) * var(--u));
   display: flex;
   flex-direction: column;
   gap: calc(56 * var(--u));
   width: calc(204 * var(--u));
-  padding-top: calc(var(--pad-top, 0) * var(--u));
 }
 
 /* Each picture fills the column's width; its height comes from its aspect-ratio (set in the HTML) */
@@ -1337,36 +1384,83 @@ body.lab-page {
   object-fit: cover;
 }
 
-/* The last paragraph sticks at the top, and leaves half a screen (50vh) before the pile of pictures does.
-   An empty block after it makes its track exactly long enough: from where it starts
-   to half a screen before the pictures let go (--stack-end - 50vh - 50vh), plus the paragraph itself. */
+/* The last paragraph does not stick: it scrolls straight up and out, before the pile of pictures leaves */
 .lab-text-track.lab-text-last {
   height: auto;
 }
 
-.lab-text-last::after {
-  content: "";
-  display: block;
-  height: calc(var(--stack-end) - 100vh - var(--top));
+.lab-text-last .lab-text {
+  position: static;
 }
 
 /* Texts at the bottom (The Israeli Cactus and The Memory Lab): the description in the same size
    as the year, 490 wide, on the same line as the year.
    The Israeli Cactus: 2023 at x 90, "Digital Art" at 207, the description at 342.
    The Memory Lab: each one 5 more to the left (85, 202, 337), like in Figma. */
-.cactus .lab-kind { left: calc(207 * var(--u)); }
+.cactus .lab-kind,
+.archive .lab-kind { left: calc(207 * var(--u)); }
 
 .memory .lab-year  { left: calc(85 * var(--u)); }
 .memory .lab-kind  { left: calc(202 * var(--u)); }
 .memory .lab-about { left: calc(337 * var(--u)); }
 
 .cactus .lab-about,
+.archive .lab-about,
 .memory .lab-about {
   top: min(max(calc(var(--footer-h) - 192 * var(--u)), calc(var(--footer-title-bottom) + 76 * var(--u))),
            calc(var(--footer-h) - 97 * var(--u)));
   width: calc(490 * var(--u));
   font-size: max(9px, calc(14.31 * var(--u)));
   line-height: 1.07;
+}
+
+/* ===================================================================
+   israeli-movie-archive.html — "Israeli Movie Archive" (Figma frame "Israeli Movie Archive", Frame 93)
+   How the page scrolls:
+   1. The black end comes up first, with no text: where it passes, the title turns white.
+   2. Once the screen is all black, the video slides up over it and stops in the middle of the screen.
+   3. While the video stays in the middle, the story box (white text) comes up from the bottom, sticks
+      there for a while, and then scrolls up and out of the top.
+   4. Only then the video scrolls up and out.
+   5. Only then the closing texts come up on the black.
+   =================================================================== */
+.archive {
+  --title-h: 447.56;
+  --title-top: 288;
+  --pile-h: 585;   /* the video */
+  /* 1. The black starts right under the first screen, so it comes up as soon as you scroll */
+  --end: 100vh;
+  /* 2. The video starts coming in once the black fills the screen (after one screen of scrolling),
+     40 later like in Figma */
+  --a-video: calc(var(--end) + 100vh + 40 * var(--u));
+  /* 3. The story box comes up from the bottom of the screen once the video has stopped in the middle
+     (plus 40). --a-text-h: its height (Figma pixels): set it when the real text is in.
+     It sticks at the bottom of the screen for --a-text-hold of scrolling, then scrolls up and out. */
+  --a-text: calc(var(--a-video) + 50vh + (585 / 2 + 40) * var(--u));
+  --a-text-h: 20;
+  --a-text-hold: 50vh;
+  --a-text-next: calc(var(--a-text) + var(--a-text-h) * var(--u) + var(--a-text-hold));
+  /* 4. The video lets go (its middle in the middle of the screen) once the story box has left the top,
+     plus a short pause (250) */
+  --stack-end: calc(var(--a-text-next) + 250 * var(--u) + 50vh);
+  /* 5. The page ends once the video has left the screen, plus a short pause (the shared rule):
+     the closing texts lie at the bottom of the black, so they come up last */
+  --page-end: calc(var(--stack-end) + var(--pile-h) / 2 * var(--u) + 100vh + 250 * var(--u));
+  --footer-h: max(calc(var(--page-end) - var(--end)),
+                  calc(50vh + (var(--title-mid) + 339 - var(--title-top)) * var(--u)));
+}
+
+/* The video: as wide as the title under it (Figma x 260, 932 × 585). Drawn 1% larger, so the
+   title's edges never peek out next to it as a thin black line. */
+.archive-track {
+  left: calc(260 * var(--u));
+  top: var(--a-video);
+  --w: 932;
+  --h: 585;
+}
+
+.archive-track .lab-media {
+  transform: scale(1.01);
 }
 
 /* ===================================================================
@@ -1377,8 +1471,8 @@ body.lab-page {
   /* No pictures yet: the black end starts right under the first screen.
      (When pictures are added, set --stack-end instead and delete this line: the shared rule does the rest.) */
   --end: 100vh;
-  --title-h: 135.85;
-  --title-top: 444;
+  --title-h: 123.63;   /* Figma: the title got smaller (61.81 per cell) */
+  --title-top: 450.38;
 }
 
 /* Visitors who asked their device for less motion: the hover moves happen without sliding */
@@ -1389,4 +1483,99 @@ body.lab-page {
   .flow.is-done .flow-year {
     transition: none;
   }
+}
+
+/* ===================================================================
+   about.html — "About" (Figma frames "Desktop - 1", "Desktop - 2" and Frame 173)
+   The screen stays in place while you scroll; about.js moves the shapes and the small texts
+   according to how far you have scrolled (HI → ELANA → DESIGNER → … → SOLUTIONS).
+   =================================================================== */
+.about {
+  container-type: inline-size;   /* lets --u measure the page width */
+  --u: calc(100cqw / 1440 * 0.9092);   /* one about unit: Figma made the sentence 0.9092 times as big (ABOUT_SCALE in about.js) */
+  position: relative;
+  height: 100vh;                 /* about.js makes it as long as the scrolling needs */
+  background-color: var(--color-background);
+}
+
+/* The screen that stays in place while you scroll */
+.about-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;              /* shapes outside the left edge are not seen */
+  background-color: var(--color-background);   /* so the white text with "exclusion" shows black on it */
+}
+
+/* The small texts "!", "my name is..", "and I am a...", "and creator of..." (Figma "Desktop - 5":
+   Averia Serif Libre 12, white with "exclusion", so they show black on white). about.js places them (moved with transform). */
+.about-text {
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 0;
+  font-family: var(--font-edge);   /* Averia Serif Libre (Figma "Desktop - 5") */
+  font-size: max(9px, calc(13.2 * var(--u)));   /* 12 in Figma (13.2 about units) */
+  font-weight: 400;
+  line-height: 1.16;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  color: #ffffff;
+  mix-blend-mode: exclusion;
+}
+
+/* The black shapes: over the text, so they jump over it. about.js places each one. */
+.about-pieces {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* VISION at the end: the liquid drawing (about.js): shapes near the mouse bubble out as drops */
+.about-morph {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.about-morph path {
+  fill: #000000;
+}
+
+/* The spot over VISION that feels the mouse: only at the very end of the page */
+.about-letter-hover {
+  position: absolute;
+  z-index: 4;
+  display: none;
+}
+
+.is-at-end .about-letter-hover {
+  display: block;
+}
+
+/* Each shape is a small drawing (svg) of its own size; about.js moves it with transform */
+.about-piece {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--w) * var(--u));
+  height: calc(var(--h) * var(--u));
+  overflow: visible;
+  fill: #000000;
+  will-change: transform;
+}
+
+/* A thin black outline (1 screen pixel) around each shape, like on the home page: touching shapes overlap
+   a tiny bit, so no thin white line ever shows between them */
+.about-piece path,
+.about-morph path {
+  stroke: #000000;
+  stroke-width: 1.5px;
+  stroke-linejoin: miter;
+  vector-effect: non-scaling-stroke;
 }

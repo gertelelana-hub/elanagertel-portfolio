@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — Elana Gertel</title>
+  <!-- Fonts from Google Fonts: Averia Serif Libre (the small texts, the names' hover texts and contact Me), Crimson Text -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,400;0,700;1,700&family=Crimson+Text:ital,wght@0,400;1,400&display=swap">
+  <link rel="stylesheet" href="styles.css?v=20261112m">
+</head>
+<body class="lab-page">
+  <!-- The "About" page, built from Figma frames "Desktop - 1" (HI, my name is..), "Desktop - 2" (ELANA)
+       and Frame 173 (the rest of the sentence). The screen stays in place while you scroll. Scrolling makes
+       the page seem to move to the right: each word slides to the left, and its black shapes jump to build
+       the next word (HI → ELANA → DESIGNER → … → SOLUTIONS), over the small texts in between.
+       Shapes that are missing come in from the left edge; shapes that are not needed leave there.
+       about.js moves everything, according to how far you have scrolled. -->
+  <main class="about" id="about">
+    <h1 class="visually-hidden">About — Hi, my name is Elana</h1>
+
+    <!-- The screen that stays in place while you scroll (the page is taller than the screen, so you can scroll) -->
+    <div class="about-stage" id="about-stage">
+      <!-- about.js puts the small texts ("my name is..", "I am a...", …) and the black shapes here -->
+      <div class="about-pieces" id="about-pieces" aria-hidden="true"></div>
+    </div>
+
+    <!-- Fixed on the screen on every page, also while scrolling (Figma: Frame 193, Frame 188 and "contact Me"):
+         the small name on the left and right edges, in the middle of the screen. Hovering a half
+         types its link under it: "home" under ELANA (back to the home page gallery, no intro)
+         and "about me" under GERTEL. "contact Me" sits at the bottom in the middle (no link yet). -->
+    <a class="flow-edge flow-edge-left" href="index.html?gallery">
+      <img class="flow-logo" src="images/logo-elana-small.svg" alt="Elana">
+      <span class="flow-edge-text">home<span class="flow-edge-cursor">|</span></span>
+    </a>
+    <a class="flow-edge flow-edge-right" href="about.html">
+      <img class="flow-logo" src="images/logo-gertel-small.svg" alt="Gertel">
+      <span class="flow-edge-text">about me<span class="flow-edge-cursor">|</span></span>
+    </a>
+    <p class="flow-small-text flow-contact">contact Me</p>
+  </main>
+
+  <!-- The words and their shapes (from Figma) first, then the code that moves them -->
+  <script src="about-words.js?v=20261112d"></script>
+  <script src="about.js?v=20261113h 155 170 185"></script>
+</body>
+</html>

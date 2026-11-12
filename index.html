@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Elana Gertel — Portfolio</title>
-  <!-- Font from Google Fonts: Crimson Text (project names, captions and years) -->
+  <!-- Fonts from Google Fonts: Averia Serif Libre (the names' hover texts and contact Me), Crimson Text (project names, captions and years) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;1,400;1,600&display=swap">
-  <link rel="stylesheet" href="styles.css?v=20261108s">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,700;1,700&family=Crimson+Text:ital,wght@0,400;1,400;1,600&display=swap">
+  <link rel="stylesheet" href="styles.css?v=20261112m">
 </head>
 <body class="home-page">
   <!-- Home page, built from the Figma flow that starts at frame "MacBook Pro 16' - 74":
@@ -19,24 +19,27 @@
     <h1 class="visually-hidden">Elana Gertel — Portfolio</h1>
   </main>
 
-  <!-- Fixed on the screen: languages at the top right (switching is not built yet; the line marks
-       the current one, EN), Contact Me at the bottom right (no link yet), and the small name on the
-       left and right edges, in the middle of the screen -->
-  <p class="flow-small-text flow-lang">HEB, <span class="flow-lang-current">EN</span></p>
-  <p class="flow-small-text flow-contact">Contact Me</p>
-  <!-- The small name: clicking it goes back to the home page, straight to the gallery (no intro) -->
-  <a href="index.html?gallery" aria-label="Elana Gertel — home page">
-    <img class="flow-logo flow-logo-left" src="images/logo-elana-small.svg" alt="">
-    <img class="flow-logo flow-logo-right" src="images/logo-gertel-small.svg" alt="">
+  <!-- Fixed on the screen on every page, also while scrolling (Figma: Frame 193, Frame 188 and "contact Me"):
+       the small name on the left and right edges, in the middle of the screen. Hovering a half
+       types its link under it: "home" under ELANA (back to the home page gallery, no intro)
+       and "about me" under GERTEL. "contact Me" sits at the bottom in the middle (no link yet). -->
+  <a class="flow-edge flow-edge-left" href="index.html?gallery">
+    <img class="flow-logo" src="images/logo-elana-small.svg" alt="Elana">
+    <span class="flow-edge-text">home<span class="flow-edge-cursor">|</span></span>
   </a>
+  <a class="flow-edge flow-edge-right" href="about.html">
+    <img class="flow-logo" src="images/logo-gertel-small.svg" alt="Gertel">
+    <span class="flow-edge-text">about me<span class="flow-edge-cursor">|</span></span>
+  </a>
+  <p class="flow-small-text flow-contact">contact Me</p>
 
   <!-- The planned puzzle moves first, then the code that plays them -->
   <!-- ?v=… : change the number after an update, so browsers load the new files instead of old saved copies -->
-  <script src="home-moves.js?v=20261108f"></script>
-  <script src="hover-moves.js?v=20261106d"></script>
-  <script src="to-lab-moves.js?v=20261108r"></script>
-  <script src="to-cactus-moves.js?v=20261108r"></script>
-  <script src="to-sense-moves.js?v=20261108r"></script>
-  <script src="home.js?v=20261109b"></script>
+  <script src="home-moves.js?v=20261112d"></script>
+  <script src="hover-moves.js?v=20261112d"></script>
+  <script src="to-lab-moves.js?v=20261112d"></script>
+  <script src="to-cactus-moves.js?v=20261112d"></script>
+  <script src="to-sense-moves.js?v=20261112d"></script>
+  <script src="home.js?v=20261112d"></script>
 </body>
 </html>
