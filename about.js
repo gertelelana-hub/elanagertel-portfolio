@@ -262,7 +262,8 @@ function draw() {
     // It is typed out once the word before it is written out and it nears the middle of the screen
     // (worked out in the plan); "!.." right away
     typeTo(i, moved);
-    textEls[i].style.transform = `translate(${(text.stripX - scrolled) * u}px, ${fromBottom(text.y)}px)`;
+    // while it is being typed it stands still (the rest moves on); once typed it moves with the rest
+    textEls[i].style.transform = `translate(${(text.stripX - scrolled + typingHold(i, scrolled)) * u}px, ${fromBottom(text.y)}px)`;
   });
   placeMorph(moved, u, screenH);
 }
@@ -476,6 +477,15 @@ function placeMorph(moved, u, screenH) {
 // before the next word starts.
 const BAR_FIRST = 15;       // how far you scroll with only the bar showing, before the first letter
 const PER_LETTER = 10;      // how far you scroll for each letter (about units)
+// How far you scroll while a text is being typed (from its bar appearing until its last letter)
+function typingLength(i) { return BAR_FIRST + (TEXTS[i].text.length - 1) * PER_LETTER; }
+// How much a text stays behind the moving page: it stands still while it is typed, so afterwards it is
+// that much further right than its place on the strip (it never jumps)
+function typingHold(i, moved) {
+  const t = TEXTS[i];
+  if (t.appear === undefined) return 0;
+  return Math.min(Math.max(moved - t.appear, 0), typingLength(i));
+}
 function typeTo(i, moved) {
   const el = textEls[i], t = TEXTS[i];
   const shown = t.appear !== undefined && moved >= t.appear;
@@ -493,7 +503,7 @@ function typeTo(i, moved) {
 // ----- The end: VISION stays in the middle, but the small texts keep moving with the scrolling until
 // "and creator of..." has left the screen at the left (EXTRA_MOVE more) -----
 const LAST_TEXT = TEXTS.length - 1;
-const EXTRA_MOVE = Math.max(0, TEXTS[LAST_TEXT].stripX + TEXTS[LAST_TEXT].text.length * LETTER_WIDTH + 30 - TOTAL_MOVE);
+const EXTRA_MOVE = Math.max(0, TEXTS[LAST_TEXT].stripX + typingLength(LAST_TEXT) + TEXTS[LAST_TEXT].text.length * LETTER_WIDTH + 30 - TOTAL_MOVE);
 
 // Draw again on every scroll and resize (at most once per screen frame)
 let waiting = false;
