@@ -52,7 +52,7 @@ const TEXTS = ABOUT_TEXTS.map((t) => ({
 }));
 // When the page has moved far enough for the middle of each small text to be in the middle of the screen
 // (TYPE_EARLY: how far before the middle the typing starts; 0 = right when it reaches the middle)
-const TYPE_EARLY = 0;          // about units
+const TYPE_EARLY = 420;        // about units: the typing starts while the text is still on the right of the screen
 TEXTS.forEach((t) => { t.atMiddle = t.stripX + (t.text.length * LETTER_WIDTH) / 2 - SCREEN_MIDDLE - TYPE_EARLY; });
 // "my name is.." (after HI, which is there from the start) appears like the others: once it nears the middle
 TEXTS.forEach((t) => { if (t.after === 0) t.appear = t.atMiddle; });
