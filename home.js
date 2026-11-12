@@ -138,13 +138,7 @@ const itemElements = ITEMS.map((item) => {
     const img = document.createElement("img");
     img.src = "images/" + PHOTO_FILES[item.kind];
     img.alt = item.alt;
-    img.className = "flow-photo-soft";   // a little blurred
-    // the same picture sharp on top: hovering reveals it (see .flow-photo-color)
-    const color = document.createElement("img");
-    color.src = img.src;
-    color.alt = "";
-    color.className = "flow-photo-color";
-    crop.append(img, color);
+    crop.append(img);   // always sharp (no blur)
     el.appendChild(crop);
     // the caption and year, hidden until the picture is hovered
     [["flow-photo-caption", item.caption], ["flow-photo-year", item.year]].forEach(([name, text]) => {

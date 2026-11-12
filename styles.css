@@ -605,41 +605,7 @@ a.flow-photo:focus-visible {
   max-width: none;
 }
 
-/* ----- Pictures: in colour and a little blurred; hovering makes them sharp ----- */
-/* Figma (Component 2): saturation 0 and a layer blur of 2 (= CSS blur 1px); hovered: no blur */
-.flow-photo-soft {
-  filter: blur(calc(1 * var(--u)));
-}
-
-/* The sharp copy on top fades in slowly. It is masked by a very soft glow from the
-   middle of the picture (--color-x, --color-y: the middle of the visible window, measured on the
-   whole picture, which is bigger than the window; set per picture below). The glow has no edge
-   and widens while it fades in, so the colour comes in a little sooner in the middle, without
-   any visible line or circle. */
-@property --color-size {
-  syntax: "<percentage>";
-  inherits: false;
-  initial-value: 60%;
-}
-
-.flow-photo-color {
-  --color-size: 60%;
-  opacity: 0;
-  -webkit-mask-image: radial-gradient(circle at var(--color-x, 50%) var(--color-y, 50%), #000 calc(var(--color-size) * 0.5 - 30%), transparent var(--color-size));
-  mask-image: radial-gradient(circle at var(--color-x, 50%) var(--color-y, 50%), #000 calc(var(--color-size) * 0.5 - 30%), transparent var(--color-size));
-  /* leaving: back to blurred, a little faster */
-  transition:
-    opacity 500ms ease-in-out,
-    --color-size 500ms ease-in-out;
-}
-
-.flow-photo.is-colored .flow-photo-color {
-  --color-size: 400%;
-  opacity: 1;
-  transition:
-    opacity 750ms ease-in-out,
-    --color-size 900ms ease-in-out;
-}
+/* ----- Pictures: always sharp, in colour (no blur) ----- */
 
 /* ----- Caption under the picture and year above its right edge, shown while hovered -----
    Figma (Component 2, hovered "mind"): caption Crimson Text 19.4px, centred, 7px under the picture;
@@ -685,14 +651,6 @@ a.flow-photo:focus-visible {
   opacity: 1;
 }
 
-/* Less motion: the colour comes without spreading */
-@media (prefers-reduced-motion: reduce) {
-  .flow-photo-color,
-  .flow-photo.is-colored .flow-photo-color {
-    transition: none;
-  }
-}
-
 /* The picture windows: Figma sizes (Component 2) / 0.9351, in home units */
 /* House picture (Double Families): window 139.39 × 138.47 in Figma */
 .photo-house {
@@ -701,8 +659,6 @@ a.flow-photo:focus-visible {
 }
 
 .photo-house img {
-  --color-x: 50%;
-  --color-y: 57.5%;
   left: -0.21%;
   top: -26%;
   width: 100.42%;
@@ -716,8 +672,6 @@ a.flow-photo:focus-visible {
 }
 
 .photo-brain img {
-  --color-x: 48.4%;
-  --color-y: 65.4%;
   left: 3.03%;
   top: -44.61%;
   width: 96.97%;
@@ -731,8 +685,6 @@ a.flow-photo:focus-visible {
 }
 
 .photo-cactus img {
-  --color-x: 50%;
-  --color-y: 66.9%;
   left: -0.11%;
   top: -51.11%;
   width: 100.22%;
@@ -774,8 +726,6 @@ a.flow-photo:focus-visible {
 }
 
 .photo-mind img {
-  --color-x: 49.7%;
-  --color-y: 58.4%;
   left: 0.68%;
   top: -36.51%;
   width: 99.32%;
@@ -795,7 +745,6 @@ a.flow-photo:focus-visible {
   top: calc(-10.86 * var(--u));
   width: calc(150.86 * var(--u));
   height: calc(213.37 * var(--u));
-  --color-y: 37.2%;
 }
 
 /* ----- Project names: Crimson Text semi-bold italic 37.6px, centred, tight lines ----- */
