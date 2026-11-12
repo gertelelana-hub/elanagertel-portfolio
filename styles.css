@@ -1494,7 +1494,7 @@ body.lab-page {
   pointer-events: none;
 }
 
-/* VISION at the end: the liquid drawing (about.js): shapes near the mouse bubble out as drops */
+/* VISION at the end: the drawing of the letters oozing into organic shapes (about.js), over the shapes */
 .about-morph {
   position: absolute;
   inset: 0;
@@ -1509,7 +1509,11 @@ body.lab-page {
   fill: #000000;
 }
 
-/* The spot over VISION that feels the mouse: only at the very end of the page */
+.about-morph .about-morph-hole {
+  fill: var(--color-background);
+}
+
+/* The spots over VISION's letters that feel the mouse: only at the very end of the page */
 .about-letter-hover {
   position: absolute;
   z-index: 4;
