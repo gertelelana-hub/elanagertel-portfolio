@@ -277,6 +277,7 @@ const MORPH_TIME = REDUCED ? 1 : 1100;   // ms for a whole letter to change
 const OOZE_SPREAD = 0.3;                 // how much later the far points start (part of the time)
 const STAY_TIME = 700;                   // ms a letter stays organic after the mouse leaves
 const GOO = 7;                           // how soft the shapes melt together halfway
+const ORGANIC_SIZE = 0.93;               // the organic letters' size (so they are as tall, for their letter, as on the titles)
 
 const morphSvg = document.createElementNS(SVG_NS, "svg");   // the drawing of the reshaping, over the shapes
 morphSvg.setAttribute("class", "about-morph");
@@ -336,11 +337,14 @@ const visionLetters = VISION_LETTERS.map(([ch, lx, lw], n) => {
   const organic = ABOUT_ORGANIC[n];
   const parts = organic.d.split(/(?=M)/).map((part) => part.trim());
   // the organic letter sits right on its sharp letter: the middle of its outline on the middle of the letter
+  // (Figma's VISION letters are about 11% taller than their letters, the project titles' only about 3%:
+  //  ORGANIC_SIZE makes them the same proportion as the other titles, so they don't hang down)
   const raw = outlinePoints(parts[0], 0, 0);
   const ox = (Math.min(...raw.map((p) => p[0])) + Math.max(...raw.map((p) => p[0]))) / 2;
   const oy = (Math.min(...raw.map((p) => p[1])) + Math.max(...raw.map((p) => p[1]))) / 2;
-  const dx = (box.x0 + box.x1) / 2 - ox, dy = (box.y0 + box.y1) / 2 - oy;
-  const outer = outlinePoints(parts[0], dx, dy);
+  const cxL = (box.x0 + box.x1) / 2, cyL = (box.y0 + box.y1) / 2;
+  const place = (pts) => pts.map(([x, y]) => [cxL + (x - ox) * ORGANIC_SIZE, cyL + (y - oy) * ORGANIC_SIZE]);
+  const outer = place(raw);
   // its own goo: soften the shapes, then cut them sharp again, so touching parts flow into each other
   const filterId = "about-goo-" + n;
   const filter = document.createElementNS(SVG_NS, "filter");
@@ -367,7 +371,7 @@ const visionLetters = VISION_LETTERS.map(([ch, lx, lw], n) => {
     L.shapes.push({ el: sh.el, path, from, to: lineUp(from, outer) });
   });
   parts.slice(1).forEach((part) => {   // the holes (O), drawn in the background colour on top
-    const points = outlinePoints(part, dx, dy);
+    const points = place(outlinePoints(part, 0, 0));
     const path = document.createElementNS(SVG_NS, "path");
     path.setAttribute("class", "about-morph-hole");
     path.style.visibility = "hidden";
