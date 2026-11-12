@@ -42,7 +42,7 @@ const ABOUT_TEXTS = [
   { text: "!..", x: 219.79, hold: false },   // hold: false = it moves with HI, also while it is typed
   { text: "my name is..", x: 539.13, whenHI: 0.25, perLetter: 5 },   // whenHI: it appears once HI is a quarter of the way from where it starts to ELANA
   { text: "and I am a...", x: 1761.78 },
-  { text: "and creator of...", x: 4162.6, perLetter: 3, early: 450 },   // centred between DESIGNER and VISION once typed
+  { text: "and creator of...", x: 4162.6, perLetter: 3, early: 60 },   // centred between DESIGNER and VISION once typed
                                                      // (it stands still while typed, 63 = 15 + 16 × 3, so it starts that much left)
 ];
 
