@@ -42,7 +42,7 @@ const ABOUT_TEXTS = [
   { text: "!..", x: 219.79, hold: false },   // hold: false = it moves with HI, also while it is typed
   { text: "my name is..", x: 539.13, whenHI: 0.25, perLetter: 5 },   // whenHI: it appears once HI is a quarter of the way from where it starts to ELANA
   { text: "and I am a...", x: 1761.78 },
-  { text: "and creator of...", x: 4030, perLetter: 3 },   // closer to DESIGNER than in Figma (4222.04), typed a little faster
+  { text: "and creator of...", x: 4030, perLetter: 3, early: 900 },   // closer to DESIGNER than in Figma (4222.04), typed a little faster
                                                      // (it stands still while typed: faster = DESIGNER gets less far away)
 ];
 
