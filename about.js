@@ -270,7 +270,7 @@ function draw() {
 
 // ----- At the end: hovering a letter of VISION makes it ooze into its organic letter, like the project titles -----
 // (the same as lab.js: every shape's outline slides, point by point, onto the letter's organic outline,
-// melting together on the way like slime; the organic outlines are in about-words.js: ABOUT_ORGANIC)
+// melting together on the way like slime; the organic letters are Figma's Frame 199, in about-words.js: ABOUT_ORGANIC)
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const MORPH_POINTS = 120;                // points on each outline
 const MORPH_TIME = REDUCED ? 1 : 1100;   // ms for a whole letter to change
@@ -333,10 +333,10 @@ const visionLetters = VISION_LETTERS.map(([ch, lx, lw], n) => {
     return x + TOTAL_MOVE >= left - 1 && x + TOTAL_MOVE < right - 1 && Math.abs(y - WORD_Y) < 140;
   });
   const box = { x0: left - TOTAL_MOVE, x1: right - TOTAL_MOVE, y0: WORD_Y, y1: WORD_Y + 135.86 };
-  const parts = ABOUT_ORGANIC[ch].split(/(?=M)/).map((part) => part.trim());
-  // the organic letter sits on the middle of the letter
-  const [rx, ry] = middleOf(outlinePoints(parts[0], 0, 0));
-  const dx = (box.x0 + box.x1) / 2 - rx, dy = (box.y0 + box.y1) / 2 - ry;
+  const organic = ABOUT_ORGANIC[n];
+  const parts = organic.d.split(/(?=M)/).map((part) => part.trim());
+  // the organic letter sits exactly where Figma puts it on the word (Frame 199 over Frame 182)
+  const dx = WORD_STRIP_X[LAST] - TOTAL_MOVE + organic.x, dy = WORD_Y + organic.y;
   const outer = outlinePoints(parts[0], dx, dy);
   // its own goo: soften the shapes, then cut them sharp again, so touching parts flow into each other
   const filterId = "about-goo-" + n;
