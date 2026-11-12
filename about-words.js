@@ -40,9 +40,10 @@ const ABOUT_WORDS = [
 // Their top is level with the top of the words.
 const ABOUT_TEXTS = [
   { text: "!..", x: 219.79 },
-  { text: "my name is..", x: 539.13, early: 0 },   // early: its own start (0 = when it reaches the middle)
+  { text: "my name is..", x: 539.13, early: -150 },   // early: its own start (0 = when it reaches the middle; less = later)
   { text: "and I am a...", x: 1761.78 },
-  { text: "and creator of...", x: 4222.04 },
+  { text: "and creator of...", x: 4045, perLetter: 6 },   // closer to DESIGNER than in Figma (4222.04), typed a little faster
+                                                     // (it stands still while typed: faster = DESIGNER gets less far away)
 ];
 
 

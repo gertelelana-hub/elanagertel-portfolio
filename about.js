@@ -478,7 +478,7 @@ function placeMorph(moved, u, screenH) {
 const BAR_FIRST = 15;       // how far you scroll with only the bar showing, before the first letter
 const PER_LETTER = 10;      // how far you scroll for each letter (about units)
 // How far you scroll while a text is being typed (from its bar appearing until its last letter)
-function typingLength(i) { return BAR_FIRST + (TEXTS[i].text.length - 1) * PER_LETTER; }
+function typingLength(i) { return BAR_FIRST + (TEXTS[i].text.length - 1) * (TEXTS[i].perLetter ?? PER_LETTER); }
 // How much a text stays behind the moving page: it stands still while it is typed, so afterwards it is
 // that much further right than its place on the strip (it never jumps)
 function typingHold(i, moved) {
@@ -490,7 +490,7 @@ function typeTo(i, moved) {
   const el = textEls[i], t = TEXTS[i];
   const shown = t.appear !== undefined && moved >= t.appear;
   el.classList.toggle("is-shown", shown);
-  const n = !shown ? 0 : Math.max(0, Math.min(t.text.length, Math.floor((moved - t.appear - BAR_FIRST) / PER_LETTER) + 1));
+  const n = !shown ? 0 : Math.max(0, Math.min(t.text.length, Math.floor((moved - t.appear - BAR_FIRST) / (t.perLetter ?? PER_LETTER)) + 1));
   if (el.typed.textContent.length !== n) {
     el.typed.textContent = t.text.slice(0, n);
     // while letters are being typed the bar stands still; a moment after the last change it blinks again
