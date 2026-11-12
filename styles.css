@@ -1441,8 +1441,8 @@ body.lab-page {
    5. Only then the closing texts come up on the black.
    =================================================================== */
 .archive {
-  --title-h: 447.56;
-  --title-top: 288;
+  --title-h: 412.58;   /* smaller, like the other project titles (62.62 per cell) */
+  --title-top: 305.49;
   --pile-h: 585;   /* the video */
   /* 1. The black starts right under the first screen, so it comes up as soon as you scroll */
   --end: 100vh;
