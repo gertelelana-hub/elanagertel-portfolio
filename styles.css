@@ -845,7 +845,7 @@ a.flow-photo:focus-visible {
 }
 
 /* The small names on the left and right edges, in the middle of the screen (Figma: Frame 193 at
-   x 65 and Frame 188 at x 1248, y 491 of 1024; y 497 on the home page).
+   x 65 and Frame 188 at x 1248, y 491 of 1024; y 497 on the home page), each with its text centred under it.
    Each one is a link with a small text under it, hidden until the name is hovered */
 .flow-edge {
   --u: calc(100vw / 1440);   /* one Figma pixel of the screen (not the page's own scale, e.g. on About) */
@@ -854,6 +854,7 @@ a.flow-photo:focus-visible {
   top: calc(50vh - var(--edge-above-middle, 21) * var(--u)); /* 512 - 491 */
   display: flex;
   flex-direction: column;
+  align-items: center;       /* the small text is centred under the name (Figma) */
   gap: calc(9 * var(--u));
   text-decoration: none;
   mix-blend-mode: exclusion; /* white shapes and text: black on white, white on black */
@@ -864,7 +865,7 @@ a.flow-photo:focus-visible {
 }
 
 .flow-edge-right {
-  right: calc(62 * var(--u)); /* 1440 - 1248 - 130 */
+  right: calc(72.75 * var(--u)); /* Frame 188 at 1248: the name (130 wide) is centred on 1302.25 */
 }
 
 .flow-logo {
