@@ -39,7 +39,7 @@ const ABOUT_WORDS = [
 // "|" at the end), where they start in Frame 184 (x, in about units = Figma pixels / 0.9092).
 // Their top is level with the top of the words.
 const ABOUT_TEXTS = [
-  { text: "!..", x: 219.79 },
+  { text: "!..", x: 219.79, hold: false },   // hold: false = it moves with HI, also while it is typed
   { text: "my name is..", x: 539.13, early: -150 },   // early: its own start (0 = when it reaches the middle; less = later)
   { text: "and I am a...", x: 1761.78 },
   { text: "and creator of...", x: 4030, perLetter: 3 },   // closer to DESIGNER than in Figma (4222.04), typed a little faster

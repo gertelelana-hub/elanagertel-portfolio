@@ -483,7 +483,7 @@ function typingLength(i) { return BAR_FIRST + (TEXTS[i].text.length - 1) * (TEXT
 // that much further right than its place on the strip (it never jumps)
 function typingHold(i, moved) {
   const t = TEXTS[i];
-  if (t.appear === undefined) return 0;
+  if (t.appear === undefined || t.hold === false) return 0;   // ("!.." moves with HI all the time)
   return Math.min(Math.max(moved - t.appear, 0), typingLength(i));
 }
 function typeTo(i, moved) {
