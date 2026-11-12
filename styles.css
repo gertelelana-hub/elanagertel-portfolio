@@ -739,6 +739,20 @@ a.flow-photo:focus-visible {
   height: 151.11%;
 }
 
+/* The new picture (Figma "לפיגמה ץץץ 1" and "2", a cake with a little figure): window 126 × 124 in Figma.
+   The top-right one opens the Israeli Movie Archive. The picture file is already cropped to the window. */
+.photo-archive {
+  width: calc(134.74 * var(--u));
+  height: calc(132.61 * var(--u));
+}
+
+.photo-archive img {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* Sense picture (women sitting on the grass): window 127.36 × 125.58 in Figma, the whole picture fills it */
 .photo-sense {
   width: calc(136.2 * var(--u));
@@ -845,7 +859,8 @@ a.flow-photo:focus-visible {
 }
 
 /* The small names on the left and right edges, in the middle of the screen (Figma: Frame 193 at
-   x 65 and Frame 188 at x 1248, y 491 of 1024; y 497 on the home page), each with its text centred under it.
+   x 65 and Frame 188 at x 1256, both on the layout grid's 65 margins; y 491 of 1024, y 497 on the home page),
+   each with its text centred under it.
    Each one is a link with a small text under it, hidden until the name is hovered */
 .flow-edge {
   --u: calc(100vw / 1440);   /* one Figma pixel of the screen (not the page's own scale, e.g. on About) */
@@ -865,7 +880,7 @@ a.flow-photo:focus-visible {
 }
 
 .flow-edge-right {
-  right: calc(72.75 * var(--u)); /* Frame 188 at 1248: the name (130 wide) is centred on 1302.25 */
+  right: calc(65 * var(--u)); /* on the layout grid's right margin (65), like ELANA on the left (Figma: Frame 188 at 1256) */
 }
 
 .flow-logo {

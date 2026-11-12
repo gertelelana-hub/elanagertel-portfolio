@@ -32,8 +32,9 @@ const ITEMS = [
     link: "memory-lab.html", toTitle: "lab" },          // "mind": opens the project page (moves: to-lab-moves.js)
   { type: "photo", kind: "sense",   alt: "Sense",           caption: "Sense", year: "2023", at: [[1764.52, -18.18], [1764.52, -18.18], [1052.93, 19.25]],
     link: "sense.html", toTitle: "sense" },                // opens the project page (moves: to-sense-moves.js)
-  { type: "photo", kind: "brain",   alt: "",                at: [[1578.44, 1454.39], [1578.44, 1454.39], [1329.85, 1245.37]] },
-  { type: "photo", kind: "brain",   alt: "",                at: [[-349.7, 1797.67], [-349.7, 1797.67], [1329.85, 172.75]] },
+  { type: "photo", kind: "archive", alt: "",                at: [[1578.44, 1454.39], [1578.44, 1454.39], [1335.19, 1247.51]] },
+  { type: "photo", kind: "archive", alt: "Israeli Movie Archive", at: [[-349.7, 1797.67], [-349.7, 1797.67], [1335.19, 172.75]],
+    link: "israeli-movie-archive.html", toTitle: "archive" },   // opens the project page (moves: to-archive-moves.js)
   { type: "photo", kind: "water-b", alt: "The Memory Lab",  caption: "The Memory Lab", at: [null, null, [344.78, 1091.6]] },
   { type: "photo", kind: "house",   alt: "Double Families", caption: "Double Families", year: "2023", at: [null, null, [689.81, 1613.67]] },
 
@@ -60,6 +61,7 @@ const ITEMS = [
 const PHOTO_FILES = {
   "house": "gallery-house.png",
   "brain": "gallery-brain.png",
+  "archive": "gallery-archive.jpg",   // the new picture (Figma "לפיגמה ץץץ"): the Israeli Movie Archive
   "mind": "gallery-brain.png",   // the same brain picture, cropped differently
   "cactus": "gallery-cactus.png",
   "sense": "gallery-sense.jpg",
@@ -340,7 +342,7 @@ LETTER_HOVER.forEach((letter) => {
 
 // ----- Clicking a project picture: the shapes puzzle into its title, then the project page opens -----
 // "mind" → "THE MEMORY LAB" (to-lab-moves.js), the cactus → "THE ISRAELI CACTUS" (to-cactus-moves.js),
-// the women on the grass → "SENSE" (to-sense-moves.js).
+// the women on the grass → "SENSE" (to-sense-moves.js), the cake (top right) → "ISRAELI MOVIE ARCHIVE" (to-archive-moves.js).
 // Pictures, names and years slide out; shapes the title does not need leave through an edge, and the
 // missing ones come in from an edge. The project page starts with the title in the same place, so the
 // change of page is not seen.
@@ -351,6 +353,7 @@ function titleMoves(name) {
   if (name === "lab" && typeof TO_LAB !== "undefined") return TO_LAB;
   if (name === "cactus" && typeof TO_CACTUS !== "undefined") return TO_CACTUS;
   if (name === "sense" && typeof TO_SENSE !== "undefined") return TO_SENSE;
+  if (name === "archive" && typeof TO_ARCHIVE !== "undefined") return TO_ARCHIVE;
   return null;
 }
 
