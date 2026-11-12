@@ -943,11 +943,8 @@ a.flow-photo:focus-visible {
   .flow-edge-cursor { animation: none; }
 }
 
-/* The home page (Figma frames 75–77): the names are 6 lower and contact Me is 3 above the bottom */
-.home-page {
-  --edge-above-middle: 15;  /* 512 - 497 */
-  --contact-bottom: 3;      /* 1024 - 1007 - 14 */
-}
+/* (The home frames in Figma have the names 6 lower and contact Me 12 lower; the site keeps them in exactly
+   the same place on every page, so they never jump when you go from one page to another.) */
 
 /* ===================================================================
    Project pages: memory-lab.html ("The Memory Lab", Figma frame 65 + Frame 93)
