@@ -335,8 +335,11 @@ const visionLetters = VISION_LETTERS.map(([ch, lx, lw], n) => {
   const box = { x0: left - TOTAL_MOVE, x1: right - TOTAL_MOVE, y0: WORD_Y, y1: WORD_Y + 135.86 };
   const organic = ABOUT_ORGANIC[n];
   const parts = organic.d.split(/(?=M)/).map((part) => part.trim());
-  // the organic letter sits exactly where Figma puts it on the word (Frame 199 over Frame 182)
-  const dx = WORD_STRIP_X[LAST] - TOTAL_MOVE + organic.x, dy = WORD_Y + organic.y;
+  // the organic letter sits right on its sharp letter: the middle of its outline on the middle of the letter
+  const raw = outlinePoints(parts[0], 0, 0);
+  const ox = (Math.min(...raw.map((p) => p[0])) + Math.max(...raw.map((p) => p[0]))) / 2;
+  const oy = (Math.min(...raw.map((p) => p[1])) + Math.max(...raw.map((p) => p[1]))) / 2;
+  const dx = (box.x0 + box.x1) / 2 - ox, dy = (box.y0 + box.y1) / 2 - oy;
   const outer = outlinePoints(parts[0], dx, dy);
   // its own goo: soften the shapes, then cut them sharp again, so touching parts flow into each other
   const filterId = "about-goo-" + n;
