@@ -57,6 +57,10 @@ TEXTS.forEach((t) => { t.atMiddle = t.stripX + (t.text.length * LETTER_WIDTH) / 
 // "my name is.." (after HI, which is there from the start) appears like the others: once it nears the middle
 TEXTS.forEach((t) => { if (t.after === 0) t.appear = t.atMiddle; });
 TEXTS[0].appear = 0;   // "!.." types itself as soon as the page opens
+// A text with "whenHI" appears once HI has moved that part of the way from where it starts to the small
+// ELANA on the left edge (its right edge: x 65 + 108.49 on the screen, in about units)
+const ELANA_RIGHT = (65 + 108.49) / ABOUT_SCALE;
+TEXTS.forEach((t) => { if (t.whenHI !== undefined) t.appear = (START_X - ELANA_RIGHT) * t.whenHI; });
 
 // ----- Plan every jump, once, by playing the whole page through in small steps -----
 // "moved" = how far the page has moved to the left (Figma pixels). A shape that rests on the strip at x
