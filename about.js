@@ -21,7 +21,7 @@
 // the page draws them ABOUT_SCALE times as big (also in styles.css, .about --u: keep the two the same).
 // The words' middle is kept in the middle of the screen, on any screen.
 
-const ABOUT_SCALE = 0.9092;              // 61.76 / 67.93
+const ABOUT_SCALE = 0.9291;              // 63.11 / 67.93: every piece on the site is one size (63.11 per cell)
 const SCREEN_W = 1440 / ABOUT_SCALE;     // the screen's width in about units
 const WORD_Y = 0;          // the top of the words (about units, measured from the words' top)
 const WORD_MID = 67.93;    // the middle of the words (half their height): it lies in the middle of the screen

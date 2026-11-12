@@ -1241,8 +1241,8 @@ body.lab-page {
    memory-lab.html — with its title turning white over the black end
    =================================================================== */
 .memory {
-  --title-top: 305.63;  /* Figma: the title got smaller (62.66 per cell) */
-  --title-h: 444.5;
+  --title-top: 304.03;  /* every piece on the site is one size: 63.11 per cell */
+  --title-h: 447.69;
   --pile-h: 801; /* the ELSC cover */
 
   /* THE CHAIN OF PLACES: where each paragraph and picture starts on the page, in the order of Figma
@@ -1305,8 +1305,8 @@ body.lab-page {
   /* Where the middle of the pile is when it lets go: the back cover (1059 tall) stays one more step (about 920) */
   --stack-end: calc(var(--c-back) + (919.54 + 1059 / 2) * var(--u));
   --pile-h: 1080; /* the tallest spread */
-  --title-h: 412.58;   /* Figma: the title got smaller (62.62 per cell) */
-  --title-top: 306;
+  --title-h: 415.84;   /* every piece on the site is one size: 63.11 per cell */
+  --title-top: 304.24;
 }
 
 /* Each spread has its own place and size in Figma (set on it in the HTML):
@@ -1441,8 +1441,8 @@ body.lab-page {
    5. Only then the closing texts come up on the black.
    =================================================================== */
 .archive {
-  --title-h: 412.58;   /* smaller, like the other project titles (62.62 per cell) */
-  --title-top: 305.49;
+  --title-h: 415.84;   /* every piece on the site is one size: 63.11 per cell */
+  --title-top: 303.73;
   --pile-h: 585;   /* the video */
   /* 1. The black starts right under the first screen, so it comes up as soon as you scroll */
   --end: 100vh;
@@ -1487,8 +1487,8 @@ body.lab-page {
   /* No pictures yet: the black end starts right under the first screen.
      (When pictures are added, set --stack-end instead and delete this line: the shared rule does the rest.) */
   --end: 100vh;
-  --title-h: 123.63;   /* Figma: the title got smaller (61.81 per cell) */
-  --title-top: 450.38;
+  --title-h: 126.23;   /* every piece on the site is one size: 63.11 per cell */
+  --title-top: 448.75;
 }
 
 /* Visitors who asked their device for less motion: the hover moves happen without sliding */
@@ -1508,7 +1508,7 @@ body.lab-page {
    =================================================================== */
 .about {
   container-type: inline-size;   /* lets --u measure the page width */
-  --u: calc(100cqw / 1440 * 0.9092);   /* one about unit: Figma made the sentence 0.9092 times as big (ABOUT_SCALE in about.js) */
+  --u: calc(100cqw / 1440 * 0.9291);   /* one about unit: the pieces are drawn at the site's one size, 63.11 per cell (ABOUT_SCALE in about.js) */
   position: relative;
   height: 100vh;                 /* about.js makes it as long as the scrolling needs */
   background-color: var(--color-background);
