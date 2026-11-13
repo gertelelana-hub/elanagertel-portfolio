@@ -283,8 +283,9 @@ const OOZE_SPREAD = 0.3;                 // how much later the far points start 
 const GOO = 7;                           // how soft the shapes melt together halfway
 const TO_THIRD_TIME = REDUCED ? 1 : 1600;  // ms to flow on from the first liquid version into the third shape (Frame 202)
 const CALM = REDUCED ? 0 : 0.35;         // how lively the liquid is on its own (1 = while the mouse is on it)
-const SWELL = 0.06;                      // how much it swells (and shrinks back), at its liveliest
-const WAVE = 4;                          // how big the slow waves round its edge are (about units), at its liveliest
+const SWELL = 0.3;                       // how much bigger it swells, at its liveliest (it never gets smaller than its shape)
+const DROP_SIZE = 1.2;                   // the third shapes' height, compared with the sharp letter's
+const WAVE = 7;                          // how big the slow waves round its edge are (about units), at its liveliest
 const LIVE_GOO = 6;                      // how much its drops melt into each other, at its liveliest
 const PUSH = 26;                         // how far the mouse pushes the liquid away
 const PUSH_REACH = 90;                   // how close the mouse has to be to push it
@@ -377,7 +378,10 @@ const visionLetters = VISION_LETTERS.map(([ch, lx, lw], n) => {
   const all2 = dropsRaw.flat();
   const ox2 = (Math.min(...all2.map((p) => p[0])) + Math.max(...all2.map((p) => p[0]))) / 2;
   const oy2 = (Math.min(...all2.map((p) => p[1])) + Math.max(...all2.map((p) => p[1]))) / 2;
-  const drops2 = dropsRaw.map((pts) => pts.map(([x, y]) => [cxL + x - ox2, cyL + y - oy2]));
+  // ...and bigger: taller than the sharp letter (DROP_SIZE times its height), so flowing into it the word grows
+  const h2 = Math.max(...all2.map((p) => p[1])) - Math.min(...all2.map((p) => p[1]));
+  const k2 = (DROP_SIZE * (box.y1 - box.y0)) / h2;
+  const drops2 = dropsRaw.map((pts) => pts.map(([x, y]) => [cxL + (x - ox2) * k2, cyL + (y - oy2) * k2]));
   const L = { outer, group, blur, filterId, t: 0, target: 0, w: 0, energy: 0, hovered: false, from: middleOf(outer), shapes: [], holes: [] };
   own.forEach((sh) => {
     const [x, y] = shapePosition(sh, TOTAL_MOVE);
@@ -415,7 +419,7 @@ function drawLetter(L, time) {
   if (goo > 0.05) { L.blur.setAttribute("stdDeviation", goo.toFixed(2)); L.group.setAttribute("filter", `url(#${L.filterId})`); }
   else L.group.removeAttribute("filter");
   // how it swells: slowly bigger and smaller, more when the mouse is on it
-  const swell = 1 + L.w * L.energy * (SWELL + SWELL * Math.sin(time * 0.7 + L.from[0] * 0.01));
+  const swell = 1 + L.w * L.energy * SWELL * (1 + 0.5 * Math.sin(time * 0.7 + L.from[0] * 0.01));   // always bigger, never smaller
   L.shapes.forEach((sh) => {
     sh.el.style.visibility = showing ? "hidden" : "";   // the real shape hides while reshaping
     sh.path.style.visibility = showing ? "visible" : "hidden";
