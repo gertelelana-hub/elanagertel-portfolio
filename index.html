@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,400;0,700;1,700&family=Crimson+Text:ital,wght@0,400;1,400;1,600&display=swap">
-  <link rel="stylesheet" href="styles.css?v=20261113l">
+  <link rel="stylesheet" href="styles.css?v=20261113x">
 </head>
 <body class="home-page">
   <!-- Home page, built from the Figma flow that starts at frame "MacBook Pro 16' - 74":
@@ -22,7 +22,7 @@
   <!-- Fixed on the screen on every page, also while scrolling (Figma: Frame 193, Frame 188 and "contact Me"):
        the small name on the left and right edges, in the middle of the screen. Hovering a half
        types its link under it: "home" under ELANA (back to the home page gallery, no intro)
-       and "about me" under GERTEL. "contact me" sits at the top left (no link yet); hovering it shows a blinking bar. -->
+       and "about me" under GERTEL. "contact me" sits at the top left; hovering it types out the contact details (contact.js). -->
   <a class="flow-edge flow-edge-left" href="index.html?gallery">
     <img class="flow-logo" src="images/logo-elana-small.svg" alt="Elana">
     <span class="flow-edge-text">home<span class="flow-edge-cursor">|</span></span>
@@ -31,7 +31,7 @@
     <img class="flow-logo" src="images/logo-gertel-small.svg" alt="Gertel">
     <span class="flow-edge-text">about me<span class="flow-edge-cursor">|</span></span>
   </a>
-  <p class="flow-small-text flow-contact">contact me<span class="flow-edge-cursor flow-contact-cursor">|</span></p>
+  <p class="flow-small-text flow-contact">contact me</p>
 
   <!-- The planned puzzle moves first, then the code that plays them -->
   <!-- ?v=… : change the number after an update, so browsers load the new files instead of old saved copies -->
@@ -42,5 +42,6 @@
   <script src="to-sense-moves.js?v=20261113e"></script>
   <script src="to-archive-moves.js?v=20261113e"></script>
   <script src="home.js?v=20261113g"></script>
+  <script src="contact.js?v=20261113e"></script>
 </body>
 </html>

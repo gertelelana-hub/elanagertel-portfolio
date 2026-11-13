@@ -791,8 +791,8 @@ a.flow-photo:focus-visible {
 
 /* ----- Fixed on the screen on every page, also while scrolling (Figma: x and y in a 1440 × 1024 screen) ----- */
 
-/* "contact me" (no link yet): Averia Serif Libre bold 12px, at the top left (Figma: Frame 204 at x 65, y 14).
-   Hovering it shows a blinking bar after it, like "home|" (Figma: its Variant3, "contact me|") */
+/* "contact me": Averia Serif Libre bold 12px, at the top left (Figma: Frame 204 at x 65, y 14).
+   Hovering it types out the contact details next to it (contact.js; Figma: Frame 207) */
 .flow-contact {
   --u: calc(100vw / 1440);   /* one Figma pixel of the screen (not the page's own scale, e.g. on About) */
   position: fixed;
@@ -807,12 +807,41 @@ a.flow-photo:focus-visible {
   cursor: default;
 }
 
-.flow-contact-cursor {
+
+/* While contact.js types or erases a line of the details, its bar stands still */
+.flow-contact-line.is-typing .flow-edge-cursor {
+  animation: none;
+}
+
+/* The contact details (Figma: Frame 207, Variant2): three lines in the same bold font, starting 131 to the
+   right of "contact me" (x 196, the grid's 2nd column), at its height. Each line is a link with its own
+   blinking bar (contact.js) */
+.flow-contact-lines {
+  --u: calc(100vw / 1440);
+  position: fixed;
+  z-index: 9;
+  left: calc(196 * var(--u));
+  top: calc(14 * var(--u));
+  display: flex;
+  flex-direction: column;
+  mix-blend-mode: exclusion; /* the whole box blends (white: black on white, white on black) */
+}
+
+.flow-contact-lines[hidden] {
+  display: none;
+}
+
+/* Once a line is typed out, its bar goes away */
+.flow-contact-line.is-done .flow-edge-cursor {
   visibility: hidden;
 }
 
-.flow-contact:hover .flow-contact-cursor {
-  visibility: visible;
+.flow-contact-line {
+  font-family: var(--font-edge);
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0.08em; /* 0.96px */
+  mix-blend-mode: normal;   /* the box blends, not each line */
 }
 
 /* The small names on the left and right edges, in the middle of the screen (Figma: Frame 193 at
@@ -1097,6 +1126,32 @@ body.lab-page {
 
 .lab-info-wide {
   width: calc(246 * var(--u));
+}
+
+/* They type themselves out (type-texts.js): an invisible copy keeps each text at its full size, and the
+   typed letters with their bar lie on top of it. The bar takes no room (so it never pushes a word down),
+   stands still while it types and goes away once the text is typed. */
+.type-ghost {
+  visibility: hidden;
+}
+
+.type-live {
+  position: absolute;
+  inset: 0;
+}
+
+.type-bar {
+  display: inline-block;
+  width: 0;
+}
+
+.is-waiting .type-bar,
+.is-done .type-bar {
+  visibility: hidden;
+}
+
+.is-typing .type-bar {
+  animation: none;
 }
 
 /* ----- Hovering a title: the shapes reshape into organic letters (lab.js) ----- */
@@ -1533,12 +1588,74 @@ body.lab-page {
   mix-blend-mode: exclusion;
 }
 
-/* The black shapes: over the text, so they jump over it. about.js places each one. */
+/* The photos above ELANA and under DESIGNER (Figma "Desktop - 5"): always seen, under the shapes and the
+   small texts. about.js slides them with the words (moved with transform) and sets each one's crop */
+.about-photo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--w) * var(--u));
+  height: calc(var(--h) * var(--u));
+  object-fit: cover;
+  will-change: transform;
+}
+
+/* The paragraph at the bottom left (Figma "Desktop - 5": x 65, its bottom 21 above the screen's bottom,
+   527 wide; Averia Serif Libre 12, line height 1.48, letter spacing 0.96). about.js types it out once
+   VISION stands in the middle of the screen. White with "exclusion", so it shows black on white. */
+.about-bio {
+  --u-screen: calc(100vw / 1440);   /* one Figma pixel of the screen */
+  position: absolute;
+  z-index: 4;
+  left: calc(65 * var(--u-screen));
+  bottom: calc(21 * var(--u-screen));
+  width: max(calc(527 * var(--u-screen)), min(400px, calc(100vw - 32px)));
+  margin: 0;
+  font-family: var(--font-edge);
+  font-size: max(9px, calc(12 * var(--u-screen)));
+  font-weight: 400;
+  line-height: 1.48;
+  letter-spacing: 0.08em;   /* 0.96px */
+  white-space: pre-line;    /* the line break between the two paragraphs */
+  color: #ffffff;
+  mix-blend-mode: exclusion;
+  visibility: hidden;
+}
+
+.about-bio.is-shown {
+  visibility: visible;
+}
+
+/* The whole paragraph, invisible: it keeps the paragraph at its full size while it is typed */
+.about-bio-ghost {
+  visibility: hidden;
+}
+
+/* The typed letters and the bar, on top of the invisible paragraph */
+.about-bio-live {
+  position: absolute;
+  inset: 0;
+}
+
+/* The bar takes no room, so at the end of a full row it never pushes the last word down */
+.about-bio .about-text-cursor {
+  display: inline-block;
+  width: 0;
+}
+
+.about-bio.is-typing .about-text-cursor {
+  animation: none;          /* the bar stands still while letters come */
+}
+
+/* The shapes: over the text, so they jump over it. about.js places each one.
+   They are white and the whole layer is "exclusion": on the white page they show black, and where they
+   pass over the photo they invert it (Figma: exclusion) */
 .about-pieces {
   position: absolute;
   inset: 0;
   z-index: 2;
   pointer-events: none;
+  mix-blend-mode: exclusion;
 }
 
 /* VISION at the end: the drawing of the letters oozing into organic shapes (about.js), over the shapes */
@@ -1579,13 +1696,19 @@ body.lab-page {
   width: calc(var(--w) * var(--u));
   height: calc(var(--h) * var(--u));
   overflow: visible;
-  fill: #000000;
+  fill: #ffffff;   /* white + the layer's exclusion = black on the white page */
   will-change: transform;
 }
 
-/* A thin black outline (1 screen pixel) around each shape, like on the home page: touching shapes overlap
+/* A thin outline (1 screen pixel) around each shape, like on the home page: touching shapes overlap
    a tiny bit, so no thin white line ever shows between them */
-.about-piece path,
+.about-piece path {
+  stroke: #ffffff;
+  stroke-width: 1.5px;
+  stroke-linejoin: miter;
+  vector-effect: non-scaling-stroke;
+}
+
 .about-morph path {
   stroke: #000000;
   stroke-width: 1.5px;

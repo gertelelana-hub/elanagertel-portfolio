@@ -192,6 +192,31 @@ shapes.forEach((s) => {
   s.el = svg;
 });
 
+// The photos (Figma "Desktop - 5"). They lie on the strip, each lined up with the left edge of a word, and
+// slide with it. They are always seen: the shapes jump over them (and invert them where they cross them,
+// styles.css .about-pieces).
+//   - "profile 3" (256 × 268): above ELANA, its bottom 19 above the words (one grid gutter)
+//   - "Gemini_Generated_Image" (314 × 413): under DESIGNER, 650 to the right of its left edge (Figma x 3936),
+//     its top 19 below the words
+// Their numbers are Desktop 5 pixels (the words' top at y 450), turned into about units like the words
+// (61.76 per cell there, 67.93 here).
+const PHOTO_SCALE = 67.93 / 61.76;
+const DESIGNER = ABOUT_WORDS.findIndex((w) => w.text === "DESIGNER");
+const PHOTOS = [
+  { src: "images/about-profile.jpg", alt: "Elana Gertel", crop: "50% 63%", word: 1, dx: 1, top: 163, w: 256, h: 268 },
+  { src: "images/about-designer.jpg", alt: "Elana drawing in a sketchbook among colour swatches", crop: "50% 4%", word: DESIGNER, dx: 650.33, top: 592, w: 314, h: 413 },
+].map((p) => {
+  const el = document.createElement("img");
+  el.className = "about-photo";
+  el.src = p.src;
+  el.alt = p.alt;
+  el.style.setProperty("--w", p.w * PHOTO_SCALE);
+  el.style.setProperty("--h", p.h * PHOTO_SCALE);
+  el.style.objectPosition = p.crop;   // the crop of the photo in Figma
+  stage.insertBefore(el, stage.firstChild);   // under everything (also under the small texts)
+  return { el, x: WORD_STRIP_X[p.word] + p.dx * PHOTO_SCALE, y: WORD_Y + (p.top - 450) * PHOTO_SCALE };
+});
+
 const textEls = TEXTS.map((t) => {
   const p = document.createElement("p");
   p.className = "about-text";
@@ -255,6 +280,8 @@ function draw() {
   const scrolled = Math.min(TOTAL_MOVE + EXTRA_MOVE, Math.max(0, window.scrollY / u / SCROLL_PER_PIXEL));
   const moved = Math.min(TOTAL_MOVE, scrolled);   // the shapes stop with VISION in the middle; the texts go on
 
+  PHOTOS.forEach((p) => { p.el.style.transform = `translate(${(p.x - moved) * u}px, ${fromBottom(p.y)}px)`; });   // they slide with the strip
+
   shapes.forEach((s) => {
     const [x, y] = shapePosition(s, moved);
     const seen = x > -200 && x < SCREEN_W + 60;        // shapes far off the screen are not drawn
@@ -270,6 +297,7 @@ function draw() {
     textEls[i].style.transform = `translate(${(text.stripX - scrolled + typingHold(i, scrolled)) * u}px, ${fromBottom(text.y)}px)`;
   });
   placeMorph(moved, u, screenH);
+  bioAt(moved >= TOTAL_MOVE - 0.5);   // the paragraph types itself once VISION is in the middle
 }
 
 
@@ -289,6 +317,12 @@ const WAVE = 7;                          // how big the slow waves round its edg
 const LIVE_GOO = 6;                      // how much its drops melt into each other, at its liveliest
 const PUSH = 26;                         // how far the mouse pushes the liquid away
 const PUSH_REACH = 90;                   // how close the mouse has to be to push it
+const ROAM = 42;                         // how far each blob swims from its place on its own (about units)
+const ROAM_EVERY = [1.6, 4.2];           // seconds before a blob decides to swim somewhere new (shortest, longest)
+const SPRING = 5;                        // how strongly a blob is pulled to where it wants to be (soft = slow and smooth)
+const DAMPING = 0.72;                    // below 1: it overshoots a little and wobbles to rest
+const STRETCH = 0.0035;                  // how much a blob stretches in the direction it swims
+const CURIOUS_REACH = 160;               // how close the mouse has to be for the blobs to notice it
 const ORGANIC_SIZE = 0.93;               // the organic letters' size (so they are as tall, for their letter, as on the titles)
 
 const morphSvg = document.createElementNS(SVG_NS, "svg");   // the drawing of the reshaping, over the shapes
@@ -392,7 +426,9 @@ const visionLetters = VISION_LETTERS.map(([ch, lx, lw], n) => {
     // in the second version each piece flows into the drop nearest to it (so a letter can split into drops)
     const c = middleOf(from);
     const drop = drops2.reduce((best, d) => (Math.hypot(middleOf(d)[0] - c[0], middleOf(d)[1] - c[1]) < Math.hypot(middleOf(best)[0] - c[0], middleOf(best)[1] - c[1]) ? d : best));
-    L.shapes.push({ el: sh.el, path, from, to: lineUp(from, outer), to2: lineUp(from, drop), mid2: middleOf(drop), phase: L.shapes.length * 1.7 + n });
+    L.shapes.push({ el: sh.el, path, from, to: lineUp(from, outer), to2: lineUp(from, drop), mid2: middleOf(drop), phase: L.shapes.length * 1.7 + n,
+                   // its own mind: where it is swimming to, where it is, how fast, and whether it likes the mouse
+                   goal: [0, 0], pos: [0, 0], vel: [0, 0], nextThought: 0, curious: Math.random() < 0.5 ? 1 : -1 });
   });
   parts.slice(1).forEach((part) => {   // the holes (O), drawn in the background colour on top
     const points = place(outlinePoints(part, 0, 0));
@@ -411,7 +447,26 @@ function delays(L) {
   const far = Math.max(...all.map((p) => Math.hypot(p[0] - L.from[0], p[1] - L.from[1])), 1);
   L.shapes.forEach((sh) => { sh.delay = sh.from.map((p) => OOZE_SPREAD * Math.hypot(p[0] - L.from[0], p[1] - L.from[1]) / far); });
 }
-function drawLetter(L, time) {
+// Each blob lives on its own: now and then it picks a new spot near its place and swims there on a soft
+// spring (gliding, overshooting a little, settling). Curious blobs lean towards the mouse, shy ones lean away.
+function think(L, sh, time, dt) {
+  if (time >= sh.nextThought) {
+    const a = Math.random() * Math.PI * 2, r = ROAM * Math.sqrt(Math.random());
+    sh.goal = [Math.cos(a) * r, Math.sin(a) * r * 0.7];
+    sh.nextThought = time + ROAM_EVERY[0] + Math.random() * (ROAM_EVERY[1] - ROAM_EVERY[0]);
+  }
+  const reach = L.w * (0.4 + 0.6 * L.energy);           // calmer on its own, bolder while the mouse is near
+  let gx = sh.goal[0] * reach, gy = sh.goal[1] * reach;
+  if (L.hovered && pointer) {
+    const dx = pointer[0] - (sh.mid2[0] + sh.pos[0]), dy = pointer[1] - (sh.mid2[1] + sh.pos[1]), d = Math.hypot(dx, dy) || 1;
+    if (d < CURIOUS_REACH) { const f = ROAM * 0.8 * (1 - d / CURIOUS_REACH) * sh.curious; gx += (dx / d) * f; gy += (dy / d) * f; }
+  }
+  const k = SPRING, c = 2 * Math.sqrt(k) * DAMPING;
+  sh.vel[0] += (k * (gx - sh.pos[0]) - c * sh.vel[0]) * dt;
+  sh.vel[1] += (k * (gy - sh.pos[1]) - c * sh.vel[1]) * dt;
+  sh.pos[0] += sh.vel[0] * dt; sh.pos[1] += sh.vel[1] * dt;
+}
+function drawLetter(L, time, dt) {
   const showing = L.t > 0;
   // the melting: none at the start and the end, strongest halfway; and while it lives as liquid, a little,
   // more when the mouse is on it (so its drops flow into each other)
@@ -424,6 +479,9 @@ function drawLetter(L, time) {
     sh.el.style.visibility = showing ? "hidden" : "";   // the real shape hides while reshaping
     sh.path.style.visibility = showing ? "visible" : "hidden";
     if (!showing) return;
+    think(L, sh, time, dt);
+    const speed = Math.hypot(sh.vel[0], sh.vel[1]), st = Math.min(0.3, speed * STRETCH);
+    const vx = speed ? sh.vel[0] / speed : 0, vy = speed ? sh.vel[1] / speed : 0;
     sh.path.setAttribute("d", pathFrom(sh.from.map((p, i) => {
       const e = ooze(clamp01(L.t * (1 + OOZE_SPREAD) - sh.delay[i]));
       // its liquid shape: from the first liquid version into the third shape (Frame 202)
@@ -440,6 +498,9 @@ function drawLetter(L, time) {
           const mx = tx - pointer[0], my = ty - pointer[1], d = Math.hypot(mx, my) || 1;
           if (d < PUSH_REACH) { const f = PUSH * (1 - d / PUSH_REACH) ** 2 * L.energy * live; tx += (mx / d) * f; ty += (my / d) * f; }
         }
+        // it swims: carried along to where it wants to be, and stretched a little the way it is going
+        const along = (tx - sh.mid2[0]) * vx + (ty - sh.mid2[1]) * vy;
+        tx += (sh.pos[0] + vx * along * st) * live; ty += (sh.pos[1] + vy * along * st) * live;
       }
       return [p[0] + (tx - p[0]) * e, p[1] + (ty - p[1]) * e];
     })));
@@ -465,7 +526,8 @@ function morphFrame(now) {
     // how lively it is: calm on its own, much more while the mouse is on it
     const lively = L.target === 0 ? 0 : L.hovered ? 1 : CALM;
     L.energy += (lively - L.energy) * Math.min(1, dt * (lively > L.energy ? 2 : 0.8));
-    drawLetter(L, now / 1000);
+    if (L.t === 0) L.shapes.forEach((sh) => { sh.pos = [0, 0]; sh.vel = [0, 0]; });   // sharp again: it forgets where it swam
+    drawLetter(L, now / 1000, dt);
     busy = true;
   });
   if (busy) requestAnimationFrame(morphFrame);
@@ -555,6 +617,94 @@ function typeTo(i, moved) {
 // "and creator of..." has left the screen at the left (EXTRA_MOVE more) -----
 const LAST_TEXT = TEXTS.length - 1;
 const EXTRA_MOVE = Math.max(0, TEXTS[LAST_TEXT].stripX + typingLength(LAST_TEXT) + TEXTS[LAST_TEXT].text.length * LETTER_WIDTH + 30 - TOTAL_MOVE);
+
+// ----- The paragraph at the bottom left (Figma "Desktop - 5": "I'm Elana, a designer…") -----
+// Once VISION stands in the middle of the screen, it types itself out as if someone were typing it live:
+// first the bar blinks a moment, then the letters come at an uneven pace, with short stops after commas,
+// longer ones after full stops and between the two paragraphs, and now and then a little hesitation.
+// The bar stands still while letters come and blinks while it pauses; at the end it keeps blinking.
+// Scrolling back away from VISION hides it (the typing waits); coming back shows it again and it goes on.
+const BIO = "I’m Elana, a designer working at the intersection of product, UI / UX, and branding. My roots are typography, illustration, and motion. I design with the business goal in mind first, making sure strong aesthetics always serve a purpose.\n" +
+            "Using AI as a core part of my workflow, I also vibe-code and ship my own functional products from scratch, bridging the gap between visual craft and live software. I love collaborating closely with teams to solve messy problems early and turn ideas into clear, expressive experiences.";
+const BIO_FIRST_WAIT = 1200;   // ms the bar blinks before the first letter
+const BLINK_AFTER = 350;       // a pause longer than this (ms) lets the bar blink
+const bioEl = document.createElement("p");
+bioEl.className = "about-bio";
+bioEl.setAttribute("aria-label", BIO);
+const bioTyped = document.createElement("span");
+bioTyped.setAttribute("aria-hidden", "true");
+const bioBar = document.createElement("span");
+bioBar.className = "about-text-cursor flow-edge-cursor";
+bioBar.setAttribute("aria-hidden", "true");
+bioBar.textContent = "|";
+// an invisible copy of the whole paragraph holds its full size, so the typed lines never move;
+// the typed letters and the bar lie on top of it
+const bioGhost = document.createElement("span");
+bioGhost.className = "about-bio-ghost";
+bioGhost.setAttribute("aria-hidden", "true");
+bioGhost.textContent = BIO;
+const bioLive = document.createElement("span");
+bioLive.className = "about-bio-live";
+bioLive.append(bioTyped, bioBar);
+bioEl.append(bioGhost, bioLive);
+
+// Where the lines break: measured on the invisible paragraph, so a word that goes on the next row is typed
+// there from its first letter (it never starts at the end of a row and then jumps down).
+// The space before such a word becomes a line break (the same length, so every letter keeps its place).
+let bioWithBreaks = BIO;
+function measureBioLines() {
+  const node = bioGhost.firstChild, range = document.createRange();
+  let out = "", lastTop = null;
+  for (let i = 0; i < BIO.length; i++) {
+    const ch = BIO[i];
+    if (ch === "\n") { out += ch; lastTop = null; continue; }
+    if (ch !== " ") {
+      range.setStart(node, i); range.setEnd(node, i + 1);
+      const top = range.getBoundingClientRect().top;
+      if (lastTop !== null && top > lastTop + 2 && out.endsWith(" ")) out = out.slice(0, -1) + "\n";   // a new row
+      lastTop = top;
+    }
+    out += ch;
+  }
+  bioWithBreaks = out;
+  bioTyped.textContent = bioWithBreaks.slice(0, bioShown);
+}
+document.fonts.ready.then(measureBioLines);
+window.addEventListener("resize", measureBioLines);
+stage.appendChild(bioEl);
+
+let bioShown = 0, bioTimer = null, bioOn = false;
+// How long to wait before the next letter, like a person typing
+function bioPause(typed, next) {
+  if (typed === ".") return 400 + Math.random() * 350;        // the end of a sentence: a breath
+  if (next === "\n") return 0;
+  if (typed === "\n") return 750 + Math.random() * 300;       // a new paragraph: a longer think
+  if (typed === ",") return 140 + Math.random() * 120;
+  if (typed === " " && Math.random() < 0.05) return 380 + Math.random() * 300;   // a little hesitation
+  return 14 + Math.random() * 30;                             // the letters of a word, unevenly
+}
+function bioWait(ms) {
+  // the bar only blinks during the longer pauses
+  bioEl.classList.toggle("is-typing", ms < BLINK_AFTER);
+  bioTimer = setTimeout(bioNext, ms);
+}
+function bioNext() {
+  bioTimer = null;
+  if (!bioOn || bioShown >= BIO.length) { bioEl.classList.remove("is-typing"); return; }
+  bioShown++;
+  bioTyped.textContent = bioWithBreaks.slice(0, bioShown);
+  if (bioShown >= BIO.length) { bioEl.classList.remove("is-typing"); return; }   // done: the bar blinks on
+  bioWait(bioPause(BIO[bioShown - 1], BIO[bioShown]));
+}
+// Called by draw(): on at the end (VISION in the middle), off when scrolled back
+function bioAt(atEnd) {
+  if (atEnd === bioOn) return;
+  bioOn = atEnd;
+  bioEl.classList.toggle("is-shown", atEnd);
+  clearTimeout(bioTimer);
+  bioTimer = null;
+  if (atEnd && bioShown < BIO.length) bioWait(bioShown === 0 ? BIO_FIRST_WAIT : 400);
+}
 
 // Draw again on every scroll and resize (at most once per screen frame)
 let waiting = false;

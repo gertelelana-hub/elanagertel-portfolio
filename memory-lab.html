@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,400;0,700;1,700&family=Comme:wght@400&family=Crimson+Text:ital,wght@0,400;1,400&display=swap">
-  <link rel="stylesheet" href="styles.css?v=20261113l">
+  <link rel="stylesheet" href="styles.css?v=20261113x">
   <!-- Show the page only once the title is drawn (the marker "page-ready" comes after the scripts),
        so coming from the home page the title is simply there, without blinking -->
   <link rel="expect" href="#page-ready" blocking="render">
@@ -34,10 +34,17 @@
       </div>
     </div>
 
+    <!-- Under the title on the first screen (Figma: four texts at y 875, Averia Serif Libre 12, black).
+         They scroll away with the page. (For now the same texts as The Israeli Cactus, until Figma has this project's own.) -->
+    <p class="lab-intro" style="--x: 65">Brief</p>
+    <p class="lab-intro lab-info-wide" style="--x: 196">choose a plant and research it.</p>
+    <p class="lab-intro" style="--x: 591">Solution</p>
+    <p class="lab-intro lab-info-wide" style="--x: 726">An illustrated book centered on cactus forms and symbols in Israel, combining botanical artwork with Hebrew text.</p>
+
     <!-- Fixed on the screen on every page, also while scrolling (Figma: Frame 193, Frame 188 and "contact Me"):
          the small name on the left and right edges, in the middle of the screen. Hovering a half
          types its link under it: "home" under ELANA (back to the home page gallery, no intro)
-         and "about me" under GERTEL. "contact me" sits at the top left (no link yet); hovering it shows a blinking bar. -->
+         and "about me" under GERTEL. "contact me" sits at the top left; hovering it types out the contact details (contact.js). -->
     <a class="flow-edge flow-edge-left" href="index.html?gallery">
       <img class="flow-logo" src="images/logo-elana-small.svg" alt="Elana">
       <span class="flow-edge-text">home<span class="flow-edge-cursor">|</span></span>
@@ -46,7 +53,7 @@
       <img class="flow-logo" src="images/logo-gertel-small.svg" alt="Gertel">
       <span class="flow-edge-text">about me<span class="flow-edge-cursor">|</span></span>
     </a>
-    <p class="flow-small-text flow-contact">contact me<span class="flow-edge-cursor flow-contact-cursor">|</span></p>
+    <p class="flow-small-text flow-contact">contact me</p>
 
     <!-- The pictures and videos: each one slides up from the bottom of the screen, stops in the
          middle of the screen, and the next one slides up over it (Figma: sticky layers) -->
@@ -89,9 +96,14 @@
 
     <!-- The black end of the page: the project details -->
     <footer class="lab-footer">
-      <p class="lab-footer-text lab-year">2023</p>
-      <p class="lab-footer-text lab-kind">Digital Art</p>
-      <p class="lab-footer-text lab-about">An illustrated book centered on cactus forms and symbols in Israel, combining botanical artwork with Hebrew text.</p>
+      <!-- The project details (Figma: four texts on the black, Averia Serif Libre 12, white).
+           For now the same as The Israeli Cactus, until Figma has this project's own. -->
+      <p class="lab-footer-text lab-info" style="--x: 65">2023</p>
+      <p class="lab-footer-text lab-info lab-info-wide" style="--x: 196">Bezalel Academy of Art and Design
+Science Illustration - Amit Trainin</p>
+      <p class="lab-footer-text lab-info" style="--x: 591">Technique</p>
+      <p class="lab-footer-text lab-info lab-info-wide" style="--x: 726">Illustrated art
+Indesign Typography</p>
     </footer>
   </main>
 
@@ -99,5 +111,7 @@
   <script src="lab-organic.js?v=20261113e"></script>
   <script src="lab.js?v=20261108m"></script>
   <div id="page-ready"></div>
+  <script src="contact.js?v=20261113e"></script>
+  <script src="type-texts.js?v=20261113a"></script>
 </body>
 </html>
