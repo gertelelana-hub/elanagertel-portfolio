@@ -282,6 +282,8 @@ const MORPH_TIME = REDUCED ? 1 : 1100;   // ms for a whole letter to change
 const OOZE_SPREAD = 0.3;                 // how much later the far points start (part of the time)
 const STAY_TIME = 700;                   // ms a letter stays organic after the mouse leaves
 const GOO = 7;                           // how soft the shapes melt together halfway
+const FLOW_TIME = REDUCED ? 1e9 : 3600;  // ms for one slow flow there and back between the two liquid versions (Frame 199 ↔ 202)
+const FLOW_GOO = 5;                      // how much it melts together halfway between them
 const ORGANIC_SIZE = 0.93;               // the organic letters' size (so they are as tall, for their letter, as on the titles)
 
 const morphSvg = document.createElementNS(SVG_NS, "svg");   // the drawing of the reshaping, over the shapes
@@ -366,14 +368,23 @@ const visionLetters = VISION_LETTERS.map(([ch, lx, lw], n) => {
   morphDefs.appendChild(filter);
   const group = document.createElementNS(SVG_NS, "g");
   morphSvg.appendChild(group);
-  const L = { outer, group, blur, filterId, t: 0, target: 0, from: middleOf(outer), leaveTimer: null, shapes: [], holes: [] };
+  // the second liquid version (Frame 202): one or more drops, together centred on the letter like the first
+  const dropsRaw = ABOUT_ORGANIC_2[n].map(([x, y, d]) => outlinePoints(d, x, y));
+  const all2 = dropsRaw.flat();
+  const ox2 = (Math.min(...all2.map((p) => p[0])) + Math.max(...all2.map((p) => p[0]))) / 2;
+  const oy2 = (Math.min(...all2.map((p) => p[1])) + Math.max(...all2.map((p) => p[1]))) / 2;
+  const drops2 = dropsRaw.map((pts) => pts.map(([x, y]) => [cxL + x - ox2, cyL + y - oy2]));
+  const L = { outer, group, blur, filterId, t: 0, target: 0, w: 0, flowStart: null, from: middleOf(outer), leaveTimer: null, shapes: [], holes: [] };
   own.forEach((sh) => {
     const [x, y] = shapePosition(sh, TOTAL_MOVE);
     const from = outlinePoints(ABOUT_SHAPES[sh.shape][2], x, y);
     const path = document.createElementNS(SVG_NS, "path");
     path.style.visibility = "hidden";
     group.appendChild(path);
-    L.shapes.push({ el: sh.el, path, from, to: lineUp(from, outer) });
+    // in the second version each piece flows into the drop nearest to it (so a letter can split into drops)
+    const c = middleOf(from);
+    const drop = drops2.reduce((best, d) => (Math.hypot(middleOf(d)[0] - c[0], middleOf(d)[1] - c[1]) < Math.hypot(middleOf(best)[0] - c[0], middleOf(best)[1] - c[1]) ? d : best));
+    L.shapes.push({ el: sh.el, path, from, to: lineUp(from, outer), to2: lineUp(from, drop) });
   });
   parts.slice(1).forEach((part) => {   // the holes (O), drawn in the background colour on top
     const points = place(outlinePoints(part, 0, 0));
@@ -394,7 +405,8 @@ function delays(L) {
 }
 function drawLetter(L) {
   const showing = L.t > 0;
-  const goo = GOO * Math.sin(Math.PI * L.t) ** 0.8;   // the melting: none at the start and the end, strongest halfway
+  // the melting: none at the start and the end, strongest halfway; also while it flows between the two liquid versions
+  const goo = Math.max(GOO * Math.sin(Math.PI * L.t) ** 0.8, FLOW_GOO * Math.sin(Math.PI * L.w));
   if (goo > 0.05) { L.blur.setAttribute("stdDeviation", goo.toFixed(2)); L.group.setAttribute("filter", `url(#${L.filterId})`); }
   else L.group.removeAttribute("filter");
   L.shapes.forEach((sh) => {
@@ -403,12 +415,14 @@ function drawLetter(L) {
     if (!showing) return;
     sh.path.setAttribute("d", pathFrom(sh.from.map((p, i) => {
       const e = ooze(clamp01(L.t * (1 + OOZE_SPREAD) - sh.delay[i]));
-      return [p[0] + (sh.to[i][0] - p[0]) * e, p[1] + (sh.to[i][1] - p[1]) * e];
+      // its liquid shape: between the first and the second liquid version
+      const tx = sh.to[i][0] + (sh.to2[i][0] - sh.to[i][0]) * L.w, ty = sh.to[i][1] + (sh.to2[i][1] - sh.to[i][1]) * L.w;
+      return [p[0] + (tx - p[0]) * e, p[1] + (ty - p[1]) * e];
     })));
   });
   L.holes.forEach(({ path, points, middle }) => {
-    const e = ooze(clamp01(L.t * (1 + OOZE_SPREAD) - OOZE_SPREAD * 0.6));
-    path.style.visibility = showing && e > 0 ? "visible" : "hidden";
+    const e = ooze(clamp01(L.t * (1 + OOZE_SPREAD) - OOZE_SPREAD * 0.6)) * (1 - L.w);   // the second version has no hole: it closes
+    path.style.visibility = showing && e > 0.01 ? "visible" : "hidden";
     path.setAttribute("d", pathFrom(points.map((p) => [middle[0] + (p[0] - middle[0]) * e, middle[1] + (p[1] - middle[1]) * e])));
   });
 }
@@ -419,10 +433,19 @@ function morphFrame(now) {
   morphLast = now;
   let busy = false;
   visionLetters.forEach((L) => {
-    if (L.t === L.target) return;
+    if (L.t === L.target && L.target !== 1 && L.w === 0) return;
     L.t = L.target > L.t ? Math.min(L.target, L.t + step) : Math.max(L.target, L.t - step);
+    const flowing = L.target === 1 && L.t === 1;   // (checked after this step, so the flow starts right away)
+    if (flowing) {
+      // still hovered and liquid: it keeps flowing slowly back and forth between the two liquid versions
+      if (L.flowStart === null) L.flowStart = now;
+      L.w = 0.5 - 0.5 * Math.cos((2 * Math.PI * (now - L.flowStart)) / FLOW_TIME);
+    } else {
+      L.flowStart = null;
+      L.w = Math.max(0, L.w - step * 1.5);   // leaving: it lets go of the second version as it oozes back
+    }
     drawLetter(L);
-    if (L.t !== L.target) busy = true;
+    if (L.t !== L.target || flowing || L.w > 0) busy = true;
   });
   if (busy) requestAnimationFrame(morphFrame);
   else { morphRunning = false; morphLast = null; }
