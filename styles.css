@@ -791,31 +791,39 @@ a.flow-photo:focus-visible {
 
 /* ----- Fixed on the screen on every page, also while scrolling (Figma: x and y in a 1440 × 1024 screen) ----- */
 
-/* "contact Me" (no link yet): Averia Serif Libre bold italic 12px, in the middle at the bottom
-   (Figma: x 686, y 995 on the project pages; y 1007 on the home page) */
+/* "contact me" (no link yet): Averia Serif Libre bold 12px, at the top left (Figma: Frame 204 at x 65, y 14).
+   Hovering it shows a blinking bar after it, like "home|" (Figma: its Variant3, "contact me|") */
 .flow-contact {
   --u: calc(100vw / 1440);   /* one Figma pixel of the screen (not the page's own scale, e.g. on About) */
   position: fixed;
   z-index: 9;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(var(--contact-bottom, 15) * var(--u)); /* 1024 - 995 - 14 */
+  left: calc(65 * var(--u));
+  top: calc(14 * var(--u));
   margin: 0;
   font-family: var(--font-edge);
   font-weight: 700;
-  font-style: italic;
+  font-style: normal;
   letter-spacing: 0.08em; /* 0.96px */
+  cursor: default;
+}
+
+.flow-contact-cursor {
+  visibility: hidden;
+}
+
+.flow-contact:hover .flow-contact-cursor {
+  visibility: visible;
 }
 
 /* The small names on the left and right edges, in the middle of the screen (Figma: Frame 193 at
-   x 65 and Frame 188 at x 1256, both on the layout grid's 65 margins; y 491 of 1024, y 497 on the home page),
+   x 65 and Frame 188 at x 1256, both on the layout grid's 65 margins; y 450 of 1024, on the grid's 4th row),
    each with its text centred under it.
    Each one is a link with a small text under it, hidden until the name is hovered */
 .flow-edge {
   --u: calc(100vw / 1440);   /* one Figma pixel of the screen (not the page's own scale, e.g. on About) */
   position: fixed;
   z-index: 9;
-  top: calc(50vh - var(--edge-above-middle, 21) * var(--u)); /* 512 - 491 */
+  top: calc(50vh - var(--edge-above-middle, 62) * var(--u)); /* 512 - 450: on the layout grid's 4th row (Figma) */
   display: flex;
   flex-direction: column;
   align-items: center;       /* the small text is centred under the name (Figma) */
@@ -1050,6 +1058,45 @@ body.lab-page {
   width: calc(826 * var(--u));
   font-size: max(14px, calc(29.65 * var(--u)));
   line-height: 1.26;
+}
+
+/* ----- The project's short texts (Figma: Averia Serif Libre 12, line height 148%, letter spacing 8%) -----
+   .lab-intro: on the first screen under the title (y 875 of 1024, black), scrolling away with the page;
+   .lab-info: on the black at the end (192 above its bottom, like the texts before, white).
+   --x: where each one starts (Figma); the "wide" ones are 246 wide and may break into lines. */
+.lab-intro,
+.lab-info {
+  position: absolute;
+  z-index: 1;
+  left: calc(var(--x) * var(--u));
+  margin: 0;
+  font-family: var(--font-edge);
+  font-size: max(9px, calc(12 * var(--u)));
+  font-weight: 400;
+  line-height: 1.48;
+  letter-spacing: 0.08em;
+  white-space: pre-line;
+}
+
+.lab-intro {
+  z-index: 1;                          /* over the title (0), under the book pictures that slide up (they come later) */
+  top: calc(100vh - 149 * var(--u));   /* 1024 - 875 */
+  color: #ffffff;
+  mix-blend-mode: exclusion;           /* black on white, white where it passes over the black title */
+}
+
+.lab-info {
+  top: min(max(calc(var(--footer-h) - 192 * var(--u)), calc(var(--footer-title-bottom) + 76 * var(--u))),
+           calc(var(--footer-h) - 97 * var(--u)));
+  font-family: var(--font-edge);
+  color: #ffffff;
+  /* thin, like in Figma (white letters on black otherwise look a little bold on a Mac) */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.lab-info-wide {
+  width: calc(246 * var(--u));
 }
 
 /* ----- Hovering a title: the shapes reshape into organic letters (lab.js) ----- */
