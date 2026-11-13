@@ -280,10 +280,14 @@ const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const MORPH_POINTS = 120;                // points on each outline
 const MORPH_TIME = REDUCED ? 1 : 1100;   // ms for a whole letter to change
 const OOZE_SPREAD = 0.3;                 // how much later the far points start (part of the time)
-const STAY_TIME = 700;                   // ms a letter stays organic after the mouse leaves
 const GOO = 7;                           // how soft the shapes melt together halfway
-const FLOW_TIME = REDUCED ? 1e9 : 3600;  // ms for one slow flow there and back between the two liquid versions (Frame 199 ↔ 202)
-const FLOW_GOO = 5;                      // how much it melts together halfway between them
+const TO_THIRD_TIME = REDUCED ? 1 : 1600;  // ms to flow on from the first liquid version into the third shape (Frame 202)
+const CALM = REDUCED ? 0 : 0.35;         // how lively the liquid is on its own (1 = while the mouse is on it)
+const SWELL = 0.06;                      // how much it swells (and shrinks back), at its liveliest
+const WAVE = 4;                          // how big the slow waves round its edge are (about units), at its liveliest
+const LIVE_GOO = 6;                      // how much its drops melt into each other, at its liveliest
+const PUSH = 26;                         // how far the mouse pushes the liquid away
+const PUSH_REACH = 90;                   // how close the mouse has to be to push it
 const ORGANIC_SIZE = 0.93;               // the organic letters' size (so they are as tall, for their letter, as on the titles)
 
 const morphSvg = document.createElementNS(SVG_NS, "svg");   // the drawing of the reshaping, over the shapes
@@ -374,7 +378,7 @@ const visionLetters = VISION_LETTERS.map(([ch, lx, lw], n) => {
   const ox2 = (Math.min(...all2.map((p) => p[0])) + Math.max(...all2.map((p) => p[0]))) / 2;
   const oy2 = (Math.min(...all2.map((p) => p[1])) + Math.max(...all2.map((p) => p[1]))) / 2;
   const drops2 = dropsRaw.map((pts) => pts.map(([x, y]) => [cxL + x - ox2, cyL + y - oy2]));
-  const L = { outer, group, blur, filterId, t: 0, target: 0, w: 0, flowStart: null, from: middleOf(outer), leaveTimer: null, shapes: [], holes: [] };
+  const L = { outer, group, blur, filterId, t: 0, target: 0, w: 0, energy: 0, hovered: false, from: middleOf(outer), shapes: [], holes: [] };
   own.forEach((sh) => {
     const [x, y] = shapePosition(sh, TOTAL_MOVE);
     const from = outlinePoints(ABOUT_SHAPES[sh.shape][2], x, y);
@@ -384,7 +388,7 @@ const visionLetters = VISION_LETTERS.map(([ch, lx, lw], n) => {
     // in the second version each piece flows into the drop nearest to it (so a letter can split into drops)
     const c = middleOf(from);
     const drop = drops2.reduce((best, d) => (Math.hypot(middleOf(d)[0] - c[0], middleOf(d)[1] - c[1]) < Math.hypot(middleOf(best)[0] - c[0], middleOf(best)[1] - c[1]) ? d : best));
-    L.shapes.push({ el: sh.el, path, from, to: lineUp(from, outer), to2: lineUp(from, drop) });
+    L.shapes.push({ el: sh.el, path, from, to: lineUp(from, outer), to2: lineUp(from, drop), mid2: middleOf(drop), phase: L.shapes.length * 1.7 + n });
   });
   parts.slice(1).forEach((part) => {   // the holes (O), drawn in the background colour on top
     const points = place(outlinePoints(part, 0, 0));
@@ -403,49 +407,62 @@ function delays(L) {
   const far = Math.max(...all.map((p) => Math.hypot(p[0] - L.from[0], p[1] - L.from[1])), 1);
   L.shapes.forEach((sh) => { sh.delay = sh.from.map((p) => OOZE_SPREAD * Math.hypot(p[0] - L.from[0], p[1] - L.from[1]) / far); });
 }
-function drawLetter(L) {
+function drawLetter(L, time) {
   const showing = L.t > 0;
-  // the melting: none at the start and the end, strongest halfway; also while it flows between the two liquid versions
-  const goo = Math.max(GOO * Math.sin(Math.PI * L.t) ** 0.8, FLOW_GOO * Math.sin(Math.PI * L.w));
+  // the melting: none at the start and the end, strongest halfway; and while it lives as liquid, a little,
+  // more when the mouse is on it (so its drops flow into each other)
+  const goo = Math.max(GOO * Math.sin(Math.PI * L.t) ** 0.8, LIVE_GOO * L.w * L.energy);
   if (goo > 0.05) { L.blur.setAttribute("stdDeviation", goo.toFixed(2)); L.group.setAttribute("filter", `url(#${L.filterId})`); }
   else L.group.removeAttribute("filter");
+  // how it swells: slowly bigger and smaller, more when the mouse is on it
+  const swell = 1 + L.w * L.energy * (SWELL + SWELL * Math.sin(time * 0.7 + L.from[0] * 0.01));
   L.shapes.forEach((sh) => {
     sh.el.style.visibility = showing ? "hidden" : "";   // the real shape hides while reshaping
     sh.path.style.visibility = showing ? "visible" : "hidden";
     if (!showing) return;
     sh.path.setAttribute("d", pathFrom(sh.from.map((p, i) => {
       const e = ooze(clamp01(L.t * (1 + OOZE_SPREAD) - sh.delay[i]));
-      // its liquid shape: between the first and the second liquid version
-      const tx = sh.to[i][0] + (sh.to2[i][0] - sh.to[i][0]) * L.w, ty = sh.to[i][1] + (sh.to2[i][1] - sh.to[i][1]) * L.w;
+      // its liquid shape: from the first liquid version into the third shape (Frame 202)
+      let tx = sh.to[i][0] + (sh.to2[i][0] - sh.to[i][0]) * L.w, ty = sh.to[i][1] + (sh.to2[i][1] - sh.to[i][1]) * L.w;
+      const live = L.w * e;   // only the liquid moves
+      if (live > 0) {
+        // it keeps moving: swelling, and slow waves running round its edge
+        const dx = tx - sh.mid2[0], dy = ty - sh.mid2[1], r = Math.hypot(dx, dy) || 1, a = Math.atan2(dy, dx);
+        const wave = WAVE * L.energy * (Math.sin(time * 1.1 + a * 3 + sh.phase) + 0.5 * Math.sin(time * 0.7 - a * 2 + sh.phase));
+        const grow = (swell - 1) * r + wave;
+        tx += (dx / r) * grow * live; ty += (dy / r) * grow * live;
+        // and the mouse pushes the liquid away where it touches it
+        if (L.hovered && pointer) {
+          const mx = tx - pointer[0], my = ty - pointer[1], d = Math.hypot(mx, my) || 1;
+          if (d < PUSH_REACH) { const f = PUSH * (1 - d / PUSH_REACH) ** 2 * L.energy * live; tx += (mx / d) * f; ty += (my / d) * f; }
+        }
+      }
       return [p[0] + (tx - p[0]) * e, p[1] + (ty - p[1]) * e];
     })));
   });
   L.holes.forEach(({ path, points, middle }) => {
-    const e = ooze(clamp01(L.t * (1 + OOZE_SPREAD) - OOZE_SPREAD * 0.6)) * (1 - L.w);   // the second version has no hole: it closes
+    const e = ooze(clamp01(L.t * (1 + OOZE_SPREAD) - OOZE_SPREAD * 0.6)) * (1 - L.w);   // the third shape has no hole: it closes
     path.style.visibility = showing && e > 0.01 ? "visible" : "hidden";
     path.setAttribute("d", pathFrom(points.map((p) => [middle[0] + (p[0] - middle[0]) * e, middle[1] + (p[1] - middle[1]) * e])));
   });
 }
-// one animation loop for the whole word
+// one animation loop for the whole word: it runs as long as any letter is liquid
 let morphLast = null, morphRunning = false;
 function morphFrame(now) {
-  const step = morphLast === null ? 0 : (now - morphLast) / MORPH_TIME;
+  const dt = morphLast === null ? 0 : Math.min(0.05, (now - morphLast) / 1000);
   morphLast = now;
   let busy = false;
   visionLetters.forEach((L) => {
-    if (L.t === L.target && L.target !== 1 && L.w === 0) return;
+    if (L.t === 0 && L.target === 0) return;
+    const step = (dt * 1000) / MORPH_TIME;
     L.t = L.target > L.t ? Math.min(L.target, L.t + step) : Math.max(L.target, L.t - step);
-    const flowing = L.target === 1 && L.t === 1;   // (checked after this step, so the flow starts right away)
-    if (flowing) {
-      // still hovered and liquid: it keeps flowing slowly back and forth between the two liquid versions
-      if (L.flowStart === null) L.flowStart = now;
-      L.w = 0.5 - 0.5 * Math.cos((2 * Math.PI * (now - L.flowStart)) / FLOW_TIME);
-    } else {
-      L.flowStart = null;
-      L.w = Math.max(0, L.w - step * 1.5);   // leaving: it lets go of the second version as it oozes back
-    }
-    drawLetter(L);
-    if (L.t !== L.target || flowing || L.w > 0) busy = true;
+    if (L.target === 1 && L.t === 1) L.w = Math.min(1, L.w + dt * 1000 / TO_THIRD_TIME);   // on into the third shape
+    if (L.target === 0) L.w = Math.max(0, L.w - step * 1.5);
+    // how lively it is: calm on its own, much more while the mouse is on it
+    const lively = L.target === 0 ? 0 : L.hovered ? 1 : CALM;
+    L.energy += (lively - L.energy) * Math.min(1, dt * (lively > L.energy ? 2 : 0.8));
+    drawLetter(L, now / 1000);
+    busy = true;
   });
   if (busy) requestAnimationFrame(morphFrame);
   else { morphRunning = false; morphLast = null; }
@@ -454,6 +471,13 @@ function goTo(L, value) {
   L.target = value;
   if (!morphRunning) { morphRunning = true; requestAnimationFrame(morphFrame); }
 }
+
+// where the mouse is, in about units (for the liquid to move away from it)
+let pointer = null;
+stage.addEventListener("mousemove", (event) => {
+  const b = stage.getBoundingClientRect(), u = b.width / 1440 * ABOUT_SCALE;
+  pointer = [(event.clientX - b.left) / u, WORD_MID + (event.clientY - b.top - b.height / 2) / u];
+});
 
 // each letter has a spot that feels the mouse: around its shapes and its organic shape
 visionLetters.forEach((L) => {
@@ -465,7 +489,7 @@ visionLetters.forEach((L) => {
   stage.appendChild(el);
   L.el = el;
   el.addEventListener("mouseenter", (event) => {
-    clearTimeout(L.leaveTimer);
+    L.hovered = true;
     if (L.t === 0) {
       // the ooze starts where the mouse came in
       const b = el.getBoundingClientRect();
@@ -473,20 +497,16 @@ visionLetters.forEach((L) => {
                 L.area.y0 + ((event.clientY - b.top) / b.height) * (L.area.y1 - L.area.y0)];
       delays(L);
     }
-    goTo(L, 1);
+    goTo(L, 1);   // once touched it turns liquid and stays liquid (it does not go back when the mouse leaves)
   });
-  // it stays organic for a moment, then oozes back
-  el.addEventListener("mouseleave", () => {
-    clearTimeout(L.leaveTimer);
-    L.leaveTimer = setTimeout(() => goTo(L, 0), STAY_TIME);
-  });
+  el.addEventListener("mouseleave", () => { L.hovered = false; });
 });
 
 // Called by draw(): the drawing and the hover spots follow the screen; they only work at the very end
 function placeMorph(moved, u, screenH) {
   const atEnd = moved >= TOTAL_MOVE - 0.5;
   stage.classList.toggle("is-at-end", atEnd);
-  if (!atEnd) visionLetters.forEach((L) => { if (L.target !== 0) { clearTimeout(L.leaveTimer); goTo(L, 0); } });
+  if (!atEnd) visionLetters.forEach((L) => { if (L.target !== 0) { L.hovered = false; goTo(L, 0); } });   // scrolling back: sharp again
   const w = stage.clientWidth / u, h = screenH / u;
   morphSvg.setAttribute("viewBox", `0 ${(WORD_MID - h / 2).toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)}`);
   visionLetters.forEach((L) => {
