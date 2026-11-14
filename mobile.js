@@ -3,8 +3,7 @@
 //    A phone also sends "mouse" events after every tap (mouseenter, mouseleave, focus…), so the hover
 //    effects use this to tell a real mouse from a finger, and give fingers their own tap effects.
 // 2. The rotate prompt: on a phone held upright (portrait), a white screen asks the visitor to turn
-//    the phone sideways. It goes away by itself once the phone is turned, and "continue anyway" hides it
-//    for the rest of the visit (remembered in sessionStorage).
+//    the phone sideways. It goes away by itself once the phone is turned (there is no way around it).
 // 3. The small names on the edges (ELANA / GERTEL): on a phone the first tap shows "home|" / "about me|",
 //    a second tap opens the link.
 // This file is loaded before the page's other scripts, so they can use window.touchedJustNow and
@@ -25,9 +24,6 @@
   if (isPhone) document.documentElement.classList.add("is-phone");
 
   // ----- 2. The rotate prompt -----
-  const DISMISSED_KEY = "rotate-prompt-dismissed";
-  let dismissed = false;
-  try { dismissed = sessionStorage.getItem(DISMISSED_KEY) === "yes"; } catch (e) { /* storage blocked: just ask again */ }
   const portrait = window.matchMedia("(orientation: portrait)");
   const waiting = [];   // things to do once the prompt is gone (the home page's opening waits for it)
 
@@ -46,8 +42,7 @@
       <span class="rotate-piece" data-piece="E" style="--c: 0; --r: 2"></span>
       <span class="rotate-piece" data-piece="F" style="--c: 1; --r: 2"></span>
     </div>
-    <p class="rotate-prompt-text">Rotate your screen for this experience<span class="flow-edge-cursor"> |</span></p>
-    <button class="rotate-prompt-skip" type="button">continue anyway</button>`;
+    <p class="rotate-prompt-text">Rotate your screen for this experience<span class="flow-edge-cursor"> |</span></p>`;
 
   // ----- The puzzle: upright → on its side → upright, again and again -----
   // Squares (in whole squares): A B / C D / E F upright. Each step slides one piece straight into an empty
@@ -104,18 +99,13 @@
   }
 
   function isShowing() {
-    return isPhone && portrait.matches && !dismissed;
+    return isPhone && portrait.matches;
   }
   function update() {
     const showing = isShowing();
     document.documentElement.classList.toggle("rotate-prompt-open", showing);
     if (!showing) waiting.splice(0).forEach((todo) => todo());
   }
-  prompt.querySelector(".rotate-prompt-skip").addEventListener("click", () => {
-    dismissed = true;
-    try { sessionStorage.setItem(DISMISSED_KEY, "yes"); } catch (e) { /* not remembered: fine */ }
-    update();
-  });
   // while it shows, a finger on it does not scroll the page under it
   prompt.addEventListener("touchmove", (event) => event.preventDefault(), { passive: false });
 
