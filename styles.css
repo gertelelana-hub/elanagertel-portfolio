@@ -1766,8 +1766,7 @@ body.lab-page {
    centred on its side too (and back before it stands up again). Its bottom stays put. */
 .rotate-puzzle {
   position: absolute;
-  left: calc(50% - var(--cell));
-  animation: rotate-puzzle-centre 7s infinite;
+  left: calc(50% - var(--cell));   /* mobile.js moves the pieces (and glides the box) */
   top: calc(50% - 271 * var(--k));
   width: calc(3 * var(--cell));
   height: calc(3 * var(--cell));
@@ -1781,34 +1780,6 @@ body.lab-page {
   height: var(--cell);
   background-color: var(--color-text);
   outline: 0.5px solid var(--color-text);   /* no thin white line between touching squares */
-}
-
-/* The puzzle (7 s, again and again): upright for a moment; the top right piece slides right and then
-   down two squares; the top left piece slides right two squares and then down one: now it lies on its side.
-   A moment later they go back the same way, the last one to move going first. */
-.rotate-piece-a { animation: rotate-piece-a 7s infinite; }
-.rotate-piece-b { animation: rotate-piece-b 7s infinite; }
-
-@keyframes rotate-puzzle-centre {
-  0%, 47%  { transform: translateX(0); animation-timing-function: ease-in-out; }
-  52%, 57% { transform: translateX(calc(-0.5 * var(--cell))); animation-timing-function: ease-in-out; }
-  62%, 100% { transform: translateX(0); }
-}
-
-@keyframes rotate-piece-a {
-  0%, 12%  { transform: translate(0, 0); animation-timing-function: ease-in-out; }
-  19%      { transform: translate(var(--cell), 0); animation-timing-function: ease-in-out; }
-  30%, 79% { transform: translate(var(--cell), calc(2 * var(--cell))); animation-timing-function: ease-in-out; }
-  90%      { transform: translate(var(--cell), 0); animation-timing-function: ease-in-out; }
-  97%, 100% { transform: translate(0, 0); }
-}
-
-@keyframes rotate-piece-b {
-  0%, 30%  { transform: translate(0, 0); animation-timing-function: ease-in-out; }
-  40%      { transform: translate(calc(2 * var(--cell)), 0); animation-timing-function: ease-in-out; }
-  47%, 62% { transform: translate(calc(2 * var(--cell)), var(--cell)); animation-timing-function: ease-in-out; }
-  69%      { transform: translate(calc(2 * var(--cell)), 0); animation-timing-function: ease-in-out; }
-  79%, 100% { transform: translate(0, 0); }
 }
 
 /* "Rotate your screen for this experience |" (Figma: Frame 212, Averia Serif Libre 12, in the middle of the screen) */
@@ -1843,10 +1814,6 @@ body.lab-page {
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .rotate-puzzle, .rotate-piece-a, .rotate-piece-b { animation: none; }
 }
 
 @media (hover: none) and (pointer: coarse) {
