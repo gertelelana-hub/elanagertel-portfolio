@@ -42,7 +42,10 @@
       <span class="rotate-piece" data-piece="E" style="--c: 0; --r: 2"></span>
       <span class="rotate-piece" data-piece="F" style="--c: 1; --r: 2"></span>
     </div>
-    <p class="rotate-prompt-text">Rotate your screen for this experience<span class="flow-edge-cursor"> |</span></p>`;
+    <p class="rotate-prompt-text" aria-label="Rotate your screen for this experience">
+      <span class="rotate-prompt-ghost" aria-hidden="true">Rotate your screen for this experience |</span>
+      <span class="rotate-prompt-live" aria-hidden="true"><span class="rotate-prompt-typed"></span><span class="flow-edge-cursor"> |</span></span>
+    </p>`;
 
   // ----- The puzzle: upright → on its side → upright, again and again -----
   // Squares (in whole squares): A B / C D / E F upright. Each step slides one piece straight into an empty
@@ -96,6 +99,26 @@
       { offset: at(sideStart + 2 * GLIDE_MS + HOLD_SIDE), transform: "translateX(0px)" },
       { offset: 1, transform: "translateX(0px)" },
     ], { duration: total, iterations: Infinity });
+
+    // The sentence types itself out while the pieces go from upright to sideways, stays while it lies on
+    // its side, and erases itself while they go back (the bar stands still while it types or erases)
+    const words = "Rotate your screen for this experience";
+    const text = prompt.querySelector(".rotate-prompt-text");
+    const typed = prompt.querySelector(".rotate-prompt-typed");
+    const glide = box.getAnimations()[0];
+    const backStart = sideStart + 2 * GLIDE_MS + HOLD_SIDE;
+    cancelAnimationFrame(startPuzzle.frame);
+    (function follow() {
+      const ms = (glide.currentTime || 0) % total;
+      let part = 0;   // how much of the sentence shows (0 to 1)
+      if (ms >= HOLD_UPRIGHT && ms < sideStart) part = (ms - HOLD_UPRIGHT) / there;
+      else if (ms >= sideStart && ms < backStart) part = 1;
+      else if (ms >= backStart) part = 1 - (ms - backStart) / there;
+      const n = Math.round(Math.max(0, Math.min(1, part)) * words.length);
+      if (typed.textContent.length !== n) typed.textContent = words.slice(0, n);
+      text.classList.toggle("is-typing", part > 0 && part < 1);
+      startPuzzle.frame = requestAnimationFrame(follow);
+    })();
   }
 
   function isShowing() {

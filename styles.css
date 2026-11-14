@@ -1797,6 +1797,22 @@ body.lab-page {
   white-space: nowrap;
 }
 
+/* It types itself out (mobile.js): an invisible copy keeps the sentence's full width, so it never moves;
+   the typed letters and the bar lie on top of it, from its left edge */
+.rotate-prompt-ghost {
+  visibility: hidden;
+}
+
+.rotate-prompt-live {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.rotate-prompt-text.is-typing .flow-edge-cursor {
+  animation: none;
+}
+
 @media (hover: none) and (pointer: coarse) {
   /* No grey flash over things you tap */
   a,
