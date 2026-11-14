@@ -2,6 +2,9 @@
 // - the four on the first screen (.lab-intro) a moment after the page opens; they then scroll up and out
 //   with the page,
 // - the four on the black end (.lab-info) once they come onto the screen.
+// - the last story paragraph (on the last fold; the others just scroll in, stick and scroll out): once it
+//   has come fully onto the screen; while it comes up only its bar shows, blinking. It types very fast (with a tiny stop
+//   after each sentence) and then scrolls up and out with the page as before.
 // All the texts of a group type at the same time, each with its own bar; the bar stands still while it
 // types and goes away once its text is typed.
 // An invisible copy of each text keeps it at its full size, and the line breaks are measured on it first,
@@ -70,9 +73,31 @@
     }, FIRST_WAIT);
   }
 
+  // A story paragraph types on its own, quickly, with a tiny stop after each sentence
+  const STORY_STEP = 10;       // ms between two steps
+  const STORY_LETTERS = 2;     // letters typed in each step (6 while it catches up)
+  const STORY_SENTENCE = 110;  // ms more after a full stop, a question mark or an exclamation mark
+  function typeStory(t) {
+    t.started = true;
+    t.el.classList.add("is-typing");
+    (function next() {
+      // once it starts sliding up and out, it catches up (3 times as fast), so it is typed before it leaves
+      const leaving = t.el.getBoundingClientRect().bottom < storyPlace() - 20;
+      const before = t.shown;
+      t.shown = Math.min(t.full.length, t.shown + STORY_LETTERS * (leaving ? 3 : 1));
+      t.typed.textContent = t.withBreaks.slice(0, t.shown);
+      if (t.shown >= t.full.length) { t.el.classList.remove("is-typing"); t.el.classList.add("is-done"); return; }
+      // a tiny stop if a sentence ended in this step
+      const ended = /[.?!] /.test(t.full.slice(before, t.shown + 1));
+      setTimeout(next, STORY_STEP + (ended && !leaving ? STORY_SENTENCE : 0));
+    })();
+  }
+
   const intro = [...document.querySelectorAll(".lab-intro")].map(prepare);
   const info = [...document.querySelectorAll(".lab-info")].map(prepare);
-  const all = intro.concat(info);
+  const story = [...document.querySelectorAll(".lab-text-last .lab-text")].map(prepare);   // only the last one (the others just scroll)
+  story.forEach((t) => t.el.classList.replace("is-waiting", "is-coming"));   // its bar shows while it comes up
+  const all = intro.concat(info, story);
   if (!all.length) return;
 
   document.fonts.ready.then(() => {
@@ -87,4 +112,19 @@
     }
   });
   window.addEventListener("resize", () => all.forEach(measure));
+
+  // A story paragraph is in its place once its bottom has come up to where it sticks
+  // (19.91 Figma pixels above the bottom of the screen, see .lab-text in styles.css)
+  function storyPlace() { return window.innerHeight - 19.91 * (document.documentElement.clientWidth / 1440) + 2; }
+  function checkStory() {
+    story.forEach((t) => {
+      if (!t.started && t.el.getBoundingClientRect().bottom <= storyPlace()) typeStory(t);
+    });
+  }
+  if (story.length) {
+    document.fonts.ready.then(() => {
+      checkStory();
+      window.addEventListener("scroll", checkStory, { passive: true });
+    });
+  }
 })();

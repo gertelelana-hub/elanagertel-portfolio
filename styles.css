@@ -1154,6 +1154,11 @@ body.lab-page {
   animation: none;
 }
 
+/* The story paragraphs (.lab-text) are sticky: the typed letters lie on top of the invisible copy */
+.lab-text .type-live {
+  display: block;
+}
+
 /* ----- Hovering a title: the shapes reshape into organic letters (lab.js) ----- */
 /* Each letter's spot that feels the mouse (lab.js sets its place and size) */
 .lab-title-hover {
@@ -1384,7 +1389,9 @@ body.lab-page {
   z-index: 1;
 }
 
-/* ----- The story paragraphs (Figma: Crimson Text 13.64, a narrow column on the left edge, white with "exclusion") -----
+/* ----- The story paragraphs (Figma: Averia Serif Libre 12, line height 148%, letter spacing 8%; a column 170 wide
+   at x 65, the layout grid's left margin; white with "exclusion", so black on white).
+   Only the last one types itself out (type-texts.js). -----
    Each paragraph lies in a track (like the pictures). It comes up from the bottom of the screen and
    sticks there, 19.91 above the bottom edge, until the next paragraph comes up and pushes it out.
    --x, --w: its left edge and width (Figma pixels); --top: where it starts (from the page's chain of places).
@@ -1408,10 +1415,11 @@ body.lab-page {
   bottom: calc(19.91 * var(--u));   /* the same distance from the bottom as it used to have from the top */
   width: calc(var(--w) * var(--u));
   margin: 0;
-  font-family: "Crimson Text", Georgia, serif;
-  font-size: max(11px, calc(13.64 * var(--u)));
-  line-height: 1.46;
-  letter-spacing: 0.06em;
+  font-family: var(--font-edge);
+  font-size: max(9px, calc(12 * var(--u)));
+  font-weight: 400;
+  line-height: 1.48;
+  letter-spacing: 0.08em;
   color: #ffffff;
 }
 
