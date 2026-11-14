@@ -1744,18 +1744,14 @@ body.lab-page {
 }
 
 .rotate-prompt-open .rotate-prompt {
+  --k: calc(100vw / 393);       /* one Figma pixel of the phone frame (393 wide) */
+  --cell: calc(67.93 * var(--k));   /* one square piece */
   position: fixed;
   z-index: 100;                 /* over everything */
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 28px;
-  padding: 32px 16px;
+  display: block;
   background-color: var(--color-background);
   color: var(--color-text);
-  text-align: center;
   touch-action: none;           /* a finger on it does not scroll the page under it */
 }
 
@@ -1764,50 +1760,78 @@ body.lab-page {
   overflow: hidden;             /* the page under it does not scroll */
 }
 
-/* The drawing: a black phone that turns on its side and back, with an arrow */
-.rotate-prompt-icon {
-  width: 120px;
-  height: 120px;
-  overflow: visible;
+/* The six square pieces (Figma: Frame 211, 2 × 3 squares of 67.93, centred, its top 271 above the middle of
+   the screen). The box is 3 squares wide; upright the pieces fill its two left columns (centred, like Figma),
+   on their side its two bottom rows; then the whole shape glides half a square to the left, so it is
+   centred on its side too (and back before it stands up again). Its bottom stays put. */
+.rotate-puzzle {
+  position: absolute;
+  left: calc(50% - var(--cell));
+  animation: rotate-puzzle-centre 7s infinite;
+  top: calc(50% - 271 * var(--k));
+  width: calc(3 * var(--cell));
+  height: calc(3 * var(--cell));
 }
 
-.rotate-prompt-phone {
-  fill: var(--color-text);
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: rotate-prompt-turn 2.6s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+.rotate-piece {
+  position: absolute;
+  left: calc(var(--c) * var(--cell));
+  top: calc(var(--r) * var(--cell));
+  width: var(--cell);
+  height: var(--cell);
+  background-color: var(--color-text);
+  outline: 0.5px solid var(--color-text);   /* no thin white line between touching squares */
 }
 
-.rotate-prompt-screen {
-  fill: var(--color-background);
+/* The puzzle (7 s, again and again): upright for a moment; the top right piece slides right and then
+   down two squares; the top left piece slides right two squares and then down one: now it lies on its side.
+   A moment later they go back the same way, the last one to move going first. */
+.rotate-piece-a { animation: rotate-piece-a 7s infinite; }
+.rotate-piece-b { animation: rotate-piece-b 7s infinite; }
+
+@keyframes rotate-puzzle-centre {
+  0%, 47%  { transform: translateX(0); animation-timing-function: ease-in-out; }
+  52%, 57% { transform: translateX(calc(-0.5 * var(--cell))); animation-timing-function: ease-in-out; }
+  62%, 100% { transform: translateX(0); }
 }
 
-.rotate-prompt-arrow {
-  fill: none;
-  stroke: var(--color-text);
-  stroke-width: 4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+@keyframes rotate-piece-a {
+  0%, 12%  { transform: translate(0, 0); animation-timing-function: ease-in-out; }
+  19%      { transform: translate(var(--cell), 0); animation-timing-function: ease-in-out; }
+  30%, 79% { transform: translate(var(--cell), calc(2 * var(--cell))); animation-timing-function: ease-in-out; }
+  90%      { transform: translate(var(--cell), 0); animation-timing-function: ease-in-out; }
+  97%, 100% { transform: translate(0, 0); }
 }
 
-@keyframes rotate-prompt-turn {
-  0%, 20%   { transform: rotate(0deg); }
-  45%, 75%  { transform: rotate(90deg); }
-  100%      { transform: rotate(0deg); }
+@keyframes rotate-piece-b {
+  0%, 30%  { transform: translate(0, 0); animation-timing-function: ease-in-out; }
+  40%      { transform: translate(calc(2 * var(--cell)), 0); animation-timing-function: ease-in-out; }
+  47%, 62% { transform: translate(calc(2 * var(--cell)), var(--cell)); animation-timing-function: ease-in-out; }
+  69%      { transform: translate(calc(2 * var(--cell)), 0); animation-timing-function: ease-in-out; }
+  79%, 100% { transform: translate(0, 0); }
 }
 
-/* "turn your phone sideways for the best experience|" (Averia Serif Libre bold, like "contact me") */
+/* "Rotate your screen for this experience |" (Figma: Frame 212, Averia Serif Libre 12, in the middle of the screen) */
 .rotate-prompt-text {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   margin: 0;
   font-family: var(--font-edge);
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.48;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.16;
   letter-spacing: 0.08em;
+  white-space: nowrap;
 }
 
-/* "continue anyway": small and underlined, with room around it for a finger */
+/* "continue anyway": small and underlined near the bottom, with room around it for a finger */
 .rotate-prompt-skip {
+  position: absolute;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%);
   padding: 12px 16px;
   border: none;
   background: none;
@@ -1822,7 +1846,7 @@ body.lab-page {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rotate-prompt-phone { animation: none; transform: rotate(90deg); }
+  .rotate-puzzle, .rotate-piece-a, .rotate-piece-b { animation: none; }
 }
 
 @media (hover: none) and (pointer: coarse) {

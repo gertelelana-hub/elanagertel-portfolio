@@ -35,17 +35,18 @@
   prompt.className = "rotate-prompt";
   prompt.setAttribute("role", "dialog");
   prompt.setAttribute("aria-label", "Turn your phone sideways");
-  // the drawing: a black phone that turns on its side, with a small arrow showing which way
+  // Figma "phone first dcreen": a black upright rectangle of six square pieces (2 across, 3 down) that
+  // puzzles its way to lying on its side (3 across, 2 down) and back, and the text in the middle of the screen
   prompt.innerHTML = `
-    <svg class="rotate-prompt-icon" viewBox="0 0 120 120" aria-hidden="true">
-      <path class="rotate-prompt-arrow" d="M30 24 A44 44 0 0 1 96 30" />
-      <path class="rotate-prompt-arrow" d="M88 22 L96 30 L86 35" />
-      <g class="rotate-prompt-phone">
-        <rect x="42" y="26" width="36" height="68" rx="7" />
-        <rect class="rotate-prompt-screen" x="46" y="33" width="28" height="52" rx="2" />
-      </g>
-    </svg>
-    <p class="rotate-prompt-text">turn your phone sideways<br>for the best experience<span class="flow-edge-cursor">|</span></p>
+    <div class="rotate-puzzle" aria-hidden="true">
+      <span class="rotate-piece rotate-piece-a" style="--c: 1; --r: 0"></span>
+      <span class="rotate-piece rotate-piece-b" style="--c: 0; --r: 0"></span>
+      <span class="rotate-piece" style="--c: 0; --r: 1"></span>
+      <span class="rotate-piece" style="--c: 1; --r: 1"></span>
+      <span class="rotate-piece" style="--c: 0; --r: 2"></span>
+      <span class="rotate-piece" style="--c: 1; --r: 2"></span>
+    </div>
+    <p class="rotate-prompt-text">Rotate your screen for this experience<span class="flow-edge-cursor"> |</span></p>
     <button class="rotate-prompt-skip" type="button">continue anyway</button>`;
 
   function isShowing() {
