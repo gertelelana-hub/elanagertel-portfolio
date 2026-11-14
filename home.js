@@ -297,6 +297,11 @@ function updateHover() {
 function hoverOn(key) { wanted = key; updateHover(); }
 function hoverOff(key) { if (wanted === key) wanted = null; updateHover(); }
 
+// Phones: a tap also sends "mouse" events (mouseenter, focus…). Those are ignored right after a finger
+// touched the screen (window.touchedJustNow, in mobile.js); taps get their own effects instead.
+const byFinger = () => typeof window.touchedJustNow === "function" && window.touchedJustNow();
+const photoShow = {};      // each picture's show(on) (below), so a tap can use it too
+
 // Every picture scatters the shapes (also when reached with the keyboard), turns sharp,
 // and shows its caption and year
 ITEMS.forEach((item, i) => {
@@ -308,16 +313,35 @@ ITEMS.forEach((item, i) => {
     const key = typeof PHOTO_SCATTERS !== "undefined" && PHOTO_SCATTERS[i] ? "scatter-" + i : "scatter";
     on ? hoverOn(key) : hoverOff(key);
   }
-  el.addEventListener("mouseenter", () => show(true));
-  el.addEventListener("mouseleave", () => show(false));
-  el.addEventListener("focus", () => show(true));
-  el.addEventListener("blur", () => show(false));
+  // (a tap on a phone also sends these: then they do nothing, see "tapping a picture" below)
+  el.addEventListener("mouseenter", () => { if (!byFinger()) show(true); });
+  el.addEventListener("mouseleave", () => { if (!byFinger()) show(false); });
+  el.addEventListener("focus", () => { if (!byFinger()) show(true); });
+  el.addEventListener("blur", () => { if (!byFinger()) show(false); });
+  photoShow[i] = show;
+});
+
+// ----- Phones: tapping a picture -----
+// The first tap does what hovering does (the shapes scatter, the caption and year show);
+// a second tap on the same picture opens its project (see goToProject below).
+// A tap anywhere else puts everything back.
+let tappedPhoto = null;    // the picture shown by a tap (its number in ITEMS), or null
+function tapPhoto(i) {
+  if (tappedPhoto !== null && tappedPhoto !== i) photoShow[tappedPhoto](false);
+  tappedPhoto = i;
+  photoShow[i](true);
+}
+document.addEventListener("click", (event) => {
+  if (tappedPhoto === null || !byFinger() || event.target.closest(".flow-photo")) return;
+  photoShow[tappedPhoto](false);
+  tappedPhoto = null;
 });
 
 // Every big letter: an invisible area over the letter's place in the gallery feels the mouse.
 // It is a little bigger than the letter (the magnet reacts just before they touch), and it stays
 // put, so the letter can slide away without the mouse "leaving" it.
 const MAGNET_REACH = 12;   // Figma pixels
+const TAP_LETTER_TIME = 1600;   // ms a tapped letter stays pushed away (phones)
 LETTER_HOVER.forEach((letter) => {
   const area = document.createElement("div");
   area.className = "flow-letter-area";
@@ -327,10 +351,23 @@ LETTER_HOVER.forEach((letter) => {
   area.style.setProperty("--h", bottom - top + 2 * MAGNET_REACH);
   let plan = null;   // the escape this letter is doing (or wants to do) for the mouse
   area.addEventListener("mouseenter", (event) => {
+    if (byFinger()) return;
     plan = escapePlan(letter, area, event);
     hoverOn(plan);
   });
-  area.addEventListener("mouseleave", () => hoverOff(plan));
+  area.addEventListener("mouseleave", () => { if (!byFinger()) hoverOff(plan); });
+  // Phones: a tap pushes the letter away from the finger, and after a moment it slides back
+  let backTimer = null;
+  area.addEventListener("click", (event) => {
+    if (!byFinger()) return;
+    mouseMove = [0, 0];   // a finger does not "move": the letter is pushed away from where it was tapped
+    if (plan) hoverOff(plan);
+    plan = escapePlan(letter, area, event);
+    hoverOn(plan);
+    clearTimeout(backTimer);
+    const tapped = plan;
+    backTimer = setTimeout(() => hoverOff(tapped), TAP_LETTER_TIME);
+  });
   flow.appendChild(area);
 });
 
@@ -437,8 +474,17 @@ function playToTitle(plan, link, shift, size = 1) {
   setTimeout(() => { window.location.href = link; }, plan.total + 150 + (size === 1 ? 0 : SHRINK + 50));
 }
 
+// (phones: the first tap on a picture only shows it, see "tapping a picture" above; the second opens it)
 ITEMS.forEach((item, i) => {
-  if (item.link) itemElements[i].addEventListener("click", (event) => goToProject(event, i));
+  if (item.type !== "photo") return;
+  itemElements[i].addEventListener("click", (event) => {
+    if (byFinger() && tappedPhoto !== i) {
+      event.preventDefault();
+      if (flow.classList.contains("is-done") && !leaving) tapPhoto(i);
+      return;
+    }
+    if (item.link) goToProject(event, i);
+  });
 });
 
 // The opening is over: the gallery is ready for hovering
@@ -481,9 +527,12 @@ function playOpening() {
 
 // Visitors who asked their device for less motion see the gallery right away, and so does anyone
 // coming back from another page through the small name on the edges (index.html?gallery)
+// On a phone held upright, the opening waits until the rotate prompt (mobile.js) is gone, so it is not missed.
 const skipIntro = new URLSearchParams(window.location.search).has("gallery");
 if (skipIntro || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   showGallery();
+} else if (window.rotatePrompt) {
+  window.rotatePrompt.whenGone(playOpening);
 } else {
   playOpening();
 }

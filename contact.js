@@ -67,11 +67,27 @@
   }
 
   // ----- The mouse (and the keyboard: moving onto "contact me" with Tab works the same) -----
+  // (a tap on a phone also sends these; it is handled below instead, so they do nothing then)
+  const byFinger = () => typeof window.touchedJustNow === "function" && window.touchedJustNow();
   contact.setAttribute("tabindex", "0");
-  contact.addEventListener("mouseenter", () => setOpen(true));
-  contact.addEventListener("focus", () => setOpen(true));
-  contact.addEventListener("mouseleave", leaveSoon);
-  contact.addEventListener("blur", leaveSoon);
-  list.addEventListener("mouseenter", () => clearTimeout(leaveTimer));
-  list.addEventListener("mouseleave", leaveSoon);
+  contact.addEventListener("mouseenter", () => { if (!byFinger()) setOpen(true); });
+  contact.addEventListener("focus", () => { if (!byFinger()) setOpen(true); });
+  contact.addEventListener("mouseleave", () => { if (!byFinger()) leaveSoon(); });
+  contact.addEventListener("blur", () => { if (!byFinger()) leaveSoon(); });
+  list.addEventListener("mouseenter", () => { if (!byFinger()) clearTimeout(leaveTimer); });
+  list.addEventListener("mouseleave", () => { if (!byFinger()) leaveSoon(); });
+
+  // ----- A finger (phones): a tap on "contact me" opens or closes the details;
+  //       a tap anywhere else, or a few seconds without a tap, closes them -----
+  const TOUCH_OPEN_TIME = 8000;   // ms the details stay open after a tap
+  contact.addEventListener("click", () => {
+    if (!byFinger()) return;
+    setOpen(!open);
+    if (open) leaveTimer = setTimeout(() => setOpen(false), TOUCH_OPEN_TIME);
+  });
+  document.addEventListener("click", (event) => {
+    if (!byFinger() || !open) return;
+    if (event.target.closest(".flow-contact, .flow-contact-lines")) return;
+    setOpen(false);
+  });
 })();

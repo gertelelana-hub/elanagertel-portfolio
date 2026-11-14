@@ -24,6 +24,13 @@
   /* Text: 18px in the 1440px frame, growing and shrinking with the stage,
      but never smaller than 12px so it stays readable on phones */
   --text-font-size: max(12px, var(--stage-width) * 18.16 / 1440);
+
+  /* Phones only (see "PHONES" at the end of this file): the smallest sizes, so texts stay readable */
+  --phone-small-text: 10px;      /* contact me, home| / about me|, the projects' short texts */
+  --phone-story-text: 10px;      /* the story paragraphs on the project pages */
+  --phone-caption-text: 11px;    /* the picture captions on the home page */
+  --phone-logo-elana: 72px;      /* the small ELANA on the left edge (GERTEL gets the same height) */
+  --phone-media-max-h: 88svh;    /* pictures and videos on the project pages: never taller than this */
 }
 
 /* ===== Font: Simpler Pro by Hagilda (stored in fonts/) ===== */
@@ -1714,4 +1721,298 @@ body.lab-page {
   stroke-width: 1.5px;
   stroke-linejoin: miter;
   vector-effect: non-scaling-stroke;
+}
+
+/* ===================================================================
+   PHONES
+   Everything below only changes phones and tablets (a touch screen with no mouse), so the computer
+   version stays exactly as it is. mobile.js adds the tap effects and the rotate prompt.
+   =================================================================== */
+
+/* ----- The rotate prompt (mobile.js): a white screen asking to turn the phone sideways -----
+   mobile.js only adds it on phones; it shows while the phone is upright (html.rotate-prompt-open) */
+.rotate-prompt {
+  display: none;
+}
+
+.rotate-prompt-open .rotate-prompt {
+  position: fixed;
+  z-index: 100;                 /* over everything */
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 32px 16px;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  text-align: center;
+  touch-action: none;           /* a finger on it does not scroll the page under it */
+}
+
+.rotate-prompt-open,
+.rotate-prompt-open body {
+  overflow: hidden;             /* the page under it does not scroll */
+}
+
+/* The drawing: a black phone that turns on its side and back, with an arrow */
+.rotate-prompt-icon {
+  width: 120px;
+  height: 120px;
+  overflow: visible;
+}
+
+.rotate-prompt-phone {
+  fill: var(--color-text);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: rotate-prompt-turn 2.6s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.rotate-prompt-screen {
+  fill: var(--color-background);
+}
+
+.rotate-prompt-arrow {
+  fill: none;
+  stroke: var(--color-text);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@keyframes rotate-prompt-turn {
+  0%, 20%   { transform: rotate(0deg); }
+  45%, 75%  { transform: rotate(90deg); }
+  100%      { transform: rotate(0deg); }
+}
+
+/* "turn your phone sideways for the best experience|" (Averia Serif Libre bold, like "contact me") */
+.rotate-prompt-text {
+  margin: 0;
+  font-family: var(--font-edge);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.48;
+  letter-spacing: 0.08em;
+}
+
+/* "continue anyway": small and underlined, with room around it for a finger */
+.rotate-prompt-skip {
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  font-family: var(--font-edge);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--color-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rotate-prompt-phone { animation: none; transform: rotate(90deg); }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  /* No grey flash over things you tap */
+  a,
+  button,
+  .flow-contact,
+  .flow-photo,
+  .flow-letter-area,
+  .lab-title-hover,
+  .about-letter-hover {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ----- On every page: "contact me" and the small names on the edges ----- */
+  /* a little bigger, so they are readable; some invisible room around them for a finger
+     (padding with the same negative margin: they stay exactly where they were) */
+  .flow-contact,
+  .flow-contact-line,
+  .flow-edge-text {
+    font-size: max(var(--phone-small-text), calc(12 * var(--u)));
+  }
+
+  .flow-contact {
+    padding: 8px;
+    margin: -8px;
+  }
+
+  /* the details start after "contact me" (it is wider now), each line a little taller to tap */
+  .flow-contact-lines {
+    left: max(calc(196 * var(--u)), calc(65 * var(--u) + 100px));
+    top: calc(14 * var(--u) - 4px);
+  }
+
+  .flow-contact-line {
+    padding: 4px 0;
+  }
+
+  .flow-edge {
+    padding: 8px;
+    margin: -8px;
+  }
+
+  .flow-edge-left .flow-logo  { width: max(calc(108.49 * var(--u)), var(--phone-logo-elana)); }
+  .flow-edge-right .flow-logo { width: max(calc(130 * var(--u)), var(--phone-logo-elana) * 130 / 108.49); }
+
+  /* A finger has no hover: the first tap shows "home|" / "about me|" (mobile.js adds .is-open),
+     the second tap opens the link */
+  .flow-edge:hover .flow-edge-text {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  .flow-edge.is-open .flow-edge-text {
+    clip-path: inset(0 0 0 0);
+  }
+
+  /* ----- Home page: the captions and years over the pictures (shown after a tap) ----- */
+  .flow-photo-caption {
+    font-size: max(var(--phone-caption-text), calc(19.41 * var(--u)));
+  }
+
+  .flow-photo-year {
+    font-size: max(9px, calc(11.83 * var(--u)));
+  }
+
+  /* ----- Project pages ----- */
+  /* The short texts: readable, and as much wider as they are bigger, so they break into the same rows */
+  .lab-intro,
+  .lab-info {
+    font-size: max(var(--phone-small-text), calc(12 * var(--u)));
+  }
+
+  .lab-info-wide {
+    /* but never wider than the room up to the next text (the next column starts 395 further) */
+    width: max(calc(246 * var(--u)), min(calc(246em / 12), calc(379 * var(--u))));
+  }
+
+  /* On a short, wide screen the title takes most of the height: the texts on the first screen
+     go just under the title instead of over it */
+  .lab-intro {
+    top: max(calc(100vh - 149 * var(--u)),
+             calc(50vh + (var(--title-top) + var(--title-h) - var(--title-mid)) * var(--u) + 12px));
+  }
+
+  /* The second wide text on the first screen (the "Solution" text) may use the room up to the right
+     margin, so it takes fewer rows and stays on the first screen */
+  .lab-intro.lab-info-wide ~ .lab-intro.lab-info-wide {
+    width: max(calc(246em / 12), calc((1440 - 65 - var(--x)) * var(--u)));
+  }
+
+  /* The story paragraphs: readable, and wider (1.4 times as wide as their bigger letters need), so they
+     take fewer rows and stay low on the screen, under the small name on the left edge */
+  .lab-text {
+    font-size: max(var(--phone-story-text), calc(13.64 * var(--u)));
+    width: max(calc(var(--w) * var(--u)), calc(var(--w) * 1.4em / 13.64));
+  }
+
+  /* Pictures and videos: never taller than the screen. A picture that would be taller is drawn
+     smaller (same shape), still in the middle of the screen and in the middle of its place.
+     --media-h / --media-w: its size on the screen. (svh: the screen's height while the browser's
+     address bar shows, so it always fits.) */
+  .lab-track {
+    --media-h: min(calc(var(--h) * var(--u)), var(--phone-media-max-h));
+    --media-w: calc(var(--media-h) * var(--w) / var(--h));
+  }
+
+  .lab-media {
+    top: calc(50svh - var(--media-h) / 2);
+    width: var(--media-w);
+    height: var(--media-h);
+    margin-left: calc((var(--w) * var(--u) - var(--media-w)) / 2);
+  }
+
+  /* the pile still lets go all at once (each track ends half its picture's screen height under --stack-end) */
+  .lab-invert .lab-track {
+    bottom: calc(100% - var(--stack-end) - var(--media-h) / 2);
+  }
+
+  /* The end of the page. On a short screen the title (in the middle) leaves too little room under it
+     for the texts on the black. So the black end is a little longer (--phone-end-extra), and for that
+     last bit of scrolling the title moves up with the page, making room for the texts. */
+  .lab-invert {
+    --title-bottom-below-middle: calc((var(--title-top) + var(--title-h) - var(--title-mid)) * var(--u));
+    --phone-end-extra: max(0px, 100px + var(--title-bottom-below-middle) - 50svh);
+    --footer-h: calc(max(calc(1126 * var(--u)), calc(50vh + (var(--title-mid) + 339 - var(--title-top)) * var(--u)))
+                     + var(--phone-end-extra));
+    --footer-title-bottom: calc(var(--footer-h) - var(--phone-end-extra) - 50vh + var(--title-bottom-below-middle));
+  }
+
+  .archive {
+    --footer-h: calc(max(calc(var(--page-end) - var(--end)),
+                         calc(50vh + (var(--title-mid) + 339 - var(--title-top)) * var(--u)))
+                     + var(--phone-end-extra));
+  }
+
+  /* the first screen lets go of the middle of the screen --phone-end-extra before the end of the page */
+  .lab-invert .lab-first-track {
+    height: calc(100% + 1px - 50vh + var(--title-mid) * var(--u) - var(--phone-end-extra));
+  }
+
+  /* the first screen reaches down past the title, so the white title is never cut off at its bottom */
+  .lab-invert .lab-first {
+    height: min(calc(1024 * var(--u)), calc(50svh + var(--title-mid) * var(--u)));
+  }
+
+  /* the texts on the black: under the title, and always fully on the screen at the end */
+  .lab-info {
+    top: min(max(calc(var(--footer-h) - 192 * var(--u)), calc(var(--footer-title-bottom) + 16px)),
+             calc(var(--footer-h) - 84px));
+  }
+
+  /* ----- About page ----- */
+  /* The screen that stays in place: the height of the screen while the address bar shows,
+     so the paragraph at the bottom is never hidden under it */
+  .about-stage {
+    height: 100vh;
+    height: 100svh;
+  }
+
+  /* the paragraph: readable, and wider on a wide screen, so it takes fewer rows */
+  .about-bio {
+    font-size: max(var(--phone-small-text), calc(12 * var(--u-screen)));
+    width: max(calc(527 * var(--u-screen)), min(600px, calc(100vw - 130 * var(--u-screen))));
+  }
+}
+
+/* ----- Phones held upright (after "continue anyway"): the screen is narrow, so the project's four short
+   texts go in two rows (label, then its text), instead of four columns that would run into each other.
+   Row 1: "Brief" and its text; row 2: "Solution" (the texts after the first wide one) and its text.
+   The same for the four texts on the black end ("2023" / "Technique"). ----- */
+@media (hover: none) and (pointer: coarse) and (orientation: portrait) {
+  .lab-intro,
+  .lab-info {
+    left: calc(65 * var(--u));
+  }
+
+  .lab-intro.lab-info-wide,
+  .lab-info.lab-info-wide,
+  .lab-intro.lab-info-wide ~ .lab-intro.lab-info-wide {
+    left: calc(65 * var(--u) + 80px);
+    width: calc(100vw - 2 * 65 * var(--u) - 80px);
+  }
+
+  /* on the first screen: just under the title (there is room there; the story starts at the bottom) */
+  .lab-intro {
+    top: calc(50vh + var(--title-bottom-below-middle) + 24px);
+  }
+
+  .lab-info-wide ~ .lab-intro {
+    top: calc(50vh + var(--title-bottom-below-middle) + 24px + 3em);
+  }
+
+  /* on the black end: near its bottom */
+  .lab-info {
+    top: calc(var(--footer-h) - 120px);
+  }
+
+  .lab-info-wide ~ .lab-info {
+    top: calc(var(--footer-h) - 120px + 4em);
+  }
 }

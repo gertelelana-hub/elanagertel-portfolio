@@ -214,8 +214,23 @@ const PHOTOS = [
   el.style.setProperty("--h", p.h * PHOTO_SCALE);
   el.style.objectPosition = p.crop;   // the crop of the photo in Figma
   stage.insertBefore(el, stage.firstChild);   // under everything (also under the small texts)
-  return { el, x: WORD_STRIP_X[p.word] + p.dx * PHOTO_SCALE, y: WORD_Y + (p.top - 450) * PHOTO_SCALE };
+  const y = WORD_Y + (p.top - 450) * PHOTO_SCALE;
+  const above = y < WORD_Y;   // the photo above the words (or under them)
+  // phones: a photo that does not fit on a short screen is drawn smaller, keeping the corner next to the words
+  el.style.transformOrigin = above ? "left bottom" : "left top";
+  return { el, x: WORD_STRIP_X[p.word] + p.dx * PHOTO_SCALE, y, h: p.h * PHOTO_SCALE, above };
 });
+
+// Phones (a touch screen with no mouse): how much smaller a photo is drawn so it fits between the words and
+// the top or bottom edge of the screen (1 = its own size). On a computer the photos keep their size.
+const FIT_PHOTOS = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+const PHOTO_EDGE_GAP = 8;   // screen pixels kept free between a photo and the edge of the screen
+function photoFit(p, u, top, screenH) {
+  if (!FIT_PHOTOS) return 1;
+  const height = p.h * u;
+  const room = p.above ? top + height - PHOTO_EDGE_GAP : screenH - PHOTO_EDGE_GAP - top;
+  return Math.max(0.3, Math.min(1, room / height));
+}
 
 const textEls = TEXTS.map((t) => {
   const p = document.createElement("p");
@@ -280,7 +295,10 @@ function draw() {
   const scrolled = Math.min(TOTAL_MOVE + EXTRA_MOVE, Math.max(0, window.scrollY / u / SCROLL_PER_PIXEL));
   const moved = Math.min(TOTAL_MOVE, scrolled);   // the shapes stop with VISION in the middle; the texts go on
 
-  PHOTOS.forEach((p) => { p.el.style.transform = `translate(${(p.x - moved) * u}px, ${fromBottom(p.y)}px)`; });   // they slide with the strip
+  PHOTOS.forEach((p) => {   // they slide with the strip
+    const top = fromBottom(p.y), fit = photoFit(p, u, top, screenH);
+    p.el.style.transform = `translate(${(p.x - moved) * u}px, ${top}px)` + (fit < 1 ? ` scale(${fit})` : "");
+  });
 
   shapes.forEach((s) => {
     const [x, y] = shapePosition(s, moved);
@@ -538,6 +556,10 @@ function goTo(L, value) {
   if (!morphRunning) { morphRunning = true; requestAnimationFrame(morphFrame); }
 }
 
+// Phones: a tap also sends "mouse" events; they are ignored right after a finger touched the screen (mobile.js)
+const byFinger = () => typeof window.touchedJustNow === "function" && window.touchedJustNow();
+const TAP_LIVELY_TIME = 1800;   // phones: ms a tapped letter stays as lively as under the mouse
+
 // where the mouse is, in about units (for the liquid to move away from it)
 let pointer = null;
 stage.addEventListener("mousemove", (event) => {
@@ -554,7 +576,7 @@ visionLetters.forEach((L) => {
   el.className = "about-letter-hover";
   stage.appendChild(el);
   L.el = el;
-  el.addEventListener("mouseenter", (event) => {
+  function touchLetter(event) {
     L.hovered = true;
     if (L.t === 0) {
       // the ooze starts where the mouse came in
@@ -564,8 +586,21 @@ visionLetters.forEach((L) => {
       delays(L);
     }
     goTo(L, 1);   // once touched it turns liquid and stays liquid (it does not go back when the mouse leaves)
+  }
+  // (a tap on a phone also sends mouseenter/mouseleave: then they do nothing, the tap is handled below)
+  el.addEventListener("mouseenter", (event) => { if (!byFinger()) touchLetter(event); });
+  el.addEventListener("mouseleave", () => { if (!byFinger()) L.hovered = false; });
+  // Phones: a tap turns the letter liquid (from where the finger touched it), and for a moment it is as
+  // lively as under the mouse, moving away from the finger
+  let calmTimer = null;
+  el.addEventListener("click", (event) => {
+    if (!byFinger()) return;
+    const b = stage.getBoundingClientRect(), u = b.width / 1440 * ABOUT_SCALE;
+    pointer = [(event.clientX - b.left) / u, WORD_MID + (event.clientY - b.top - b.height / 2) / u];
+    touchLetter(event);
+    clearTimeout(calmTimer);
+    calmTimer = setTimeout(() => { L.hovered = false; }, TAP_LIVELY_TIME);
   });
-  el.addEventListener("mouseleave", () => { L.hovered = false; });
 });
 
 // Called by draw(): the drawing and the hover spots follow the screen; they only work at the very end

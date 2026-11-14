@@ -95,6 +95,10 @@ const MORPH_TIME = REDUCED ? 1 : 1100;   // ms for a whole letter to change
 const OOZE_SPREAD = 0.3;                 // how much later the far points start (part of the time)
 const STAY_TIME = 700;                   // ms a letter stays organic after the mouse leaves
 const GOO = 7;                           // how soft the shapes melt together halfway (Figma pixels)
+const TAP_STAY_TIME = 900;               // phones: ms a tapped letter stays organic before it oozes back
+
+// Phones: a tap also sends "mouse" events; they are ignored right after a finger touched the screen (mobile.js)
+const byFinger = () => typeof window.touchedJustNow === "function" && window.touchedJustNow();
 
 // A hidden <svg> to measure outlines in
 const measureSvg = document.createElementNS(SVG_NS, "svg");
@@ -286,7 +290,7 @@ function setUpMorph(white) {
     area.style.setProperty("--w", x1 - x0);
     area.style.setProperty("--h", y1 - y0);
     container.appendChild(area);
-    area.addEventListener("mouseenter", (event) => {
+    function oozeFrom(event) {
       clearTimeout(letter.leaveTimer);
       if (letter.t === 0) {
         // the ooze starts where the mouse came in (in page positions)
@@ -295,14 +299,25 @@ function setUpMorph(white) {
         delays(letter);
       }
       goTo(letter, 1);
-    });
+    }
     // it stays organic for a moment, then oozes back
-    area.addEventListener("mouseleave", () => {
+    function oozeBackSoon(wait) {
       clearTimeout(letter.leaveTimer);
-      letter.leaveTimer = setTimeout(() => goTo(letter, 0), STAY_TIME);
+      letter.leaveTimer = setTimeout(() => goTo(letter, 0), wait);
+    }
+    // (a tap on a phone also sends mouseenter/mouseleave: then they do nothing, the tap is handled below)
+    area.addEventListener("mouseenter", (event) => { if (!byFinger()) oozeFrom(event); });
+    area.addEventListener("mouseleave", () => { if (!byFinger()) oozeBackSoon(STAY_TIME); });
+    area.addEventListener("click", (event) => {
+      if (byFinger()) {
+        // Phones: a tap makes the letter ooze from where the finger touched it; a moment later it oozes back
+        oozeFrom(event);
+        oozeBackSoon(MORPH_TIME + TAP_STAY_TIME);
+        return;
+      }
+      // the first screen's title still scrolls down when clicked (it lies over the big button)
+      if (!white) document.getElementById("lab-first-screen").click();
     });
-    // the first screen's title still scrolls down when clicked (it lies over the big button)
-    if (!white) area.addEventListener("click", () => document.getElementById("lab-first-screen").click());
   });
 }
 
